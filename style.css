@@ -525,6 +525,9 @@ body {
   letter-spacing: 0.1em;
 }
 
+.currency-label--gp { color: #C9A84C; }
+.currency-label--sp { color: #A8A9AD; }
+
 .currency-input {
   width: 100%;
   background: var(--surface);

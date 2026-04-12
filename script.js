@@ -284,7 +284,6 @@
         saveGear({
           gp:        parseFloat(document.getElementById('gear-gp').value) || 0,
           sp:        parseFloat(document.getElementById('gear-sp').value) || 0,
-          cp:        parseFloat(document.getElementById('gear-cp').value) || 0,
           armorName: document.getElementById('gear-armor-name').value,
           armorAc:   parseFloat(document.getElementById('gear-armor-ac').value) || 0,
           torches:   parseInt(document.getElementById('gear-torches').value, 10) || 0,
@@ -299,7 +298,6 @@
 
         document.getElementById('gear-gp').value       = gear.gp;
         document.getElementById('gear-sp').value       = gear.sp;
-        document.getElementById('gear-cp').value       = gear.cp;
         document.getElementById('gear-armor-name').value = gear.armorName;
         document.getElementById('gear-armor-ac').value = gear.armorAc;
         document.getElementById('gear-torches').value  = gear.torches;
@@ -315,7 +313,7 @@
       }
 
       // ── Wire top-level inputs ────────────────────────
-      ['gear-gp','gear-sp','gear-cp','gear-armor-name','gear-armor-ac',
+      ['gear-gp','gear-sp','gear-armor-name','gear-armor-ac',
        'gear-torches','gear-burn-time'].forEach(id => {
         document.getElementById(id).addEventListener('input', collectAndSave);
       });
