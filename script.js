@@ -550,7 +550,6 @@
     // ── Combat Tab ────────────────────────────────────────
     (function () {
       const SAVES = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
-      const DEATH_PIPS = 3;
 
       function getCombat() {
         const c = window.SD.character;
@@ -561,7 +560,6 @@
         if (!Array.isArray(cb.attacks))         cb.attacks = [];
         if (!Array.isArray(cb.spells))          cb.spells = [];
         if (!Array.isArray(cb.classSaves))      cb.classSaves = [];
-        if (!Array.isArray(cb.deathPips))       cb.deathPips = Array(DEATH_PIPS).fill(false);
         return cb;
       }
 
@@ -761,85 +759,12 @@
         });
       }
 
-      // ── Death Clock ──────────────────────────────────────
-      let _timer   = null;
-      let _seconds = 600;
-
-      function fmtTime(s) {
-        return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-      }
-
-      function updateDisplay() {
-        const el = document.getElementById('cbt-death-display');
-        el.textContent = fmtTime(_seconds);
-        el.classList.toggle('running', _timer !== null && _seconds > 60);
-        el.classList.toggle('danger',  _timer !== null && _seconds <= 60);
-        el.classList.toggle('dead',    _seconds === 0 && _timer === null);
-      }
-
-      function initDeathClock() {
-        document.getElementById('cbt-death-start').addEventListener('click', () => {
-          if (_timer || _seconds === 0) return;
-          _timer = setInterval(() => {
-            _seconds--;
-            updateDisplay();
-            if (_seconds === 0) { clearInterval(_timer); _timer = null; updateDisplay(); }
-          }, 1000);
-          updateDisplay();
-        });
-
-        document.getElementById('cbt-death-stop').addEventListener('click', () => {
-          if (_timer) { clearInterval(_timer); _timer = null; updateDisplay(); }
-        });
-
-        document.getElementById('cbt-death-reset').addEventListener('click', () => {
-          if (_timer) { clearInterval(_timer); _timer = null; }
-          _seconds = 600;
-          const el = document.getElementById('cbt-death-display');
-          el.classList.remove('dead', 'running', 'danger');
-          updateDisplay();
-        });
-
-        document.getElementById('cbt-death-stable').addEventListener('click', () => {
-          if (_timer) { clearInterval(_timer); _timer = null; }
-          _seconds = 600;
-          const el = document.getElementById('cbt-death-display');
-          el.classList.remove('dead', 'running', 'danger');
-          el.textContent = 'STABLE';
-          el.style.color = '#2e7d32';
-        });
-
-        // Death save pips
-        renderDeathPips();
-        updateDisplay();
-      }
-
-      function renderDeathPips() {
-        const container = document.getElementById('cbt-death-pips');
-        container.innerHTML = '';
-        const pips = getCombat().deathPips;
-
-        pips.forEach((filled, i) => {
-          const pip = document.createElement('button');
-          pip.className = 'death-pip' + (filled ? ' filled' : '');
-          pip.title = filled ? 'Click to clear' : 'Click to mark';
-          pip.setAttribute('aria-label', `Death save ${i + 1}`);
-          pip.addEventListener('click', () => {
-            getCombat().deathPips[i] = !getCombat().deathPips[i];
-            persist();
-            renderDeathPips();
-          });
-          container.appendChild(pip);
-        });
-      }
-
       // ── Boot ─────────────────────────────────────────────
       function bootCombat() {
         initStats();
         renderAttacks();
         renderSpells();
         renderSaves();
-        initDeathClock();
 
         document.getElementById('cbt-add-attack').addEventListener('click', () => {
           getCombat().attacks.push({ id: uid(), name: '', bonus: '', damage: '', notes: '' });
