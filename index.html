@@ -46,6 +46,100 @@
       --border:   #2d1015;
     }
 
+    /* ── Theme variants ─────────────────────────────────── */
+    [data-theme="parchment"] {
+      --bg:      #f2e8cc;
+      --text:    #1e1408;
+      --accent:  #7a3d12;
+      --muted:   #8a7060;
+      --surface: #e8d9b0;
+      --border:  #c8b080;
+    }
+    [data-theme="blood-moon"] {
+      --bg:      #0d0508;
+      --text:    #e8c8c0;
+      --accent:  #b83030;
+      --muted:   #6b4040;
+      --surface: #18080a;
+      --border:  #3a1010;
+    }
+
+    /* ── Theme selector ─────────────────────────────────── */
+    #theme-btn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 100;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    #theme-btn:hover { color: var(--accent); border-color: var(--accent); }
+    #theme-btn[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
+
+    #theme-popover {
+      display: none;
+      position: fixed;
+      top: 46px;
+      right: 10px;
+      z-index: 99;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+    }
+    #theme-popover.open { display: block; }
+
+    .theme-swatches {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .theme-swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .theme-swatch-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      outline: 2px solid transparent;
+      outline-offset: 3px;
+      transition: outline-color 0.15s;
+    }
+    .theme-swatch[aria-pressed="true"] .theme-swatch-circle {
+      outline-color: var(--accent);
+    }
+    .theme-swatch-label {
+      font-family: var(--font-hdr);
+      font-size: 0.62rem;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    .theme-swatch[aria-pressed="true"] .theme-swatch-label {
+      color: var(--accent);
+    }
+
     /* ── Base ───────────────────────────────────────────── */
     body {
       background: var(--bg);
@@ -1541,6 +1635,25 @@
 
   </div>
 
+  <!-- ── Theme selector ──────────────────────────────── -->
+  <button id="theme-btn" aria-label="Choose theme" aria-expanded="false" aria-controls="theme-popover">⚙</button>
+  <div id="theme-popover" role="dialog" aria-label="Theme selection">
+    <div class="theme-swatches">
+      <button class="theme-swatch" data-theme="dungeon" aria-pressed="true" title="Dungeon">
+        <span class="theme-swatch-circle" style="background:#1a1510; border:1px solid #2a2520;"></span>
+        <span class="theme-swatch-label">Dungeon</span>
+      </button>
+      <button class="theme-swatch" data-theme="parchment" aria-pressed="false" title="Parchment">
+        <span class="theme-swatch-circle" style="background:#f2e8cc; border:1px solid #c8b080;"></span>
+        <span class="theme-swatch-label">Parchment</span>
+      </button>
+      <button class="theme-swatch" data-theme="blood-moon" aria-pressed="false" title="Blood Moon">
+        <span class="theme-swatch-circle" style="background:#3d0808; border:1px solid #5a1010;"></span>
+        <span class="theme-swatch-label">Blood Moon</span>
+      </button>
+    </div>
+  </div>
+
   <!-- ── Tab bar ─────────────────────────────────────── -->
   <nav id="tab-bar" role="tablist" aria-label="Character sheet sections">
     <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="panel-core"   data-panel="core">
@@ -2417,6 +2530,56 @@
       }
 
       bootCombat();
+    })();
+  </script>
+
+  <script>
+    // ── Theme selector ─────────────────────────────────
+    (function() {
+      const THEME_KEY = 'sd_theme';
+      const btn      = document.getElementById('theme-btn');
+      const popover  = document.getElementById('theme-popover');
+      const swatches = document.querySelectorAll('.theme-swatch');
+
+      function applyTheme(theme) {
+        if (theme === 'dungeon') {
+          document.documentElement.removeAttribute('data-theme');
+        } else {
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+        swatches.forEach(s => {
+          s.setAttribute('aria-pressed', s.dataset.theme === theme ? 'true' : 'false');
+        });
+        localStorage.setItem(THEME_KEY, theme);
+      }
+
+      function togglePopover(open) {
+        popover.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isOpen = popover.classList.contains('open');
+        togglePopover(!isOpen);
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!popover.contains(e.target) && e.target !== btn) {
+          togglePopover(false);
+        }
+      });
+
+      swatches.forEach(swatch => {
+        swatch.addEventListener('click', function() {
+          applyTheme(this.dataset.theme);
+          togglePopover(false);
+        });
+      });
+
+      // Restore saved theme on load
+      const saved = localStorage.getItem(THEME_KEY) || 'dungeon';
+      applyTheme(saved);
     })();
   </script>
 
