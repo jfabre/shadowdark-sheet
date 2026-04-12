@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dungeon">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,15 +14,36 @@
 
     /* ── Theme tokens ───────────────────────────────────── */
     :root {
+      --font-hdr: 'IM Fell English', serif;
+      --font-num: 'Share Tech Mono', monospace;
+      --tab-h:    52px;
+    }
+
+    [data-theme='dungeon'] {
       --bg:       #0a0a0a;
       --text:     #f0e8d0;
       --accent:   #c8a84b;
       --muted:    #6b6050;
       --surface:  #151515;
       --border:   #2a2520;
-      --font-hdr: 'IM Fell English', serif;
-      --font-num: 'Share Tech Mono', monospace;
-      --tab-h:    52px;
+    }
+
+    [data-theme='parchment'] {
+      --bg:       #f5efe0;
+      --text:     #2a1f10;
+      --accent:   #8b4513;
+      --muted:    #9a8070;
+      --surface:  #ede4cf;
+      --border:   #c8b89a;
+    }
+
+    [data-theme='blood-moon'] {
+      --bg:       #0d0506;
+      --text:     #e8d8d0;
+      --accent:   #c0392b;
+      --muted:    #6b3040;
+      --surface:  #160a0a;
+      --border:   #2d1015;
     }
 
     /* ── Base ───────────────────────────────────────────── */
