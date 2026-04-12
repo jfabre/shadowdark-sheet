@@ -70,23 +70,37 @@
       top: 10px;
       right: 10px;
       z-index: 100;
-      width: 30px;
-      height: 30px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       color: var(--muted);
-      font-size: 15px;
+      font-size: 18px;
       line-height: 1;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 0;
-      transition: color 0.2s, border-color 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      transition: color 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
     }
-    #theme-btn:hover { color: var(--accent); border-color: var(--accent); }
-    #theme-btn[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
+    #theme-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.12);
+      box-shadow: 0 3px 14px rgba(0,0,0,0.5);
+    }
+    #theme-btn[aria-expanded="true"] {
+      color: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.06);
+    }
+    #theme-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
 
     #theme-popover {
       display: none;
@@ -1636,7 +1650,7 @@
   </div>
 
   <!-- ── Theme selector ──────────────────────────────── -->
-  <button id="theme-btn" aria-label="Choose theme" aria-expanded="false" aria-controls="theme-popover">⚙</button>
+  <button id="theme-btn" aria-label="Choose theme" aria-expanded="false" aria-controls="theme-popover">⚜</button>
   <div id="theme-popover" role="dialog" aria-label="Theme selection">
     <div class="theme-swatches">
       <button class="theme-swatch" data-theme="dungeon" aria-pressed="true" title="Dungeon">
