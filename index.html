@@ -836,6 +836,396 @@
     .deity-section { transition: opacity 0.2s; }
     .deity-section.dimmed { opacity: 0.45; }
 
+
+
+    /* ── Combat Tab ─────────────────────────────────────── */
+    .cbt-stats {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .cbt-stat-box {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 6px;
+      text-align: center;
+    }
+
+    .cbt-stat-label {
+      font-family: var(--font-num);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .cbt-stat-num {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      color: var(--accent);
+      font-family: var(--font-num);
+      font-size: 1.6rem;
+      text-align: center;
+      padding: 2px 0;
+    }
+
+    .cbt-stat-speed {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      color: var(--accent);
+      font-family: var(--font-num);
+      font-size: 0.95rem;
+      text-align: center;
+      padding: 4px 0;
+    }
+
+    .cbt-stat-num:focus, .cbt-stat-speed:focus { outline: none; border-bottom-color: var(--accent); }
+
+    .cbt-stat-derived {
+      color: var(--accent);
+      font-family: var(--font-num);
+      font-size: 1.6rem;
+      line-height: 1;
+      padding: 4px 0 3px;
+    }
+
+    /* Sections */
+    .cbt-section { margin-bottom: 22px; }
+
+    .cbt-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-num);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+
+    .cbt-save-hint { font-size: 0.58rem; }
+
+    .cbt-add-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      font-size: 1rem;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1;
+    }
+    .cbt-add-btn:active { background: var(--border); }
+
+    /* Attack list */
+    .atk-cols-head, .atk-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.5fr 44px;
+      gap: 4px;
+      align-items: center;
+      padding: 0 2px;
+    }
+
+    .atk-cols-head {
+      font-family: var(--font-num);
+      font-size: 0.58rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      padding-bottom: 4px;
+    }
+
+    .atk-row {
+      border-bottom: 1px solid var(--border);
+      padding: 4px 2px;
+    }
+
+    .atk-row input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid transparent;
+      color: var(--text);
+      font-family: var(--font-num);
+      font-size: 0.8rem;
+      padding: 2px 0;
+      width: 100%;
+      min-width: 0;
+    }
+    .atk-row input:focus { outline: none; border-bottom-color: var(--accent); }
+
+    .atk-row-btns { display: flex; gap: 2px; }
+
+    .btn-roll, .btn-trash {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 3px;
+      -webkit-tap-highlight-color: transparent;
+      opacity: 0.7;
+    }
+    .btn-roll:active, .btn-trash:active { opacity: 1; }
+
+    .cbt-empty {
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.85rem;
+      padding: 8px 2px;
+    }
+
+    /* Spell items */
+    .spell-item {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 6px;
+      overflow: hidden;
+    }
+
+    .spell-hdr {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      gap: 8px;
+      cursor: pointer;
+      background: var(--surface);
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .spell-toggle { font-size: 0.65rem; color: var(--muted); flex-shrink: 0; }
+
+    .spell-name-inp {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: var(--font-hdr);
+      font-size: 0.9rem;
+      min-width: 0;
+    }
+    .spell-name-inp:focus { outline: none; }
+
+    .spell-tier-badge {
+      font-family: var(--font-num);
+      font-size: 0.62rem;
+      background: var(--border);
+      color: var(--accent);
+      padding: 2px 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .spell-body {
+      padding: 8px 10px;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+
+    .spell-meta-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .spell-meta-row label {
+      display: flex;
+      flex-direction: column;
+      font-family: var(--font-num);
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      flex: 1;
+      min-width: 55px;
+    }
+
+    .spell-meta-row input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-num);
+      font-size: 0.82rem;
+      padding: 2px 0;
+      margin-top: 3px;
+      width: 100%;
+    }
+    .spell-meta-row input:focus { outline: none; border-bottom-color: var(--accent); }
+
+    .spell-desc-ta {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-hdr);
+      font-size: 0.85rem;
+      padding: 6px;
+      resize: vertical;
+      min-height: 60px;
+    }
+    .spell-desc-ta:focus { outline: none; border-color: var(--accent); }
+
+    /* Saving throws */
+    .cbt-saves-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .save-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .save-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .save-label input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 12px;
+      height: 12px;
+    }
+
+    .save-stat {
+      font-family: var(--font-num);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .save-val {
+      font-family: var(--font-num);
+      font-size: 1.25rem;
+      color: var(--accent);
+    }
+
+    /* Death clock */
+    .cbt-death {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cbt-death-display {
+      font-family: var(--font-num);
+      font-size: 3rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .cbt-death-display.running  { color: #e8a000; }
+    .cbt-death-display.danger   { color: #c0392b; animation: cbt-pulse 1s ease-in-out infinite; }
+    .cbt-death-display.dead     { color: #c0392b; }
+
+    @keyframes cbt-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    .cbt-death-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .cbt-btn-danger {
+      background: #5a1515;
+      border: 1px solid #c0392b;
+      color: var(--text);
+      font-family: var(--font-num);
+      font-size: 0.75rem;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .cbt-btn-sec {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-num);
+      font-size: 0.75rem;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .cbt-btn-stable {
+      background: #1a4020;
+      border: 1px solid #2e7d32;
+      color: var(--text);
+      font-family: var(--font-num);
+      font-size: 0.75rem;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cbt-btn-danger:active, .cbt-btn-sec:active, .cbt-btn-stable:active { filter: brightness(1.3); }
+
+    .cbt-death-saves {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cbt-death-saves-label {
+      font-family: var(--font-num);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .cbt-death-pips {
+      display: flex;
+      gap: 6px;
+    }
+
+    .death-pip {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--muted);
+      cursor: pointer;
+      background: transparent;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .death-pip.filled { background: var(--accent); border-color: var(--accent); }
   </style>
 </head>
 <body>
@@ -924,7 +1314,70 @@
 
     <div id="panel-combat" class="tab-panel">
       <h2>Combat</h2>
-      <p>AC, attacks, spells, saves — coming soon.</p>
+
+      <!-- AC / Initiative / Speed -->
+      <div class="cbt-stats">
+        <div class="cbt-stat-box">
+          <div class="cbt-stat-label">AC</div>
+          <input id="cbt-ac" type="number" class="cbt-stat-num" min="0" max="30" value="10" inputmode="numeric" />
+        </div>
+        <div class="cbt-stat-box">
+          <div class="cbt-stat-label">Initiative</div>
+          <div id="cbt-init" class="cbt-stat-derived">+0</div>
+        </div>
+        <div class="cbt-stat-box">
+          <div class="cbt-stat-label">Speed</div>
+          <input id="cbt-speed" type="text" class="cbt-stat-speed" value="30 ft" />
+        </div>
+      </div>
+
+      <!-- Attacks -->
+      <div class="cbt-section">
+        <div class="cbt-section-head">
+          <span>Attacks</span>
+          <button id="cbt-add-attack" class="cbt-add-btn" aria-label="Add attack">＋</button>
+        </div>
+        <div class="atk-cols-head">
+          <span>Weapon</span><span>Bonus</span><span>Damage</span><span>Notes</span><span></span>
+        </div>
+        <div id="cbt-attack-list"></div>
+      </div>
+
+      <!-- Spells -->
+      <div class="cbt-section">
+        <div class="cbt-section-head">
+          <span>Spells</span>
+          <button id="cbt-add-spell" class="cbt-add-btn" aria-label="Add spell">＋</button>
+        </div>
+        <div id="cbt-spell-list"></div>
+      </div>
+
+      <!-- Saving Throws -->
+      <div class="cbt-section">
+        <div class="cbt-section-head">
+          <span>Saving Throws</span>
+          <span class="cbt-save-hint">☑ = class save (+lvl)</span>
+        </div>
+        <div id="cbt-saves-grid" class="cbt-saves-grid"></div>
+      </div>
+
+      <!-- Death Clock -->
+      <div class="cbt-section">
+        <div class="cbt-section-head"><span>Death Clock</span></div>
+        <div class="cbt-death">
+          <div id="cbt-death-display" class="cbt-death-display">10:00</div>
+          <div class="cbt-death-btns">
+            <button id="cbt-death-start"  class="cbt-btn-danger">▶ Start</button>
+            <button id="cbt-death-stop"   class="cbt-btn-sec">⏸ Stop</button>
+            <button id="cbt-death-reset"  class="cbt-btn-sec">↺ Reset</button>
+            <button id="cbt-death-stable" class="cbt-btn-stable">✓ Stable</button>
+          </div>
+          <div class="cbt-death-saves">
+            <span class="cbt-death-saves-label">Death saves</span>
+            <div class="cbt-death-pips" id="cbt-death-pips"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="panel-gear" class="tab-panel">
@@ -1633,6 +2086,317 @@
       initClassTab();
     })();
 
+
+
+    // ── Combat Tab ────────────────────────────────────────
+    (function () {
+      const SAVES = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+      const DEATH_PIPS = 3;
+
+      function getCombat() {
+        const c = window.SD.character;
+        if (!c.combat) c.combat = {};
+        const cb = c.combat;
+        if (cb.ac == null)                      cb.ac = 10;
+        if (!cb.speed)                          cb.speed = '30 ft';
+        if (!Array.isArray(cb.attacks))         cb.attacks = [];
+        if (!Array.isArray(cb.spells))          cb.spells = [];
+        if (!Array.isArray(cb.classSaves))      cb.classSaves = [];
+        if (!Array.isArray(cb.deathPips))       cb.deathPips = Array(DEATH_PIPS).fill(false);
+        return cb;
+      }
+
+      function persist() { window.SD.saveCharacter(window.SD.character); }
+
+      function getStatMod(stat) {
+        const val = (window.SD.character.stats || {})[stat.toLowerCase()] ?? 10;
+        return Math.floor((val - 10) / 2);
+      }
+
+      function getLevel() { return window.SD.character.level || 1; }
+
+      function fmt(n) { return n >= 0 ? `+${n}` : `${n}`; }
+
+      function uid() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      }
+
+      function esc(s) {
+        return String(s ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      // ── AC / Speed / Initiative ──────────────────────────
+      function initStats() {
+        const cb = getCombat();
+
+        const acEl = document.getElementById('cbt-ac');
+        acEl.value = cb.ac;
+        acEl.addEventListener('input', () => { getCombat().ac = parseInt(acEl.value) || 0; persist(); });
+
+        const spEl = document.getElementById('cbt-speed');
+        spEl.value = cb.speed;
+        spEl.addEventListener('input', () => { getCombat().speed = spEl.value; persist(); });
+
+        refreshInit();
+      }
+
+      function refreshInit() {
+        document.getElementById('cbt-init').textContent = fmt(getStatMod('DEX'));
+      }
+
+      // ── Attacks ──────────────────────────────────────────
+      function renderAttacks() {
+        const list = document.getElementById('cbt-attack-list');
+        const attacks = getCombat().attacks;
+        list.innerHTML = '';
+
+        if (!attacks.length) {
+          list.innerHTML = '<p class="cbt-empty">No attacks. Tap ＋ to add one.</p>';
+          return;
+        }
+
+        attacks.forEach((atk, idx) => {
+          const row = document.createElement('div');
+          row.className = 'atk-row';
+          row.innerHTML =
+            `<input class="atk-f" placeholder="Weapon"  value="${esc(atk.name)}"   data-f="name"   />` +
+            `<input class="atk-f" placeholder="+0"       value="${esc(atk.bonus)}"  data-f="bonus"  inputmode="text" />` +
+            `<input class="atk-f" placeholder="1d6"      value="${esc(atk.damage)}" data-f="damage" />` +
+            `<input class="atk-f" placeholder="Notes"    value="${esc(atk.notes)}"  data-f="notes"  />` +
+            `<div class="atk-row-btns">` +
+              `<button class="btn-roll"  title="Roll attack &amp; damage">🎲</button>` +
+              `<button class="btn-trash" title="Remove attack">🗑</button>` +
+            `</div>`;
+
+          row.querySelectorAll('input').forEach(inp => {
+            inp.addEventListener('input', () => { atk[inp.dataset.f] = inp.value; persist(); });
+          });
+
+          row.querySelector('.btn-roll').addEventListener('click', () => rollAttack(atk));
+          row.querySelector('.btn-trash').addEventListener('click', () => {
+            getCombat().attacks.splice(idx, 1);
+            persist();
+            renderAttacks();
+          });
+
+          list.appendChild(row);
+        });
+      }
+
+      function rollAttack(atk) {
+        const rawBonus = (atk.bonus || '').replace(/\s/g, '');
+        const bonusStr = /^[+-]/.test(rawBonus) ? rawBonus : (rawBonus ? `+${rawBonus}` : '+0');
+        const dmg      = atk.damage || '1d4';
+        const hitExpr  = `1d20${bonusStr}`;
+        const name     = atk.name || 'Attack';
+
+        if (window.TS && window.TS.dice && typeof window.TS.dice.putDiceInTray === 'function') {
+          // Tabletop Simulator / external dice bridge
+          window.TS.dice.putDiceInTray([
+            { notation: hitExpr, label: `${name} — hit` },
+            { notation: dmg,     label: `${name} — dmg` }
+          ]);
+        } else {
+          // Inline fallback roll
+          const d20     = Math.ceil(Math.random() * 20);
+          const bonusN  = parseInt(bonusStr) || 0;
+          const total   = d20 + bonusN;
+          console.log(`[${name}] hit: ${total} (d20=${d20}${bonusStr})  dmg: ${dmg}`);
+        }
+      }
+
+      // ── Spells ───────────────────────────────────────────
+      function renderSpells() {
+        const list   = document.getElementById('cbt-spell-list');
+        const spells = getCombat().spells;
+        list.innerHTML = '';
+
+        if (!spells.length) {
+          list.innerHTML = '<p class="cbt-empty">No spells. Tap ＋ to add one.</p>';
+          return;
+        }
+
+        spells.forEach((sp, idx) => {
+          const item = document.createElement('div');
+          item.className = 'spell-item';
+
+          item.innerHTML =
+            `<div class="spell-hdr">` +
+              `<span class="spell-toggle">▶</span>` +
+              `<input class="spell-name-inp" placeholder="Spell name" value="${esc(sp.name)}" />` +
+              `<span class="spell-tier-badge">T${sp.tier || 1}</span>` +
+              `<button class="btn-trash" title="Remove spell">🗑</button>` +
+            `</div>` +
+            `<div class="spell-body">` +
+              `<div class="spell-meta-row">` +
+                `<label>Tier<input type="number" class="sp-tier" min="1" max="9" value="${sp.tier || 1}" inputmode="numeric" /></label>` +
+                `<label>Range<input class="sp-range" placeholder="Near" value="${esc(sp.range)}" /></label>` +
+                `<label>Duration<input class="sp-dur" placeholder="Instant" value="${esc(sp.duration)}" /></label>` +
+              `</div>` +
+              `<textarea class="spell-desc-ta" placeholder="Description">${esc(sp.desc)}</textarea>` +
+            `</div>`;
+
+          const hdr    = item.querySelector('.spell-hdr');
+          const body   = item.querySelector('.spell-body');
+          const toggle = item.querySelector('.spell-toggle');
+          const badge  = item.querySelector('.spell-tier-badge');
+
+          hdr.addEventListener('click', e => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+            const open = body.style.display === 'block';
+            body.style.display = open ? 'none' : 'block';
+            toggle.textContent  = open ? '▶' : '▼';
+          });
+
+          item.querySelector('.spell-name-inp').addEventListener('input', e => { sp.name = e.target.value; persist(); });
+          item.querySelector('.sp-tier').addEventListener('input', e => {
+            sp.tier = parseInt(e.target.value) || 1;
+            badge.textContent = `T${sp.tier}`;
+            persist();
+          });
+          item.querySelector('.sp-range').addEventListener('input',    e => { sp.range    = e.target.value; persist(); });
+          item.querySelector('.sp-dur').addEventListener('input',      e => { sp.duration = e.target.value; persist(); });
+          item.querySelector('.spell-desc-ta').addEventListener('input', e => { sp.desc   = e.target.value; persist(); });
+          item.querySelector('.btn-trash').addEventListener('click', () => {
+            getCombat().spells.splice(idx, 1);
+            persist();
+            renderSpells();
+          });
+
+          list.appendChild(item);
+        });
+      }
+
+      // ── Saving Throws ────────────────────────────────────
+      function renderSaves() {
+        const grid = document.getElementById('cbt-saves-grid');
+        grid.innerHTML = '';
+        const cb = getCombat();
+
+        SAVES.forEach(stat => {
+          const isCls  = cb.classSaves.includes(stat);
+          const total  = getStatMod(stat) + (isCls ? getLevel() : 0);
+
+          const box    = document.createElement('div');
+          box.className = 'save-box';
+          box.innerHTML =
+            `<label class="save-label">` +
+              `<input type="checkbox" ${isCls ? 'checked' : ''} />` +
+              `<span class="save-stat">${stat}</span>` +
+            `</label>` +
+            `<span class="save-val">${fmt(total)}</span>`;
+
+          box.querySelector('input').addEventListener('change', e => {
+            const saves = getCombat().classSaves;
+            if (e.target.checked) { if (!saves.includes(stat)) saves.push(stat); }
+            else                  { const i = saves.indexOf(stat); if (i >= 0) saves.splice(i, 1); }
+            persist();
+            renderSaves();
+          });
+
+          grid.appendChild(box);
+        });
+      }
+
+      // ── Death Clock ──────────────────────────────────────
+      let _timer   = null;
+      let _seconds = 600;
+
+      function fmtTime(s) {
+        return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+      }
+
+      function updateDisplay() {
+        const el = document.getElementById('cbt-death-display');
+        el.textContent = fmtTime(_seconds);
+        el.classList.toggle('running', _timer !== null && _seconds > 60);
+        el.classList.toggle('danger',  _timer !== null && _seconds <= 60);
+        el.classList.toggle('dead',    _seconds === 0 && _timer === null);
+      }
+
+      function initDeathClock() {
+        document.getElementById('cbt-death-start').addEventListener('click', () => {
+          if (_timer || _seconds === 0) return;
+          _timer = setInterval(() => {
+            _seconds--;
+            updateDisplay();
+            if (_seconds === 0) { clearInterval(_timer); _timer = null; updateDisplay(); }
+          }, 1000);
+          updateDisplay();
+        });
+
+        document.getElementById('cbt-death-stop').addEventListener('click', () => {
+          if (_timer) { clearInterval(_timer); _timer = null; updateDisplay(); }
+        });
+
+        document.getElementById('cbt-death-reset').addEventListener('click', () => {
+          if (_timer) { clearInterval(_timer); _timer = null; }
+          _seconds = 600;
+          const el = document.getElementById('cbt-death-display');
+          el.classList.remove('dead', 'running', 'danger');
+          updateDisplay();
+        });
+
+        document.getElementById('cbt-death-stable').addEventListener('click', () => {
+          if (_timer) { clearInterval(_timer); _timer = null; }
+          _seconds = 600;
+          const el = document.getElementById('cbt-death-display');
+          el.classList.remove('dead', 'running', 'danger');
+          el.textContent = 'STABLE';
+          el.style.color = '#2e7d32';
+        });
+
+        // Death save pips
+        renderDeathPips();
+        updateDisplay();
+      }
+
+      function renderDeathPips() {
+        const container = document.getElementById('cbt-death-pips');
+        container.innerHTML = '';
+        const pips = getCombat().deathPips;
+
+        pips.forEach((filled, i) => {
+          const pip = document.createElement('button');
+          pip.className = 'death-pip' + (filled ? ' filled' : '');
+          pip.title = filled ? 'Click to clear' : 'Click to mark';
+          pip.setAttribute('aria-label', `Death save ${i + 1}`);
+          pip.addEventListener('click', () => {
+            getCombat().deathPips[i] = !getCombat().deathPips[i];
+            persist();
+            renderDeathPips();
+          });
+          container.appendChild(pip);
+        });
+      }
+
+      // ── Boot ─────────────────────────────────────────────
+      function bootCombat() {
+        initStats();
+        renderAttacks();
+        renderSpells();
+        renderSaves();
+        initDeathClock();
+
+        document.getElementById('cbt-add-attack').addEventListener('click', () => {
+          getCombat().attacks.push({ id: uid(), name: '', bonus: '', damage: '', notes: '' });
+          persist();
+          renderAttacks();
+        });
+
+        document.getElementById('cbt-add-spell').addEventListener('click', () => {
+          getCombat().spells.push({ id: uid(), name: '', tier: 1, range: '', duration: '', desc: '' });
+          persist();
+          renderSpells();
+        });
+      }
+
+      bootCombat();
+    })();
   </script>
 
 </body>
