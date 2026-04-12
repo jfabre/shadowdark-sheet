@@ -623,6 +623,219 @@
 
     input { outline: none; }
     input:focus { border-color: var(--accent); }
+
+
+    /* ── CLASS tab ──────────────────────────────────────── */
+    .cls-header {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: flex-end;
+    }
+
+    .cls-header .fld { display: flex; flex-direction: column; gap: 4px; }
+    .cls-header .fld--grow { flex: 1; }
+    .cls-header .fld--narrow { width: 70px; }
+
+    .fld-label {
+      font-family: var(--font-num);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .fld-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-hdr);
+      font-size: 1rem;
+      padding: 7px 10px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .fld-input:focus { border-color: var(--accent); }
+
+    .cls-section { margin-bottom: 22px; }
+
+    .cls-section-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .cls-section-title {
+      font-family: var(--font-num);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .cls-add-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 2px 8px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .cls-add-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* Collapsible features toggle */
+    .features-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 10px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .features-toggle .toggle-arrow {
+      font-size: 0.75rem;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+
+    .features-toggle[aria-expanded="false"] .toggle-arrow { transform: rotate(-90deg); }
+
+    .features-body { overflow: hidden; }
+    .features-body.collapsed { display: none; }
+
+    /* Talent rows */
+    .talent-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .level-badge {
+      font-family: var(--font-num);
+      font-size: 0.6rem;
+      color: var(--bg);
+      background: var(--muted);
+      border-radius: 3px;
+      padding: 2px 5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 38px;
+      text-align: center;
+    }
+
+    .level-badge.earned { background: var(--accent); }
+
+    .talent-input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-hdr);
+      font-size: 0.9rem;
+      padding: 6px 9px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .talent-input:focus { border-color: var(--accent); }
+    .talent-input::placeholder { color: var(--muted); font-style: italic; }
+
+    .talent-clear {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 4px;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: color 0.15s;
+    }
+
+    .talent-clear:hover { color: #c05050; }
+
+    /* Feature items */
+    .feature-item {
+      border-left: 2px solid var(--border);
+      padding: 8px 12px;
+      margin-bottom: 8px;
+    }
+
+    .feature-name {
+      font-family: var(--font-num);
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 3px;
+    }
+
+    .feature-desc {
+      font-size: 0.85rem;
+      color: var(--text);
+      opacity: 0.85;
+      line-height: 1.5;
+    }
+
+    .feature-notes-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-hdr);
+      font-size: 0.9rem;
+      padding: 7px 10px;
+      outline: none;
+      resize: none;
+      overflow: hidden;
+      transition: border-color 0.15s;
+      min-height: 60px;
+    }
+
+    .feature-notes-input:focus { border-color: var(--accent); }
+    .feature-notes-input::placeholder { color: var(--muted); font-style: italic; }
+
+    /* Auto-growing textarea */
+    .auto-grow {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-hdr);
+      font-size: 0.95rem;
+      padding: 8px 10px;
+      outline: none;
+      resize: none;
+      overflow: hidden;
+      min-height: 80px;
+      line-height: 1.55;
+      transition: border-color 0.15s;
+    }
+
+    .auto-grow:focus { border-color: var(--accent); }
+    .auto-grow::placeholder { color: var(--muted); font-style: italic; }
+
+    /* Deity section dimmed when not Priest */
+    .deity-section { transition: opacity 0.2s; }
+    .deity-section.dimmed { opacity: 0.45; }
+
   </style>
 </head>
 <body>
@@ -792,7 +1005,64 @@
 
     <div id="panel-class" class="tab-panel">
       <h2>Class</h2>
-      <p>Talents, spells &amp; class features — coming soon.</p>
+
+      <!-- Class + Level header -->
+      <div class="cls-header">
+        <div class="fld fld--grow">
+          <label class="fld-label" for="cls-name">Class</label>
+          <input id="cls-name" class="fld-input" type="text" placeholder="Fighter, Wizard…" autocomplete="off" />
+        </div>
+        <div class="fld fld--narrow">
+          <label class="fld-label" for="cls-level">Level</label>
+          <input id="cls-level" class="fld-input" type="number" min="1" max="10" placeholder="1" />
+        </div>
+      </div>
+
+      <!-- Talents -->
+      <div class="cls-section">
+        <div class="cls-section-hdr">
+          <span class="cls-section-title">Talents</span>
+        </div>
+        <div id="talents-list"></div>
+      </div>
+
+      <!-- Class Features (collapsible) -->
+      <div class="cls-section">
+        <button class="features-toggle" id="features-toggle"
+                aria-expanded="true" aria-controls="features-body">
+          <span class="cls-section-title">Class Features</span>
+          <span class="toggle-arrow">▾</span>
+        </button>
+        <div id="features-body" class="features-body"></div>
+      </div>
+
+      <!-- Background -->
+      <div class="cls-section">
+        <div class="cls-section-hdr">
+          <span class="cls-section-title">Background</span>
+        </div>
+        <textarea id="cls-background" class="auto-grow"
+                  placeholder="Your character's background…"></textarea>
+      </div>
+
+      <!-- Deity -->
+      <div class="cls-section deity-section" id="deity-section">
+        <div class="cls-section-hdr">
+          <span class="cls-section-title">Deity</span>
+        </div>
+        <input id="cls-deity" class="fld-input" type="text"
+               placeholder="Name of deity worshipped" autocomplete="off" />
+      </div>
+
+      <!-- Notes / Backstory -->
+      <div class="cls-section">
+        <div class="cls-section-hdr">
+          <span class="cls-section-title">Notes &amp; Backstory</span>
+        </div>
+        <textarea id="cls-notes" class="auto-grow"
+                  placeholder="History, personality, campaign notes…"></textarea>
+      </div>
+
     </div>
 
   </div>
@@ -1146,6 +1416,223 @@
 
       renderGear();
     })();
+
+
+    // ── CLASS tab ──────────────────────────────────────
+    (function () {
+      const TALENT_LEVELS = [2, 4, 6, 8, 10];
+
+      const CLASS_FEATURES = {
+        fighter: [
+          { name: 'Weapon Mastery', desc: 'Choose a weapon. Gain +1 to attack and damage with that weapon. At every odd level, choose another weapon to master.' },
+          { name: 'Combat Superiority', desc: 'When you roll a natural 19–20 on an attack, you may attempt a combat maneuver (disarm, knockdown, etc.) in addition to dealing damage.' },
+        ],
+        thief: [
+          { name: 'Backstab', desc: 'When you attack a creature who is unaware of you or who is flanked by an ally, deal +1d6 damage per every 3 character levels.' },
+          { name: 'Thievery', desc: 'You know how to pick locks, disarm traps, move silently, and perform other roguish skills. Roll Dex + Level for thievery checks.' },
+          { name: 'Sneak Attack', desc: 'Once per round, when you have advantage on an attack roll, you may add +1d6 damage to the hit.' },
+        ],
+        wizard: [
+          { name: 'Spellcasting', desc: 'You cast arcane spells. Roll Int + Level vs. DC 12 to cast. On failure, the spell is lost but not spent.' },
+          { name: 'Learning Spells', desc: 'When you gain a level or find a scroll/spellbook, you may attempt to learn new spells (Int check, DC 12).' },
+          { name: 'Spell Loss on 1', desc: 'When you roll a natural 1 on a spellcasting check, you lose the spell and suffer 1d4 damage.' },
+        ],
+        priest: [
+          { name: 'Deity', desc: 'You serve a god. Your powers flow from your faith. Betraying your deity's tenets may cost you spellcasting until atonement.' },
+          { name: 'Turn Undead', desc: 'Roll Cha + Level (DC 12 per HD of the undead). On success, the undead flee or are destroyed for 1 round per level.' },
+          { name: 'Spellcasting', desc: 'You cast divine spells. Roll Wis + Level vs. DC 12 to cast. On failure, the spell is not lost.' },
+        ],
+      };
+
+      // ── helpers ────────────────────────────────────────
+      function clsKey(k) { return 'cls_' + k; }
+
+      function load(key, fallback) {
+        const char = window.SD.loadCharacter();
+        const v = char[clsKey(key)];
+        return v !== undefined ? v : fallback;
+      }
+
+      function save(key, value) {
+        const char = window.SD.loadCharacter();
+        char[clsKey(key)] = value;
+        window.SD.saveCharacter(char);
+        window.SD.character = char;
+      }
+
+      function autoGrow(el) {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+      }
+
+      // ── talents ────────────────────────────────────────
+      function renderTalents(level) {
+        const list = document.getElementById('talents-list');
+        const saved = load('talents', ['', '', '', '', '']);
+
+        list.innerHTML = '';
+        TALENT_LEVELS.forEach((talentLvl, i) => {
+          const earned = level >= talentLvl;
+          const row = document.createElement('div');
+          row.className = 'talent-row';
+
+          const badge = document.createElement('span');
+          badge.className = 'level-badge' + (earned ? ' earned' : '');
+          badge.textContent = 'LVL ' + talentLvl;
+
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'talent-input';
+          input.placeholder = earned ? 'Talent description…' : 'Unlocked at level ' + talentLvl;
+          input.value = saved[i] || '';
+          input.disabled = !earned;
+          input.setAttribute('aria-label', 'Level ' + talentLvl + ' talent');
+          input.addEventListener('input', () => {
+            const talents = load('talents', ['', '', '', '', '']);
+            talents[i] = input.value;
+            save('talents', talents);
+          });
+
+          const clearBtn = document.createElement('button');
+          clearBtn.className = 'talent-clear';
+          clearBtn.textContent = '✕';
+          clearBtn.setAttribute('aria-label', 'Clear talent');
+          clearBtn.disabled = !earned;
+          clearBtn.addEventListener('click', () => {
+            input.value = '';
+            input.dispatchEvent(new Event('input'));
+          });
+
+          row.appendChild(badge);
+          row.appendChild(input);
+          row.appendChild(clearBtn);
+          list.appendChild(row);
+        });
+      }
+
+      // ── class features ─────────────────────────────────
+      function renderFeatures(className) {
+        const body = document.getElementById('features-body');
+        const key = (className || '').toLowerCase().trim();
+        const features = CLASS_FEATURES[key];
+
+        body.innerHTML = '';
+
+        if (features) {
+          features.forEach(f => {
+            const item = document.createElement('div');
+            item.className = 'feature-item';
+
+            const name = document.createElement('div');
+            name.className = 'feature-name';
+            name.textContent = f.name;
+
+            const desc = document.createElement('div');
+            desc.className = 'feature-desc';
+            desc.textContent = f.desc;
+
+            item.appendChild(name);
+            item.appendChild(desc);
+            body.appendChild(item);
+          });
+        } else {
+          const item = document.createElement('div');
+          item.className = 'feature-item';
+
+          const name = document.createElement('div');
+          name.className = 'feature-name';
+          name.textContent = 'Class Notes';
+
+          const textarea = document.createElement('textarea');
+          textarea.className = 'feature-notes-input auto-grow';
+          textarea.placeholder = 'Enter class features and special abilities…';
+          textarea.value = load('class_notes', '');
+          textarea.setAttribute('aria-label', 'Class feature notes');
+          textarea.addEventListener('input', () => {
+            save('class_notes', textarea.value);
+            autoGrow(textarea);
+          });
+          requestAnimationFrame(() => autoGrow(textarea));
+
+          item.appendChild(name);
+          item.appendChild(textarea);
+          body.appendChild(item);
+        }
+      }
+
+      // ── deity visibility ────────────────────────────────
+      function updateDeityVisibility(className) {
+        const section = document.getElementById('deity-section');
+        const isP = (className || '').toLowerCase().trim() === 'priest';
+        section.classList.toggle('dimmed', !isP);
+      }
+
+      // ── initialise ─────────────────────────────────────
+      function initClassTab() {
+        const nameEl  = document.getElementById('cls-name');
+        const levelEl = document.getElementById('cls-level');
+        const bgEl    = document.getElementById('cls-background');
+        const deityEl = document.getElementById('cls-deity');
+        const notesEl = document.getElementById('cls-notes');
+        const toggle  = document.getElementById('features-toggle');
+        const fbody   = document.getElementById('features-body');
+
+        // Restore saved values
+        nameEl.value  = load('name',  '');
+        levelEl.value = load('level', '');
+        bgEl.value    = load('background', '');
+        deityEl.value = load('deity', '');
+        notesEl.value = load('notes', '');
+
+        const currentClass = nameEl.value;
+        const currentLevel = parseInt(levelEl.value, 10) || 0;
+
+        renderTalents(currentLevel);
+        renderFeatures(currentClass);
+        updateDeityVisibility(currentClass);
+
+        requestAnimationFrame(() => {
+          autoGrow(bgEl);
+          autoGrow(notesEl);
+        });
+
+        // Events
+        nameEl.addEventListener('input', () => {
+          save('name', nameEl.value);
+          renderFeatures(nameEl.value);
+          updateDeityVisibility(nameEl.value);
+        });
+
+        levelEl.addEventListener('input', () => {
+          const lvl = parseInt(levelEl.value, 10) || 0;
+          save('level', levelEl.value);
+          renderTalents(lvl);
+        });
+
+        bgEl.addEventListener('input', () => {
+          save('background', bgEl.value);
+          autoGrow(bgEl);
+        });
+
+        deityEl.addEventListener('input', () => save('deity', deityEl.value));
+
+        notesEl.addEventListener('input', () => {
+          save('notes', notesEl.value);
+          autoGrow(notesEl);
+        });
+
+        // Collapsible features
+        toggle.addEventListener('click', () => {
+          const expanded = toggle.getAttribute('aria-expanded') === 'true';
+          toggle.setAttribute('aria-expanded', String(!expanded));
+          fbody.classList.toggle('collapsed', expanded);
+        });
+      }
+
+      // Run once DOM is ready (it is, since script is deferred-inline at body end)
+      initClassTab();
+    })();
+
   </script>
 
 </body>
