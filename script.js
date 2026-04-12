@@ -350,7 +350,7 @@
           { name: 'Spell Loss on 1', desc: 'When you roll a natural 1 on a spellcasting check, you lose the spell and suffer 1d4 damage.' },
         ],
         priest: [
-          { name: 'Deity', desc: 'You serve a god. Your powers flow from your faith. Betraying your deity's tenets may cost you spellcasting until atonement.' },
+          { name: 'Deity', desc: "You serve a god. Your powers flow from your faith. Betraying your deity's tenets may cost you spellcasting until atonement." },
           { name: 'Turn Undead', desc: 'Roll Cha + Level (DC 12 per HD of the undead). On success, the undead flee or are destroyed for 1 round per level.' },
           { name: 'Spellcasting', desc: 'You cast divine spells. Roll Wis + Level vs. DC 12 to cast. On failure, the spell is not lost.' },
         ],
