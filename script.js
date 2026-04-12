@@ -865,11 +865,14 @@
       const swatches = document.querySelectorAll('.theme-swatch');
 
       function applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
+        const root = document.documentElement;
+        root.classList.add('theme-switching');
+        root.setAttribute('data-theme', theme);
         swatches.forEach(s => {
           s.setAttribute('aria-pressed', s.dataset.theme === theme ? 'true' : 'false');
         });
         localStorage.setItem(THEME_KEY, theme);
+        setTimeout(() => root.classList.remove('theme-switching'), 300);
       }
 
       function togglePopover(open) {
