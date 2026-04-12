@@ -2542,11 +2542,7 @@
       const swatches = document.querySelectorAll('.theme-swatch');
 
       function applyTheme(theme) {
-        if (theme === 'dungeon') {
-          document.documentElement.removeAttribute('data-theme');
-        } else {
-          document.documentElement.setAttribute('data-theme', theme);
-        }
+        document.documentElement.setAttribute('data-theme', theme);
         swatches.forEach(s => {
           s.setAttribute('aria-pressed', s.dataset.theme === theme ? 'true' : 'false');
         });
@@ -2577,9 +2573,11 @@
         });
       });
 
-      // Restore saved theme on load
-      const saved = localStorage.getItem(THEME_KEY) || 'dungeon';
-      applyTheme(saved);
+      // Restore saved theme on DOMContentLoaded (default: dungeon)
+      document.addEventListener('DOMContentLoaded', function() {
+        const saved = localStorage.getItem(THEME_KEY) || 'dungeon';
+        applyTheme(saved);
+      });
     })();
   </script>
 
