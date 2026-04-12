@@ -317,9 +317,15 @@
       });
 
       document.getElementById('inv-add-btn').addEventListener('click', () => {
-        document.getElementById('inv-list').appendChild(createInvRow());
+        const gear = getGear();
+        gear.inventory = (gear.inventory || []).concat([{ name: '', slots: 1, qty: 1, notes: '' }]);
+        saveGear(gear);
+        const list = document.getElementById('inv-list');
+        list.innerHTML = '';
+        gear.inventory.forEach(item => list.appendChild(createInvRow(item)));
         updateEncumbrance();
-        collectAndSave();
+        const rows = list.querySelectorAll('.inv-row');
+        if (rows.length) rows[rows.length - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       });
 
       renderGear();
