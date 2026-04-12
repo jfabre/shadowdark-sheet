@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shadowdark Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    /* ── Theme tokens ───────────────────────────────────── */
+    :root {
+      --bg:       #0a0a0a;
+      --text:     #f0e8d0;
+      --accent:   #c8a84b;
+      --muted:    #6b6050;
+      --surface:  #151515;
+      --border:   #2a2520;
+      --font-hdr: 'IM Fell English', serif;
+      --font-num: 'Share Tech Mono', monospace;
+      --tab-h:    52px;
+    }
+
+    /* ── Base ───────────────────────────────────────────── */
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-hdr);
+      font-size: 16px;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 100dvh;
+    }
+
+    /* ── Content area ───────────────────────────────────── */
+    #content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 14px calc(var(--tab-h) + 8px);
+    }
+
+    /* ── Tab panels ─────────────────────────────────────── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .tab-panel h2 {
+      font-family: var(--font-hdr);
+      font-size: 1.4rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+      letter-spacing: 0.04em;
+    }
+
+    .tab-panel p {
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    /* ── Tab bar (bottom) ───────────────────────────────── */
+    #tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      height: var(--tab-h);
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      border-top: 3px solid transparent;
+      color: var(--muted);
+      font-family: var(--font-num);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding-top: 4px;
+      transition: color 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tab-btn .tab-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-top-color: var(--accent);
+    }
+
+    .tab-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Content ─────────────────────────────────────── -->
+  <div id="content">
+
+    <div id="panel-core" class="tab-panel active">
+      <h2>Core</h2>
+      <p>Character identity &amp; ability scores — coming soon.</p>
+    </div>
+
+    <div id="panel-combat" class="tab-panel">
+      <h2>Combat</h2>
+      <p>AC, attacks, spells, saves — coming soon.</p>
+    </div>
+
+    <div id="panel-gear" class="tab-panel">
+      <h2>Gear</h2>
+      <p>Inventory, encumbrance &amp; gold — coming soon.</p>
+    </div>
+
+    <div id="panel-class" class="tab-panel">
+      <h2>Class</h2>
+      <p>Talents, spells &amp; class features — coming soon.</p>
+    </div>
+
+  </div>
+
+  <!-- ── Tab bar ─────────────────────────────────────── -->
+  <nav id="tab-bar" role="tablist" aria-label="Character sheet sections">
+    <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="panel-core"   data-panel="core">
+      <span class="tab-icon">⚔</span>CORE
+    </button>
+    <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="panel-combat" data-panel="combat">
+      <span class="tab-icon">🛡</span>COMBAT
+    </button>
+    <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="panel-gear"   data-panel="gear">
+      <span class="tab-icon">🎒</span>GEAR
+    </button>
+    <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="panel-class"  data-panel="class">
+      <span class="tab-icon">📜</span>CLASS
+    </button>
+  </nav>
+
+  <script>
+    // ── Tab switching ──────────────────────────────────
+    const tabBtns   = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    function switchTab(panelName) {
+      tabBtns.forEach(btn => {
+        const active = btn.dataset.panel === panelName;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-selected', active);
+      });
+      tabPanels.forEach(panel => {
+        panel.classList.toggle('active', panel.id === `panel-${panelName}`);
+      });
+    }
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.panel));
+    });
+
+    // ── localStorage skeleton ──────────────────────────
+    const STORAGE_KEY = 'shadowdark_character';
+
+    function loadCharacter() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveCharacter(data) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.warn('Could not save character data:', e);
+      }
+    }
+
+    // Exposed globally for child tabs to use
+    window.SD = { loadCharacter, saveCharacter };
+
+    // Initialise with stored data on load
+    window.SD.character = loadCharacter();
+  </script>
+
+</body>
+</html>
