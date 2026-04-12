@@ -564,7 +564,7 @@
       function persist() { window.SD.saveCharacter(window.SD.character); }
 
       function getStatMod(stat) {
-        const val = (window.SD.character.stats || {})[stat.toLowerCase()] ?? 10;
+        const val = (window.SD.character.abilities || {})[stat.toUpperCase()] ?? 10;
         return Math.floor((val - 10) / 2);
       }
 
@@ -617,21 +617,36 @@
         attacks.forEach((atk, idx) => {
           const row = document.createElement('div');
           row.className = 'atk-row';
+          const stat = atk.stat || 'STR';
+          const bonusVal = atk.bonus != null && atk.bonus !== '' ? atk.bonus : String(getStatMod(stat));
           row.innerHTML =
             `<input class="atk-f" placeholder="Weapon"  value="${esc(atk.name)}"   data-f="name"   />` +
-            `<input class="atk-f" placeholder="+0"       value="${esc(atk.bonus)}"  data-f="bonus"  inputmode="text" />` +
-            `<input class="atk-f" placeholder="1d6"      value="${esc(atk.damage)}" data-f="damage" />` +
-            `<input class="atk-f" placeholder="Notes"    value="${esc(atk.notes)}"  data-f="notes"  />` +
+            `<select class="atk-stat" title="Attack stat">` +
+              `<option value="STR"${stat === 'STR' ? ' selected' : ''}>STR</option>` +
+              `<option value="DEX"${stat === 'DEX' ? ' selected' : ''}>DEX</option>` +
+            `</select>` +
+            `<input class="atk-f" placeholder="0"   value="${esc(bonusVal)}"  data-f="bonus"  inputmode="numeric" />` +
+            `<input class="atk-f" placeholder="1d6" value="${esc(atk.damage)}" data-f="damage" />` +
             `<div class="atk-row-btns">` +
               `<button class="btn-roll"  title="Roll attack &amp; damage">🎲</button>` +
               `<button class="btn-trash" title="Remove attack">🗑</button>` +
-            `</div>`;
+            `</div>` +
+            `<div class="atk-result"></div>`;
 
-          row.querySelectorAll('input').forEach(inp => {
+          row.querySelectorAll('input[data-f]').forEach(inp => {
             inp.addEventListener('input', () => { atk[inp.dataset.f] = inp.value; persist(); });
           });
 
-          row.querySelector('.btn-roll').addEventListener('click', () => rollAttack(atk));
+          const statSel  = row.querySelector('.atk-stat');
+          const bonusInp = row.querySelector('[data-f="bonus"]');
+          statSel.addEventListener('change', () => {
+            atk.stat  = statSel.value;
+            atk.bonus = String(getStatMod(statSel.value));
+            bonusInp.value = atk.bonus;
+            persist();
+          });
+
+          row.querySelector('.btn-roll').addEventListener('click', () => rollAttack(atk, row));
           row.querySelector('.btn-trash').addEventListener('click', () => {
             getCombat().attacks.splice(idx, 1);
             persist();
@@ -642,26 +657,45 @@
         });
       }
 
-      function rollAttack(atk) {
-        const rawBonus = (atk.bonus || '').replace(/\s/g, '');
+      function rollDice(expr) {
+        const m = String(expr).match(/^(\d*)d(\d+)([+-]\d+)?$/i);
+        if (!m) return expr;
+        const count = parseInt(m[1] || '1');
+        const sides = parseInt(m[2]);
+        const mod   = parseInt(m[3] || '0');
+        let total = mod;
+        for (let i = 0; i < count; i++) total += Math.ceil(Math.random() * sides);
+        return String(total);
+      }
+
+      function rollAttack(atk, row) {
+        const rawBonus = String(atk.bonus ?? '').replace(/\s/g, '');
         const bonusStr = /^[+-]/.test(rawBonus) ? rawBonus : (rawBonus ? `+${rawBonus}` : '+0');
-        const dmg      = atk.damage || '1d4';
-        const hitExpr  = `1d20${bonusStr}`;
-        const name     = atk.name || 'Attack';
+        const dmg  = atk.damage || '1d4';
+        const name = atk.name || 'Attack';
 
         if (window.TS && window.TS.dice && typeof window.TS.dice.putDiceInTray === 'function') {
-          // Tabletop Simulator / external dice bridge
           window.TS.dice.putDiceInTray([
-            { notation: hitExpr, label: `${name} — hit` },
-            { notation: dmg,     label: `${name} — dmg` }
+            { notation: `1d20${bonusStr}`, label: `${name} — hit` },
+            { notation: dmg,              label: `${name} — dmg` }
           ]);
-        } else {
-          // Inline fallback roll
-          const d20     = Math.ceil(Math.random() * 20);
-          const bonusN  = parseInt(bonusStr) || 0;
-          const total   = d20 + bonusN;
-          console.log(`[${name}] hit: ${total} (d20=${d20}${bonusStr})  dmg: ${dmg}`);
+          return;
         }
+
+        const d20      = Math.ceil(Math.random() * 20);
+        const bonusN   = parseInt(bonusStr) || 0;
+        const total    = d20 + bonusN;
+        const dmgTotal = rollDice(dmg);
+        const bonusFmt = bonusN >= 0 ? `+${bonusN}` : `${bonusN}`;
+
+        const resultEl = row.querySelector('.atk-result');
+        resultEl.textContent = `${name}: hit ${total} (d20=${d20}${bonusFmt}) — dmg ${dmgTotal}`;
+        resultEl.classList.add('visible');
+        clearTimeout(resultEl._timer);
+        resultEl._timer = setTimeout(() => {
+          resultEl.classList.remove('visible');
+          resultEl.textContent = '';
+        }, 8000);
       }
 
       // ── Spells ───────────────────────────────────────────
@@ -765,7 +799,8 @@
         renderSaves();
 
         document.getElementById('cbt-add-attack').addEventListener('click', () => {
-          getCombat().attacks.push({ id: uid(), name: '', bonus: '', damage: '', notes: '' });
+          const stat = 'STR';
+          getCombat().attacks.push({ id: uid(), name: '', stat, bonus: String(getStatMod(stat)), damage: '' });
           persist();
           renderAttacks();
         });
