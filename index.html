@@ -66,6 +66,257 @@
       font-size: 0.9rem;
     }
 
+    /* ── CORE tab ───────────────────────────────────────── */
+    .char-name-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--font-hdr);
+      font-size: 1.6rem;
+      padding: 4px 2px 6px;
+      margin-bottom: 20px;
+      outline: none;
+      letter-spacing: 0.02em;
+    }
+    .char-name-input::placeholder { color: var(--muted); opacity: 0.6; }
+
+    .identity-grid {
+      display: grid;
+      grid-template-columns: 1fr 60px 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-group label {
+      font-family: var(--font-num);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .field-group input,
+    .field-group select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-num);
+      font-size: 0.95rem;
+      padding: 6px 8px;
+      outline: none;
+      width: 100%;
+    }
+    .field-group input:focus,
+    .field-group select:focus { border-color: var(--accent); }
+    .field-group select { appearance: none; cursor: pointer; }
+    .field-group input[type="number"] { -moz-appearance: textfield; }
+    .field-group input[type="number"]::-webkit-inner-spin-button,
+    .field-group input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .field-label {
+      font-family: var(--font-num);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      white-space: nowrap;
+      min-width: 70px;
+    }
+
+    /* Alignment selector */
+    .alignment-selector {
+      display: flex;
+      gap: 6px;
+      flex: 1;
+    }
+    .align-btn {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-family: var(--font-num);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      padding: 6px 4px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .align-btn.active {
+      background: #1e1a10;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* XP row */
+    .xp-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .xp-row input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-num);
+      font-size: 0.95rem;
+      padding: 6px 8px;
+      width: 72px;
+      outline: none;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+    .xp-row input:focus { border-color: var(--accent); }
+    .xp-row input::-webkit-inner-spin-button,
+    .xp-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .xp-sep { color: var(--muted); font-family: var(--font-num); }
+
+    /* Section label */
+    .section-label {
+      font-family: var(--font-num);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* Ability score grid */
+    .ability-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .ability-cell {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: text;
+      transition: border-color 0.15s;
+    }
+    .ability-cell:focus-within { border-color: var(--accent); }
+    .ability-stat-name {
+      font-family: var(--font-num);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .ability-score {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: var(--font-num);
+      font-size: 1.5rem;
+      width: 48px;
+      text-align: center;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .ability-score::-webkit-inner-spin-button,
+    .ability-score::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .ability-mod {
+      font-family: var(--font-num);
+      font-size: 0.85rem;
+      color: var(--accent);
+      min-height: 1.1em;
+    }
+
+    /* HP row */
+    .hp-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .hp-row input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-num);
+      font-size: 1.1rem;
+      padding: 6px 8px;
+      width: 58px;
+      text-align: center;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .hp-row input:focus { border-color: var(--accent); }
+    .hp-row input::-webkit-inner-spin-button,
+    .hp-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .hp-sep { color: var(--muted); font-family: var(--font-num); }
+    .roll-btn {
+      margin-left: auto;
+      background: #1a1208;
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      color: var(--accent);
+      font-family: var(--font-num);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .roll-btn:active { background: #2a1e08; }
+
+    /* Luck tokens row */
+    .luck-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .luck-row input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-num);
+      font-size: 0.95rem;
+      padding: 6px 8px;
+      width: 58px;
+      text-align: center;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .luck-row input:focus { border-color: var(--accent); }
+    .luck-row input::-webkit-inner-spin-button,
+    .luck-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .luck-halfling-note {
+      font-family: var(--font-num);
+      font-size: 0.6rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
     /* ── Tab bar (bottom) ───────────────────────────────── */
     #tab-bar {
       position: fixed;
@@ -380,8 +631,82 @@
   <div id="content">
 
     <div id="panel-core" class="tab-panel active">
-      <h2>Core</h2>
-      <p>Character identity &amp; ability scores — coming soon.</p>
+
+      <!-- Character name -->
+      <input type="text" id="char-name" class="char-name-input" placeholder="Character Name" autocomplete="off" />
+
+      <!-- Class / Level / Ancestry -->
+      <div class="identity-grid">
+        <div class="field-group">
+          <label for="char-class">Class</label>
+          <input type="text" id="char-class" placeholder="Fighter" autocomplete="off" />
+        </div>
+        <div class="field-group">
+          <label for="char-level">Level</label>
+          <input type="number" id="char-level" min="1" max="10" value="1" />
+        </div>
+        <div class="field-group">
+          <label for="char-ancestry">Ancestry</label>
+          <select id="char-ancestry">
+            <option value="">—</option>
+            <option value="Human">Human</option>
+            <option value="Elf">Elf</option>
+            <option value="Dwarf">Dwarf</option>
+            <option value="Halfling">Halfling</option>
+            <option value="Half-Orc">Half-Orc</option>
+            <option value="Goblin">Goblin</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Alignment -->
+      <div class="field-row">
+        <span class="field-label">Alignment</span>
+        <div class="alignment-selector" id="alignment-selector">
+          <button class="align-btn" data-value="Lawful">Lawful</button>
+          <button class="align-btn" data-value="Neutral">Neutral</button>
+          <button class="align-btn" data-value="Chaotic">Chaotic</button>
+        </div>
+      </div>
+
+      <!-- XP -->
+      <div class="xp-row">
+        <span class="field-label">XP</span>
+        <input type="number" id="char-xp" min="0" value="0" />
+        <span class="xp-sep">/</span>
+        <input type="number" id="char-xp-next" min="0" value="10" />
+        <span class="field-label" style="margin-left:4px;min-width:unset">next lvl</span>
+      </div>
+
+      <!-- Ability scores 2×3 grid -->
+      <div class="section-label">Ability Scores</div>
+      <div class="ability-grid" id="ability-grid">
+        <!-- populated by JS -->
+      </div>
+
+      <!-- HP -->
+      <div class="hp-row">
+        <span class="field-label">HP</span>
+        <input type="number" id="hp-current" min="0" value="0" />
+        <span class="hp-sep">/</span>
+        <input type="number" id="hp-max" min="0" value="0" />
+        <button class="roll-btn" id="roll-hp-btn">Roll HP</button>
+      </div>
+
+      <!-- Luck tokens (Halfling racial) -->
+      <div class="luck-row" id="luck-row">
+        <span class="field-label">Luck Tokens</span>
+        <input type="number" id="luck-tokens" min="0" max="3" value="0" />
+        <span class="luck-halfling-note" id="luck-note">Halfling racial</span>
+      </div>
+
+      <!-- Languages -->
+      <div class="field-group" style="margin-bottom:14px">
+        <label for="char-languages">Languages</label>
+        <input type="text" id="char-languages" placeholder="Common, Elvish…" autocomplete="off" />
+      </div>
+
     </div>
 
     <div id="panel-combat" class="tab-panel">
@@ -508,8 +833,8 @@
       btn.addEventListener('click', () => switchTab(btn.dataset.panel));
     });
 
-    // ── localStorage skeleton ──────────────────────────
-    const STORAGE_KEY = 'shadowdark_character';
+    // ── localStorage ───────────────────────────────────
+    const STORAGE_KEY = 'sd_char';
 
     function loadCharacter() {
       try {
@@ -528,11 +853,157 @@
       }
     }
 
-    // Exposed globally for child tabs to use
     window.SD = { loadCharacter, saveCharacter };
-
-    // Initialise with stored data on load
     window.SD.character = loadCharacter();
+
+    // ── CORE tab ───────────────────────────────────────
+    const ABILITY_STATS = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+
+    function abilityMod(score) {
+      return Math.floor((Number(score) - 10) / 2);
+    }
+
+    function fmtMod(mod) {
+      return mod >= 0 ? `+${mod}` : `${mod}`;
+    }
+
+    // Build ability grid cells
+    const abilityGrid = document.getElementById('ability-grid');
+    ABILITY_STATS.forEach(stat => {
+      const cell = document.createElement('div');
+      cell.className = 'ability-cell';
+      cell.innerHTML = `
+        <span class="ability-stat-name">${stat}</span>
+        <input class="ability-score" id="ability-${stat.toLowerCase()}"
+               type="number" min="1" max="20" value="10"
+               inputmode="numeric" />
+        <span class="ability-mod" id="mod-${stat.toLowerCase()}">+0</span>
+      `;
+      abilityGrid.appendChild(cell);
+
+      const input = cell.querySelector('.ability-score');
+      const modEl = cell.querySelector('.ability-mod');
+
+      input.addEventListener('input', () => {
+        const mod = abilityMod(input.value);
+        modEl.textContent = fmtMod(mod);
+        coreAutoSave();
+      });
+      // Tap cell to focus score input
+      cell.addEventListener('click', e => {
+        if (e.target !== input) input.focus();
+      });
+    });
+
+    // Alignment selector
+    let alignment = '';
+    document.getElementById('alignment-selector').addEventListener('click', e => {
+      const btn = e.target.closest('.align-btn');
+      if (!btn) return;
+      document.querySelectorAll('.align-btn').forEach(b => b.classList.remove('active'));
+      if (alignment === btn.dataset.value) {
+        alignment = '';
+      } else {
+        alignment = btn.dataset.value;
+        btn.classList.add('active');
+      }
+      coreAutoSave();
+    });
+
+    // Luck tokens — update note visibility based on ancestry
+    function updateLuckNote() {
+      const ancestry = document.getElementById('char-ancestry').value;
+      const note = document.getElementById('luck-note');
+      note.style.opacity = ancestry === 'Halfling' ? '1' : '0.35';
+    }
+    document.getElementById('char-ancestry').addEventListener('change', () => {
+      updateLuckNote();
+      coreAutoSave();
+    });
+
+    // Roll HP button
+    document.getElementById('roll-hp-btn').addEventListener('click', () => {
+      const conMod = abilityMod(document.getElementById('ability-con').value);
+      try {
+        if (typeof TS !== 'undefined' && TS.dice && TS.dice.putDiceInTray) {
+          TS.dice.putDiceInTray([{ sides: 8, count: 1, modifier: conMod }], true);
+        } else {
+          // Fallback: simple local roll
+          const roll = Math.floor(Math.random() * 8) + 1 + conMod;
+          const hp = Math.max(1, roll);
+          const current = document.getElementById('hp-current');
+          current.value = hp;
+          coreAutoSave();
+        }
+      } catch (e) {
+        console.warn('TS.dice unavailable:', e);
+      }
+    });
+
+    // Auto-save all CORE fields to localStorage
+    function coreAutoSave() {
+      const char = window.SD.character;
+      char.name      = document.getElementById('char-name').value;
+      char.class     = document.getElementById('char-class').value;
+      char.level     = Number(document.getElementById('char-level').value) || 1;
+      char.ancestry  = document.getElementById('char-ancestry').value;
+      char.alignment = alignment;
+      char.xp        = Number(document.getElementById('char-xp').value) || 0;
+      char.xpNext    = Number(document.getElementById('char-xp-next').value) || 0;
+      char.hpCurrent = Number(document.getElementById('hp-current').value) || 0;
+      char.hpMax     = Number(document.getElementById('hp-max').value) || 0;
+      char.luckTokens = Number(document.getElementById('luck-tokens').value) || 0;
+      char.languages = document.getElementById('char-languages').value;
+      char.abilities = {};
+      ABILITY_STATS.forEach(stat => {
+        char.abilities[stat] = Number(document.getElementById(`ability-${stat.toLowerCase()}`).value) || 10;
+      });
+      window.SD.saveCharacter(char);
+    }
+
+    // Wire up auto-save for plain inputs
+    ['char-name','char-class','char-level','char-xp','char-xp-next',
+     'hp-current','hp-max','luck-tokens','char-languages'].forEach(id => {
+      document.getElementById(id).addEventListener('input', coreAutoSave);
+    });
+
+    // Load saved values into CORE fields
+    function coreLoad() {
+      const c = window.SD.character;
+      if (c.name)      document.getElementById('char-name').value = c.name;
+      if (c.class)     document.getElementById('char-class').value = c.class;
+      if (c.level)     document.getElementById('char-level').value = c.level;
+      if (c.ancestry)  document.getElementById('char-ancestry').value = c.ancestry;
+      if (c.xp  != null) document.getElementById('char-xp').value = c.xp;
+      if (c.xpNext != null) document.getElementById('char-xp-next').value = c.xpNext;
+      if (c.hpCurrent != null) document.getElementById('hp-current').value = c.hpCurrent;
+      if (c.hpMax     != null) document.getElementById('hp-max').value = c.hpMax;
+      if (c.luckTokens != null) document.getElementById('luck-tokens').value = c.luckTokens;
+      if (c.languages) document.getElementById('char-languages').value = c.languages;
+
+      if (c.alignment) {
+        alignment = c.alignment;
+        document.querySelectorAll('.align-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.value === alignment);
+        });
+      }
+
+      if (c.abilities) {
+        ABILITY_STATS.forEach(stat => {
+          const score = c.abilities[stat];
+          if (score != null) {
+            const input = document.getElementById(`ability-${stat.toLowerCase()}`);
+            const modEl = document.getElementById(`mod-${stat.toLowerCase()}`);
+            input.value = score;
+            modEl.textContent = fmtMod(abilityMod(score));
+          }
+        });
+      }
+
+      updateLuckNote();
+    }
+
+    coreLoad();
   </script>
 
   <script>
