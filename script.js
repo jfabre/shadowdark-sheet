@@ -137,7 +137,6 @@
       char.hpCurrent = Number(document.getElementById('hp-current').value) || 0;
       char.hpMax     = Number(document.getElementById('hp-max').value) || 0;
       char.luckTokens = Number(document.getElementById('luck-tokens').value) || 0;
-      char.languages = document.getElementById('char-languages').value;
       char.abilities = {};
       ABILITY_STATS.forEach(stat => {
         char.abilities[stat] = Number(document.getElementById(`ability-${stat.toLowerCase()}`).value) || 10;
@@ -147,7 +146,7 @@
 
     // Wire up auto-save for plain inputs
     ['char-name','char-class','char-level','char-xp','char-xp-next',
-     'hp-current','hp-max','luck-tokens','char-languages'].forEach(id => {
+     'hp-current','hp-max','luck-tokens'].forEach(id => {
       document.getElementById(id).addEventListener('input', coreAutoSave);
     });
 
@@ -163,7 +162,6 @@
       if (c.hpCurrent != null) document.getElementById('hp-current').value = c.hpCurrent;
       if (c.hpMax     != null) document.getElementById('hp-max').value = c.hpMax;
       if (c.luckTokens != null) document.getElementById('luck-tokens').value = c.luckTokens;
-      if (c.languages) document.getElementById('char-languages').value = c.languages;
 
       if (c.alignment) {
         alignment = c.alignment;
@@ -479,23 +477,22 @@
 
       // ── initialise ─────────────────────────────────────
       function initClassTab() {
-        const nameEl  = document.getElementById('cls-name');
-        const levelEl = document.getElementById('cls-level');
         const bgEl    = document.getElementById('cls-background');
         const deityEl = document.getElementById('cls-deity');
         const notesEl = document.getElementById('cls-notes');
+        const langEl  = document.getElementById('char-languages');
         const toggle  = document.getElementById('features-toggle');
         const fbody   = document.getElementById('features-body');
 
         // Restore saved values
-        nameEl.value  = load('name',  '');
-        levelEl.value = load('level', '');
         bgEl.value    = load('background', '');
         deityEl.value = load('deity', '');
         notesEl.value = load('notes', '');
+        if (window.SD.character.languages) langEl.value = window.SD.character.languages;
 
-        const currentClass = nameEl.value;
-        const currentLevel = parseInt(levelEl.value, 10) || 0;
+        // Read class/level from Core (single source of truth)
+        const currentClass = window.SD.character.class || '';
+        const currentLevel = Number(window.SD.character.level) || 0;
 
         renderTalents(currentLevel);
         renderFeatures(currentClass);
@@ -506,17 +503,21 @@
           autoGrow(notesEl);
         });
 
-        // Events
-        nameEl.addEventListener('input', () => {
-          save('name', nameEl.value);
-          renderFeatures(nameEl.value);
-          updateDeityVisibility(nameEl.value);
+        // Re-render when Core class/level change
+        document.getElementById('char-class').addEventListener('input', (e) => {
+          renderFeatures(e.target.value);
+          updateDeityVisibility(e.target.value);
+        });
+        document.getElementById('char-level').addEventListener('input', (e) => {
+          renderTalents(parseInt(e.target.value, 10) || 0);
         });
 
-        levelEl.addEventListener('input', () => {
-          const lvl = parseInt(levelEl.value, 10) || 0;
-          save('level', levelEl.value);
-          renderTalents(lvl);
+        // Events
+        langEl.addEventListener('input', () => {
+          const char = window.SD.loadCharacter();
+          char.languages = langEl.value;
+          window.SD.saveCharacter(char);
+          window.SD.character = char;
         });
 
         bgEl.addEventListener('input', () => {

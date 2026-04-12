@@ -85,12 +85,6 @@
         <span class="luck-halfling-note" id="luck-note">Halfling racial</span>
       </div>
 
-      <!-- Languages -->
-      <div class="field-group" style="margin-bottom:14px">
-        <label for="char-languages">Languages</label>
-        <input type="text" id="char-languages" placeholder="Common, Elvish…" autocomplete="off" />
-      </div>
-
     </div>
 
     <div id="panel-combat" class="tab-panel">
@@ -210,18 +204,6 @@
     <div id="panel-class" class="tab-panel">
       <h2>Class</h2>
 
-      <!-- Class + Level header -->
-      <div class="cls-header">
-        <div class="fld fld--grow">
-          <label class="fld-label" for="cls-name">Class</label>
-          <input id="cls-name" class="fld-input" type="text" placeholder="Fighter, Wizard…" autocomplete="off" />
-        </div>
-        <div class="fld fld--narrow">
-          <label class="fld-label" for="cls-level">Level</label>
-          <input id="cls-level" class="fld-input" type="number" min="1" max="10" placeholder="1" />
-        </div>
-      </div>
-
       <!-- Talents -->
       <div class="cls-section">
         <div class="cls-section-hdr">
@@ -247,6 +229,15 @@
         </div>
         <textarea id="cls-background" class="auto-grow"
                   placeholder="Your character's background…"></textarea>
+      </div>
+
+      <!-- Languages -->
+      <div class="cls-section">
+        <div class="cls-section-hdr">
+          <span class="cls-section-title">Languages</span>
+        </div>
+        <input id="char-languages" class="fld-input" type="text"
+               placeholder="Common, Elvish…" autocomplete="off" />
       </div>
 
       <!-- Deity -->
