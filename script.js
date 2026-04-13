@@ -73,6 +73,7 @@
         modEl.textContent = fmtMod(mod);
         coreAutoSave();
         if (stat === 'DEX' && window.SD.refreshInit) window.SD.refreshInit();
+        if (stat === 'DEX' && window.SD.refreshAC) window.SD.refreshAC();
       });
       // Tap cell to focus score input
       cell.addEventListener('click', e => {
@@ -581,12 +582,14 @@
         document.getElementById(id).addEventListener('change', () => {
           collectAndSave();
           updateEncumbrance();
+          if (window.SD.refreshAC) window.SD.refreshAC();
         });
       });
       ['gear-mithral', 'gear-shield'].forEach(id => {
         document.getElementById(id).addEventListener('change', () => {
           collectAndSave();
           updateEncumbrance();
+          if (id === 'gear-shield' && window.SD.refreshAC) window.SD.refreshAC();
         });
       });
 
@@ -1038,12 +1041,26 @@
         spEl.addEventListener('input', () => { getCombat().speed = spEl.value; persist(); });
 
         refreshInit();
+        refreshAC();
       }
 
       function refreshInit() {
         document.getElementById('cbt-init').textContent = fmt(getStatMod('DEX'));
       }
       window.SD.refreshInit = refreshInit;
+
+      function refreshAC() {
+        const armorType = document.getElementById('gear-armor-type').value;
+        const shield = document.getElementById('gear-shield').checked;
+        const dexMod = getStatMod('DEX');
+        const armorAC = { none: 10, leather: 11, chainmail: 13, plate: 15 };
+        const usesDex = armorType !== 'plate';
+        const ac = (armorAC[armorType] || 10) + (usesDex ? dexMod : 0) + (shield ? 2 : 0);
+        document.getElementById('cbt-ac').value = ac;
+        getCombat().ac = ac;
+        persist();
+      }
+      window.SD.refreshAC = refreshAC;
 
       // ── Attacks ──────────────────────────────────────────
       function renderAttacks() {
