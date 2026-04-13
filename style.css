@@ -427,7 +427,7 @@ body {
 .xp-row input:focus { border-color: var(--accent); }
 .xp-row input::-webkit-inner-spin-button,
 .xp-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
-.xp-row .field-label { margin-right: 8px; }
+.xp-row .field-label { margin-right: 8px; min-width: auto; }
 .xp-sep { color: var(--muted); font-family: var(--font-num); }
 
 /* Section label */
@@ -512,6 +512,7 @@ body {
 .hp-row input::-webkit-inner-spin-button,
 .hp-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
 .hp-sep { color: var(--muted); font-family: var(--font-num); }
+.hp-row .field-label { min-width: auto; }
 
 /* Luck tokens row */
 .luck-row {
