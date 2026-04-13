@@ -934,9 +934,9 @@
         notesEl.value = load('notes', '');
         if (window.SD.character.languages) langEl.value = window.SD.character.languages;
 
-        // Read class/level from Core (single source of truth)
-        const currentClass = window.SD.character.class || '';
-        const currentLevel = Number(window.SD.character.level) || 0;
+        // Read class/level from Core DOM (single source of truth)
+        const currentClass = document.getElementById('char-class').value || '';
+        const currentLevel = parseInt(document.getElementById('char-level').value, 10) || 1;
 
         renderTalents(currentLevel);
         renderFeatures(currentClass);
@@ -953,12 +953,12 @@
           updateDeityVisibility(e.target.value);
         });
         document.getElementById('char-level').addEventListener('input', (e) => {
-          renderTalents(parseInt(e.target.value, 10) || 0);
+          renderTalents(parseInt(e.target.value, 10) || 1);
         });
         
         // Re-render talents when ancestry changes (Human bonus slot)
         document.getElementById('char-ancestry').addEventListener('change', () => {
-          const currentLevel = Number(window.SD.character.level) || 0;
+          const currentLevel = parseInt(document.getElementById('char-level').value, 10) || 1;
           renderTalents(currentLevel);
         });
 
