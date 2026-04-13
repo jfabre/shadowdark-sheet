@@ -105,25 +105,6 @@
       coreAutoSave();
     });
 
-    // Roll HP button
-    document.getElementById('roll-hp-btn').addEventListener('click', () => {
-      const conMod = abilityMod(document.getElementById('ability-con').value);
-      try {
-        if (typeof TS !== 'undefined' && TS.dice && TS.dice.putDiceInTray) {
-          TS.dice.putDiceInTray([{ sides: 8, count: 1, modifier: conMod }], true);
-        } else {
-          // Fallback: simple local roll
-          const roll = Math.floor(Math.random() * 8) + 1 + conMod;
-          const hp = Math.max(1, roll);
-          const current = document.getElementById('hp-current');
-          current.value = hp;
-          coreAutoSave();
-        }
-      } catch (e) {
-        console.warn('TS.dice unavailable:', e);
-      }
-    });
-
     // Auto-save all CORE fields to localStorage
     function coreAutoSave() {
       const char = window.SD.character;

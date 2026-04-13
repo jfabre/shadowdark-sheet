@@ -395,21 +395,6 @@ body {
 .hp-row input::-webkit-inner-spin-button,
 .hp-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
 .hp-sep { color: var(--muted); font-family: var(--font-num); }
-.roll-btn {
-  margin-left: auto;
-  background: var(--surface);
-  border: 1px solid var(--accent);
-  border-radius: 4px;
-  color: var(--accent);
-  font-family: var(--font-num);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: background 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-.roll-btn:active { background: var(--bg); }
 
 /* Luck tokens row */
 .luck-row {
