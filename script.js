@@ -1001,7 +1001,6 @@
         if (!c.combat) c.combat = {};
         const cb = c.combat;
         if (cb.ac == null)                      cb.ac = 10;
-        if (!cb.speed)                          cb.speed = '30 ft';
         if (!Array.isArray(cb.attacks))         cb.attacks = [];
         if (!Array.isArray(cb.spells))          cb.spells = [];
         return cb;
@@ -1028,17 +1027,13 @@
           .replace(/"/g, '&quot;');
       }
 
-      // ── AC / Speed / Initiative ──────────────────────────
+      // ── AC / Initiative ──────────────────────────────────
       function initStats() {
         const cb = getCombat();
 
         const acEl = document.getElementById('cbt-ac');
         acEl.value = cb.ac;
         acEl.addEventListener('input', () => { getCombat().ac = parseInt(acEl.value) || 0; persist(); });
-
-        const spEl = document.getElementById('cbt-speed');
-        spEl.value = cb.speed;
-        spEl.addEventListener('input', () => { getCombat().speed = spEl.value; persist(); });
 
         refreshInit();
         refreshAC();

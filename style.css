@@ -1214,19 +1214,7 @@ input:focus { border-color: var(--accent); }
   padding: 2px 0;
 }
 
-.cbt-stat-speed {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--border);
-  color: var(--accent);
-  font-family: var(--font-num);
-  font-size: 0.95rem;
-  text-align: center;
-  padding: 4px 0;
-}
-
-.cbt-stat-num:focus, .cbt-stat-speed:focus { outline: none; border-bottom-color: var(--accent); }
+.cbt-stat-num:focus { outline: none; border-bottom-color: var(--accent); }
 
 .cbt-stat-derived {
   color: var(--accent);
