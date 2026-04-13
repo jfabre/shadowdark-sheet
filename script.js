@@ -167,7 +167,123 @@
     }
 
     coreLoad();
-  
+
+    // ── Portrait ─────────────────────────────────────────
+    (function () {
+      const PORTRAIT_KEY = 'sd_char_portrait';
+      const frame = document.getElementById('portrait-frame');
+      const img = document.getElementById('portrait-img');
+      const placeholder = document.getElementById('portrait-placeholder');
+      const clearBtn = document.getElementById('portrait-clear');
+      const fileInput = document.getElementById('portrait-file');
+
+      function loadPortrait() {
+        const data = localStorage.getItem(PORTRAIT_KEY);
+        if (data) {
+          img.src = data;
+          img.style.display = 'block';
+          placeholder.style.display = 'none';
+        } else {
+          img.style.display = 'none';
+          placeholder.style.display = 'flex';
+        }
+      }
+
+      function savePortrait(dataUrl) {
+        try {
+          localStorage.setItem(PORTRAIT_KEY, dataUrl);
+        } catch (e) {
+          console.warn('Could not save portrait:', e);
+        }
+      }
+
+      function clearPortrait() {
+        localStorage.removeItem(PORTRAIT_KEY);
+        img.src = '';
+        img.style.display = 'none';
+        placeholder.style.display = 'flex';
+      }
+
+      function resizeImage(file) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imgEl = new Image();
+            imgEl.onload = () => {
+              const maxDim = 400;
+              let w = imgEl.width;
+              let h = imgEl.height;
+              if (w > maxDim || h > maxDim) {
+                const scale = maxDim / Math.max(w, h);
+                w = Math.round(w * scale);
+                h = Math.round(h * scale);
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(imgEl, 0, 0, w, h);
+              resolve(canvas.toDataURL('image/jpeg', 0.85));
+            };
+            imgEl.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function handleFile(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        const dataUrl = await resizeImage(file);
+        savePortrait(dataUrl);
+        img.src = dataUrl;
+        img.style.display = 'block';
+        placeholder.style.display = 'none';
+      }
+
+      frame.addEventListener('click', (e) => {
+        if (e.target === clearBtn) return;
+        fileInput.click();
+      });
+
+      frame.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          fileInput.click();
+        }
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          handleFile(e.target.files[0]);
+        }
+        fileInput.value = '';
+      });
+
+      clearBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearPortrait();
+      });
+
+      frame.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        frame.classList.add('drag-over');
+      });
+
+      frame.addEventListener('dragleave', () => {
+        frame.classList.remove('drag-over');
+      });
+
+      frame.addEventListener('drop', (e) => {
+        e.preventDefault();
+        frame.classList.remove('drag-over');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      loadPortrait();
+    })();
+
     // ── GEAR TAB ────────────────────────────────────────
     (function () {
       const GEAR_DEFAULTS = {

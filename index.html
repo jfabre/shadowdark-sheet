@@ -54,6 +54,19 @@
         </div>
       </div>
 
+      <!-- Character portrait -->
+      <div class="portrait-section">
+        <div class="portrait-frame" id="portrait-frame" tabindex="0" role="button" aria-label="Choose portrait">
+          <img class="portrait-img" id="portrait-img" alt="Character portrait" />
+          <div class="portrait-placeholder" id="portrait-placeholder">
+            <span class="portrait-plus">＋</span>
+            <span class="portrait-text">Choose portrait</span>
+          </div>
+          <button class="portrait-clear" id="portrait-clear" aria-label="Remove portrait">✕</button>
+        </div>
+        <input type="file" id="portrait-file" accept="image/*" hidden />
+      </div>
+
       <!-- Ability scores 2×3 grid -->
       <div class="section-label">Ability Scores</div>
       <div class="ability-grid" id="ability-grid">
