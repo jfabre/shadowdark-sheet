@@ -293,8 +293,10 @@ body {
 .hp-xp-row {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 12px;
   margin-bottom: 14px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 /* XP row */
@@ -302,6 +304,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  flex: 1;
 }
 .xp-row input {
   background: var(--surface);
@@ -310,8 +314,9 @@ body {
   color: var(--text);
   font-family: var(--font-num);
   font-size: 0.95rem;
-  padding: 6px 8px;
-  width: 72px;
+  padding: 6px 6px;
+  width: 56px;
+  min-width: 0;
   outline: none;
   text-align: center;
   -moz-appearance: textfield;
@@ -383,6 +388,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 .hp-row input {
   background: var(--surface);
@@ -391,8 +397,9 @@ body {
   color: var(--text);
   font-family: var(--font-num);
   font-size: 1.1rem;
-  padding: 6px 8px;
-  width: 58px;
+  padding: 6px 6px;
+  width: 52px;
+  min-width: 0;
   text-align: center;
   outline: none;
   -moz-appearance: textfield;
