@@ -733,7 +733,7 @@
 
     // ── CLASS tab ──────────────────────────────────────
     (function () {
-      const TALENT_LEVELS = [2, 4, 6, 8, 10];
+      const TALENT_LEVELS = [1, 3, 5, 7, 9];
 
       const CLASS_FEATURES = {
         fighter: [
@@ -779,11 +779,50 @@
       }
 
       // ── talents ────────────────────────────────────────
-      function renderTalents(level) {
+      window.SD.renderTalents = function renderTalents(level) {
         const list = document.getElementById('talents-list');
-        const saved = load('talents', ['', '', '', '', '']);
+        const saved = load('talents', ['', '', '', '', '', '']);
+        const ancestry = window.SD.character.ancestry || '';
+        const isHuman = ancestry === 'Human';
+        const hasBonus = isHuman && level >= 1;
 
         list.innerHTML = '';
+        
+        if (hasBonus) {
+          const row = document.createElement('div');
+          row.className = 'talent-row';
+          
+          const badge = document.createElement('span');
+          badge.className = 'level-badge earned';
+          badge.textContent = 'LVL 1 (Human bonus)';
+          
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'talent-input';
+          input.placeholder = 'Talent description…';
+          input.value = saved[5] || '';
+          input.setAttribute('aria-label', 'Level 1 Human bonus talent');
+          input.addEventListener('input', () => {
+            const talents = load('talents', ['', '', '', '', '', '']);
+            talents[5] = input.value;
+            save('talents', talents);
+          });
+          
+          const clearBtn = document.createElement('button');
+          clearBtn.className = 'talent-clear';
+          clearBtn.textContent = '✕';
+          clearBtn.setAttribute('aria-label', 'Clear talent');
+          clearBtn.addEventListener('click', () => {
+            input.value = '';
+            input.dispatchEvent(new Event('input'));
+          });
+          
+          row.appendChild(badge);
+          row.appendChild(input);
+          row.appendChild(clearBtn);
+          list.appendChild(row);
+        }
+        
         TALENT_LEVELS.forEach((talentLvl, i) => {
           const earned = level >= talentLvl;
           const row = document.createElement('div');
@@ -801,7 +840,7 @@
           input.disabled = !earned;
           input.setAttribute('aria-label', 'Level ' + talentLvl + ' talent');
           input.addEventListener('input', () => {
-            const talents = load('talents', ['', '', '', '', '']);
+            const talents = load('talents', ['', '', '', '', '', '']);
             talents[i] = input.value;
             save('talents', talents);
           });
@@ -915,6 +954,12 @@
         });
         document.getElementById('char-level').addEventListener('input', (e) => {
           renderTalents(parseInt(e.target.value, 10) || 0);
+        });
+        
+        // Re-render talents when ancestry changes (Human bonus slot)
+        document.getElementById('char-ancestry').addEventListener('change', () => {
+          const currentLevel = Number(window.SD.character.level) || 0;
+          renderTalents(currentLevel);
         });
 
         // Events
