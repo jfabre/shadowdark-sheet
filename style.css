@@ -722,7 +722,87 @@ body {
 
 /* Armor */
 .armor-row {
+  position: relative;
   margin-bottom: 8px;
+}
+
+.armor-custom-select {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--font-hdr);
+  font-size: 0.9rem;
+  padding: 7px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  transition: border-color 0.15s;
+}
+
+.armor-custom-select:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.armor-custom-select:hover {
+  border-color: var(--accent);
+}
+
+.armor-select-name {
+  flex-shrink: 0;
+}
+
+.armor-select-suffix {
+  color: var(--muted);
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.armor-custom-dropdown {
+  position: fixed;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  z-index: 1000;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.armor-custom-dropdown.open {
+  display: block;
+}
+
+.armor-custom-option {
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: var(--font-hdr);
+  font-size: 0.9rem;
+  color: var(--text);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.armor-custom-option:hover,
+.armor-custom-option.active {
+  background: var(--border);
+  color: var(--accent);
+}
+
+.armor-option-name {
+  flex-shrink: 0;
+}
+
+.armor-option-suffix {
+  color: var(--muted);
+  font-size: 0.9em;
 }
 
 .armor-type-select {

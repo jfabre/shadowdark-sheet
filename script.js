@@ -559,7 +559,11 @@
 
         document.getElementById('gear-gp').value          = gear.gp;
         document.getElementById('gear-sp').value          = gear.sp;
-        document.getElementById('gear-armor-type').value  = gear.armorType || 'none';
+        if (window.SD.setArmorType) {
+          window.SD.setArmorType(gear.armorType || 'none');
+        } else {
+          document.getElementById('gear-armor-type').value  = gear.armorType || 'none';
+        }
         document.getElementById('gear-mithral').checked   = !!gear.mithral;
         document.getElementById('gear-shield').checked    = !!gear.shield;
         document.getElementById('enc-bonus').value        = gear.bonusSlots || 0;
@@ -592,6 +596,124 @@
           updateEncumbrance();
         });
       });
+
+      // ── Custom armor dropdown ─────────────────────────────
+      (function initArmorDropdown() {
+        const trigger = document.getElementById('armor-select-trigger');
+        const panel = document.getElementById('armor-dropdown-panel');
+        const hiddenInput = document.getElementById('gear-armor-type');
+        const options = panel.querySelectorAll('.armor-custom-option');
+
+        let isOpen = false;
+        let activeIdx = -1;
+
+        const ARMOR_DATA = {
+          none: { name: 'No armor', suffix: 'AC 10+DEX · 0 slots' },
+          leather: { name: 'Leather', suffix: 'AC 11+DEX · 1 slot' },
+          chainmail: { name: 'Chainmail', suffix: 'AC 13+DEX · 2 slots' },
+          plate: { name: 'Plate', suffix: 'AC 15 · 3 slots' }
+        };
+
+        function updateTrigger(value) {
+          const data = ARMOR_DATA[value] || ARMOR_DATA.none;
+          trigger.querySelector('.armor-select-name').textContent = data.name;
+          trigger.querySelector('.armor-select-suffix').textContent = data.suffix;
+        }
+
+        function positionPanel() {
+          const rect = trigger.getBoundingClientRect();
+          panel.style.top = rect.bottom + 'px';
+          panel.style.left = rect.left + 'px';
+          panel.style.width = rect.width + 'px';
+        }
+
+        function openDropdown() {
+          if (isOpen) return;
+          isOpen = true;
+          positionPanel();
+          panel.classList.add('open');
+          trigger.setAttribute('aria-expanded', 'true');
+          activeIdx = -1;
+        }
+
+        function closeDropdown() {
+          if (!isOpen) return;
+          isOpen = false;
+          panel.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+          activeIdx = -1;
+          options.forEach(opt => opt.classList.remove('active'));
+        }
+
+        function selectValue(value) {
+          hiddenInput.value = value;
+          updateTrigger(value);
+          hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+          closeDropdown();
+        }
+
+        function highlightOption(idx) {
+          options.forEach((opt, i) => {
+            opt.classList.toggle('active', i === idx);
+          });
+          activeIdx = idx;
+        }
+
+        trigger.addEventListener('click', () => {
+          if (isOpen) closeDropdown();
+          else openDropdown();
+        });
+
+        trigger.addEventListener('keydown', (e) => {
+          if (!isOpen && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            openDropdown();
+          } else if (isOpen) {
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              closeDropdown();
+            } else if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              const next = activeIdx < options.length - 1 ? activeIdx + 1 : 0;
+              highlightOption(next);
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              const prev = activeIdx > 0 ? activeIdx - 1 : options.length - 1;
+              highlightOption(prev);
+            } else if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              if (activeIdx >= 0) {
+                selectValue(options[activeIdx].dataset.value);
+              }
+            }
+          }
+        });
+
+        options.forEach((opt, i) => {
+          opt.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            selectValue(opt.dataset.value);
+          });
+          opt.addEventListener('mouseenter', () => {
+            highlightOption(i);
+          });
+        });
+
+        document.addEventListener('click', (e) => {
+          if (isOpen && !trigger.contains(e.target) && !panel.contains(e.target)) {
+            closeDropdown();
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          if (isOpen) positionPanel();
+        });
+
+        window.SD.setArmorType = function(value) {
+          hiddenInput.value = value;
+          updateTrigger(value);
+        };
+      })();
 
       document.getElementById('inv-add-btn').addEventListener('click', () => {
         const gear = getGear();

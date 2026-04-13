@@ -179,12 +179,29 @@
       <section class="gear-section">
         <h3 class="gear-subhead">Armor Worn</h3>
         <div class="armor-row">
-          <select id="gear-armor-type" class="armor-type-select">
-            <option value="none">None (AC 10+DEX, 0 slots)</option>
-            <option value="leather">Leather (AC 11+DEX, 1 slot)</option>
-            <option value="chainmail">Chainmail (AC 13+DEX, 2 slots)</option>
-            <option value="plate">Plate (AC 15, 3 slots)</option>
-          </select>
+          <input type="hidden" id="gear-armor-type" value="none" />
+          <div class="armor-custom-select" id="armor-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-controls="armor-dropdown-panel">
+            <span class="armor-select-name">No armor</span>
+            <span class="armor-select-suffix">AC 10+DEX · 0 slots</span>
+          </div>
+          <div class="armor-custom-dropdown" id="armor-dropdown-panel" role="listbox" aria-label="Armor options">
+            <div class="armor-custom-option" data-value="none" role="option">
+              <span class="armor-option-name">No armor</span>
+              <span class="armor-option-suffix">AC 10+DEX · 0 slots</span>
+            </div>
+            <div class="armor-custom-option" data-value="leather" role="option">
+              <span class="armor-option-name">Leather</span>
+              <span class="armor-option-suffix">AC 11+DEX · 1 slot</span>
+            </div>
+            <div class="armor-custom-option" data-value="chainmail" role="option">
+              <span class="armor-option-name">Chainmail</span>
+              <span class="armor-option-suffix">AC 13+DEX · 2 slots</span>
+            </div>
+            <div class="armor-custom-option" data-value="plate" role="option">
+              <span class="armor-option-name">Plate</span>
+              <span class="armor-option-suffix">AC 15 · 3 slots</span>
+            </div>
+          </div>
         </div>
         <div class="armor-checks-row">
           <label class="armor-check-field">
