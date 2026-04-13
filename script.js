@@ -190,8 +190,9 @@
     // ── GEAR TAB ────────────────────────────────────────
     (function () {
       const GEAR_DEFAULTS = {
-        gp: 0, sp: 0, cp: 0,
-        armorName: '', armorAc: 0,
+        gp: 0, sp: 0,
+        armorType: 'none', mithral: false, shield: false,
+        bonusSlots: 0,
         torches: 0, burnTime: 1,
         inventory: []
       };
@@ -206,22 +207,44 @@
       }
 
       function getStrMax() {
-        return (window.SD.character.core && window.SD.character.core.str)
-          ? Number(window.SD.character.core.str) || 10
-          : 10;
+        const str = (window.SD.character.abilities || {}).STR;
+        return Math.max(10, Number(str) || 10);
       }
 
       // ── Encumbrance bar ──────────────────────────────
       function updateEncumbrance() {
+        // Item slots from inventory rows
         const rows = document.querySelectorAll('#inv-list .inv-row');
-        let used = 0;
+        let itemSlots = 0;
         rows.forEach(row => {
-          const slots = parseFloat(row.querySelector('.inv-item-slots').value) || 0;
-          used += slots;
+          itemSlots += parseFloat(row.querySelector('.inv-item-slots').value) || 0;
         });
-        const max = getStrMax();
+
+        // Armor slots
+        const armorSlotMap = { none: 0, leather: 1, chainmail: 2, plate: 3 };
+        const armorType = document.getElementById('gear-armor-type').value;
+        const baseArmorSlots = armorSlotMap[armorType] || 0;
+        const mithral = document.getElementById('gear-mithral').checked;
+        const shield = document.getElementById('gear-shield').checked;
+        const armorSlots = Math.max(0, baseArmorSlots + (mithral ? -1 : 0)) + (shield ? 1 : 0);
+
+        // Coin slots: first 100 GP+SP are free, then 1 slot per 100
+        const gp = parseFloat(document.getElementById('gear-gp').value) || 0;
+        const sp = parseFloat(document.getElementById('gear-sp').value) || 0;
+        const totalCoins = gp + sp;
+        const coinSlots = Math.max(0, Math.ceil((totalCoins - 100) / 100));
+
+        // Bonus slots (Hauler talent / DM ruling)
+        const bonusSlots = parseFloat(document.getElementById('enc-bonus').value) || 0;
+
+        const used = armorSlots + coinSlots + itemSlots;
+        const max = getStrMax() + bonusSlots;
+
         document.getElementById('enc-used').textContent = used;
         document.getElementById('enc-max').textContent = max;
+        document.getElementById('enc-breakdown').textContent =
+          `armor ${armorSlots} · coins ${coinSlots} · items ${itemSlots}`;
+
         const pct = max > 0 ? Math.min((used / max) * 100, 100) : 0;
         const bar = document.getElementById('enc-bar');
         bar.style.width = pct + '%';
@@ -280,13 +303,15 @@
 
       function collectAndSave() {
         saveGear({
-          gp:        parseFloat(document.getElementById('gear-gp').value) || 0,
-          sp:        parseFloat(document.getElementById('gear-sp').value) || 0,
-          armorName: document.getElementById('gear-armor-name').value,
-          armorAc:   parseFloat(document.getElementById('gear-armor-ac').value) || 0,
-          torches:   parseInt(document.getElementById('gear-torches').value, 10) || 0,
-          burnTime:  parseFloat(document.getElementById('gear-burn-time').value) || 0,
-          inventory: collectInventory()
+          gp:         parseFloat(document.getElementById('gear-gp').value) || 0,
+          sp:         parseFloat(document.getElementById('gear-sp').value) || 0,
+          armorType:  document.getElementById('gear-armor-type').value,
+          mithral:    document.getElementById('gear-mithral').checked,
+          shield:     document.getElementById('gear-shield').checked,
+          bonusSlots: parseFloat(document.getElementById('enc-bonus').value) || 0,
+          torches:    parseInt(document.getElementById('gear-torches').value, 10) || 0,
+          burnTime:   parseFloat(document.getElementById('gear-burn-time').value) || 0,
+          inventory:  collectInventory()
         });
       }
 
@@ -294,12 +319,14 @@
       function renderGear() {
         const gear = getGear();
 
-        document.getElementById('gear-gp').value       = gear.gp;
-        document.getElementById('gear-sp').value       = gear.sp;
-        document.getElementById('gear-armor-name').value = gear.armorName;
-        document.getElementById('gear-armor-ac').value = gear.armorAc;
-        document.getElementById('gear-torches').value  = gear.torches;
-        document.getElementById('gear-burn-time').value = gear.burnTime;
+        document.getElementById('gear-gp').value          = gear.gp;
+        document.getElementById('gear-sp').value          = gear.sp;
+        document.getElementById('gear-armor-type').value  = gear.armorType || 'none';
+        document.getElementById('gear-mithral').checked   = !!gear.mithral;
+        document.getElementById('gear-shield').checked    = !!gear.shield;
+        document.getElementById('enc-bonus').value        = gear.bonusSlots || 0;
+        document.getElementById('gear-torches').value     = gear.torches;
+        document.getElementById('gear-burn-time').value   = gear.burnTime;
 
         const list = document.getElementById('inv-list');
         list.innerHTML = '';
@@ -311,9 +338,23 @@
       }
 
       // ── Wire top-level inputs ────────────────────────
-      ['gear-gp','gear-sp','gear-armor-name','gear-armor-ac',
-       'gear-torches','gear-burn-time'].forEach(id => {
-        document.getElementById(id).addEventListener('input', collectAndSave);
+      ['gear-gp', 'gear-sp', 'enc-bonus', 'gear-torches', 'gear-burn-time'].forEach(id => {
+        document.getElementById(id).addEventListener('input', () => {
+          collectAndSave();
+          updateEncumbrance();
+        });
+      });
+      ['gear-armor-type'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => {
+          collectAndSave();
+          updateEncumbrance();
+        });
+      });
+      ['gear-mithral', 'gear-shield'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => {
+          collectAndSave();
+          updateEncumbrance();
+        });
       });
 
       document.getElementById('inv-add-btn').addEventListener('click', () => {

@@ -582,47 +582,80 @@ body {
   background: #c0392b;
 }
 
-/* Armor */
-.armor-row {
+.enc-bonus-row {
   display: flex;
+  align-items: center;
   gap: 8px;
-  align-items: center;
+  margin-bottom: 6px;
 }
 
-.armor-name-input {
-  flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
+.enc-bonus-label {
   font-family: var(--font-hdr);
-  font-size: 0.95rem;
-  padding: 6px 8px;
-  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
-.armor-ac-field {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.armor-ac-label {
-  font-family: var(--font-num);
-  font-size: 0.75rem;
-  color: var(--accent);
-  letter-spacing: 0.08em;
-}
-
-.armor-ac-input {
+.enc-bonus-input {
   width: 52px;
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text);
   font-family: var(--font-num);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   text-align: center;
-  padding: 6px 4px;
+  padding: 4px;
   border-radius: 4px;
+}
+
+.enc-breakdown {
+  font-family: var(--font-num);
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 5px;
+  letter-spacing: 0.02em;
+}
+
+/* Armor */
+.armor-row {
+  margin-bottom: 8px;
+}
+
+.armor-type-select {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-hdr);
+  font-size: 0.9rem;
+  padding: 7px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.armor-checks-row {
+  display: flex;
+  gap: 16px;
+}
+
+.armor-check-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.armor-check-input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+.armor-check-label {
+  font-family: var(--font-hdr);
+  font-size: 0.85rem;
+  color: var(--muted);
 }
 
 /* Torches */
