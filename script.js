@@ -419,7 +419,8 @@
       });
 
       document.addEventListener('click', (e) => {
-        if (activeDropdown && !activeDropdown.contains(e.target)) {
+        if (activeDropdown && !activeDropdown.contains(e.target) &&
+            !e.target.classList.contains('inv-item-name')) {
           hideDropdown();
         }
       });
