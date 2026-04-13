@@ -290,8 +290,6 @@
           mithral:    document.getElementById('gear-mithral').checked,
           shield:     document.getElementById('gear-shield').checked,
           bonusSlots: parseFloat(document.getElementById('enc-bonus').value) || 0,
-          torches:    parseInt(document.getElementById('gear-torches').value, 10) || 0,
-          burnTime:   parseFloat(document.getElementById('gear-burn-time').value) || 0,
           inventory:  collectInventory()
         });
       }
@@ -306,8 +304,6 @@
         document.getElementById('gear-mithral').checked   = !!gear.mithral;
         document.getElementById('gear-shield').checked    = !!gear.shield;
         document.getElementById('enc-bonus').value        = gear.bonusSlots || 0;
-        document.getElementById('gear-torches').value     = gear.torches;
-        document.getElementById('gear-burn-time').value   = gear.burnTime;
 
         const list = document.getElementById('inv-list');
         list.innerHTML = '';
@@ -319,7 +315,7 @@
       }
 
       // ── Wire top-level inputs ────────────────────────
-      ['gear-gp', 'gear-sp', 'enc-bonus', 'gear-torches', 'gear-burn-time'].forEach(id => {
+      ['gear-gp', 'gear-sp', 'enc-bonus'].forEach(id => {
         document.getElementById(id).addEventListener('input', () => {
           collectAndSave();
           updateEncumbrance();
