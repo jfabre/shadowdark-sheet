@@ -94,14 +94,7 @@
       coreAutoSave();
     });
 
-    // Luck tokens — update note visibility based on ancestry
-    function updateLuckNote() {
-      const ancestry = document.getElementById('char-ancestry').value;
-      const note = document.getElementById('luck-note');
-      note.style.opacity = ancestry === 'Halfling' ? '1' : '0.35';
-    }
     document.getElementById('char-ancestry').addEventListener('change', () => {
-      updateLuckNote();
       coreAutoSave();
     });
 
@@ -163,7 +156,6 @@
         });
       }
 
-      updateLuckNote();
     }
 
     coreLoad();
