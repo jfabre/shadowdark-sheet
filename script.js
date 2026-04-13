@@ -794,7 +794,7 @@
           
           const badge = document.createElement('span');
           badge.className = 'level-badge earned';
-          badge.textContent = 'LVL 1 (Human bonus)';
+          badge.textContent = 'LVL 1';
           
           const input = document.createElement('input');
           input.type = 'text';
