@@ -576,7 +576,6 @@
 
     // ── Combat Tab ────────────────────────────────────────
     (function () {
-      const SAVES = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
 
       function getCombat() {
         const c = window.SD.character;
@@ -586,7 +585,6 @@
         if (!cb.speed)                          cb.speed = '30 ft';
         if (!Array.isArray(cb.attacks))         cb.attacks = [];
         if (!Array.isArray(cb.spells))          cb.spells = [];
-        if (!Array.isArray(cb.classSaves))      cb.classSaves = [];
         return cb;
       }
 
@@ -596,8 +594,6 @@
         const val = (window.SD.character.abilities || {})[stat.toUpperCase()] ?? 10;
         return Math.floor((val - 10) / 2);
       }
-
-      function getLevel() { return window.SD.character.level || 1; }
 
       function fmt(n) { return n >= 0 ? `+${n}` : `${n}`; }
 
@@ -789,43 +785,11 @@
         });
       }
 
-      // ── Saving Throws ────────────────────────────────────
-      function renderSaves() {
-        const grid = document.getElementById('cbt-saves-grid');
-        grid.innerHTML = '';
-        const cb = getCombat();
-
-        SAVES.forEach(stat => {
-          const isCls  = cb.classSaves.includes(stat);
-          const total  = getStatMod(stat) + (isCls ? getLevel() : 0);
-
-          const box    = document.createElement('div');
-          box.className = 'save-box';
-          box.innerHTML =
-            `<label class="save-label">` +
-              `<input type="checkbox" ${isCls ? 'checked' : ''} />` +
-              `<span class="save-stat">${stat}</span>` +
-            `</label>` +
-            `<span class="save-val">${fmt(total)}</span>`;
-
-          box.querySelector('input').addEventListener('change', e => {
-            const saves = getCombat().classSaves;
-            if (e.target.checked) { if (!saves.includes(stat)) saves.push(stat); }
-            else                  { const i = saves.indexOf(stat); if (i >= 0) saves.splice(i, 1); }
-            persist();
-            renderSaves();
-          });
-
-          grid.appendChild(box);
-        });
-      }
-
       // ── Boot ─────────────────────────────────────────────
       function bootCombat() {
         initStats();
         renderAttacks();
         renderSpells();
-        renderSaves();
 
         document.getElementById('cbt-add-attack').addEventListener('click', () => {
           const stat = 'STR';

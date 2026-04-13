@@ -1059,8 +1059,6 @@ input:focus { border-color: var(--accent); }
   margin-bottom: 8px;
 }
 
-.cbt-save-hint { font-size: 0.58rem; }
-
 .cbt-add-btn {
   background: none;
   border: 1px solid var(--border);
@@ -1240,49 +1238,5 @@ input:focus { border-color: var(--accent); }
   min-height: 60px;
 }
 .spell-desc-ta:focus { outline: none; border-color: var(--accent); }
-
-/* Saving throws */
-.cbt-saves-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.save-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 4px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.save-label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-}
-.save-label input[type="checkbox"] {
-  accent-color: var(--accent);
-  width: 12px;
-  height: 12px;
-}
-
-.save-stat {
-  font-family: var(--font-num);
-  font-size: 0.62rem;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  text-transform: uppercase;
-}
-
-.save-val {
-  font-family: var(--font-num);
-  font-size: 1.25rem;
-  color: var(--accent);
-}
 
 
