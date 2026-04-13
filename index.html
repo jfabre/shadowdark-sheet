@@ -88,15 +88,10 @@
             </div>
           </div>
 
-          <!-- Luck tokens (Halfling racial) -->
-          <div class="luck-row" id="luck-row">
-            <span class="field-label">Luck Tokens</span>
-            <input type="number" id="luck-tokens" min="0" max="3" value="0" />
-          </div>
         </div>
       </div>
 
-      <!-- AC / Initiative -->
+      <!-- AC / Initiative / Luck -->
       <div class="cbt-stats">
         <div class="cbt-stat-box">
           <div class="cbt-stat-label">AC</div>
@@ -105,6 +100,10 @@
         <div class="cbt-stat-box">
           <div class="cbt-stat-label">Initiative</div>
           <div id="cbt-init" class="cbt-stat-derived">+0</div>
+        </div>
+        <div class="cbt-stat-box">
+          <div class="cbt-stat-label">Luck</div>
+          <input id="luck-tokens" type="number" class="cbt-stat-num" min="0" max="3" value="0" inputmode="numeric" />
         </div>
       </div>
 

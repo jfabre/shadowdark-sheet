@@ -518,28 +518,6 @@ body {
 .hp-row .field-label { min-width: auto; }
 
 /* Luck tokens row */
-.luck-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.luck-row input {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
-  font-family: var(--font-num);
-  font-size: 0.95rem;
-  padding: 6px 8px;
-  width: 58px;
-  text-align: center;
-  outline: none;
-  -moz-appearance: textfield;
-}
-.luck-row input:focus { border-color: var(--accent); }
-.luck-row input::-webkit-inner-spin-button,
-.luck-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
-
 /* ── Tab bar (bottom) ───────────────────────────────── */
 #tab-bar {
   position: fixed;
