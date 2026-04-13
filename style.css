@@ -19,12 +19,12 @@ html, body { height: 100%; }
 }
 
 [data-theme='parchment'] {
-  --bg:       #f5efe0;
-  --text:     #2a1f10;
-  --accent:   #8b4513;
-  --muted:    #9a8070;
-  --surface:  #ede4cf;
-  --border:   #c8b89a;
+  --bg:       #f7f2e8;
+  --text:     #44392a;
+  --accent:   #8a5025;
+  --muted:    #7d6b58;
+  --surface:  #eee6d2;
+  --border:   #d5c9ad;
 }
 
 [data-theme='blood-moon'] {
@@ -38,12 +38,12 @@ html, body { height: 100%; }
 
 /* ── Theme variants ─────────────────────────────────── */
 [data-theme="parchment"] {
-  --bg:      #f2e8cc;
-  --text:    #1e1408;
-  --accent:  #7a3d12;
-  --muted:   #8a7060;
-  --surface: #e8d9b0;
-  --border:  #c8b080;
+  --bg:      #f7f2e8;
+  --text:    #44392a;
+  --accent:  #8a5025;
+  --muted:   #7d6b58;
+  --surface: #eee6d2;
+  --border:  #d5c9ad;
 }
 [data-theme="blood-moon"] {
   --bg:      #0d0508;
@@ -876,7 +876,7 @@ body {
 
 .inv-autocomplete-suffix {
   margin-left: 6px;
-  color: var(--text-muted);
+  color: var(--muted);
   font-size: 0.9em;
 }
 
