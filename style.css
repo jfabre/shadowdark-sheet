@@ -220,6 +220,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   gap: 0;
+  padding: 8px 0;
 }
 
 .identity-grid {
