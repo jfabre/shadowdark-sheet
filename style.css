@@ -876,6 +876,12 @@ body {
   color: var(--accent);
 }
 
+.inv-autocomplete-suffix {
+  margin-left: 6px;
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 

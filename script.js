@@ -319,9 +319,20 @@
         matches.forEach((item, i) => {
           const opt = document.createElement('div');
           opt.className = 'inv-autocomplete-item';
-          opt.textContent = item;
           opt.setAttribute('role', 'option');
           opt.dataset.idx = i;
+          const match = item.match(/^(.*?)(\s*\([^)]*\))?$/);
+          if (match && match[2]) {
+            const mainSpan = document.createElement('span');
+            mainSpan.textContent = match[1];
+            const suffixSpan = document.createElement('span');
+            suffixSpan.className = 'inv-autocomplete-suffix';
+            suffixSpan.textContent = match[2];
+            opt.appendChild(mainSpan);
+            opt.appendChild(suffixSpan);
+          } else {
+            opt.textContent = item;
+          }
           opt.addEventListener('mousedown', (e) => {
             e.preventDefault();
             selectItem(inputEl, item);
