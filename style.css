@@ -847,6 +847,35 @@ body {
 
 .inv-del-btn:active { color: #c0392b; }
 
+.inv-autocomplete {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-top: 2px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  display: none;
+}
+
+.inv-autocomplete-item {
+  padding: 6px 8px;
+  cursor: pointer;
+  font-family: var(--font-hdr);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.inv-autocomplete-item:hover,
+.inv-autocomplete-item.active {
+  background: var(--border);
+  color: var(--accent);
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 

@@ -284,7 +284,130 @@
       loadPortrait();
     })();
 
-    // ── GEAR TAB ────────────────────────────────────────
+    const INVENTORY_ITEMS = [
+      'Arrows (20)', 'Backpack', 'Caltrops (one bag)', 'Coin', 'Crossbow bolts (20)',
+      'Crowbar', 'Flask or bottle', 'Flint and steel', 'Gem', 'Grappling hook',
+      'Iron spikes (10)', 'Lantern', 'Mirror', 'Oil (flask)', 'Pole',
+      'Rations (3)', 'Rope (60\')', 'Torch',
+      'Bastard sword', 'Club', 'Crossbow', 'Dagger', 'Greataxe', 'Greatsword',
+      'Javelin', 'Longbow', 'Longsword', 'Mace', 'Shortbow', 'Shortsword',
+      'Spear', 'Staff', 'Warhammer'
+    ];
+
+    function initInventoryAutocomplete() {
+      let activeDropdown = null;
+      let activeIdx = -1;
+      let matches = [];
+
+      function createDropdown() {
+        const dd = document.createElement('div');
+        dd.className = 'inv-autocomplete';
+        dd.setAttribute('role', 'listbox');
+        return dd;
+      }
+
+      function renderMatches(inputEl, dd, query) {
+        matches = INVENTORY_ITEMS.filter(item =>
+          item.toLowerCase().includes(query.toLowerCase())
+        ).slice(0, 8);
+        dd.innerHTML = '';
+        activeIdx = -1;
+        if (!matches.length) {
+          dd.style.display = 'none';
+          return;
+        }
+        matches.forEach((item, i) => {
+          const opt = document.createElement('div');
+          opt.className = 'inv-autocomplete-item';
+          opt.textContent = item;
+          opt.setAttribute('role', 'option');
+          opt.dataset.idx = i;
+          opt.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            selectItem(inputEl, item);
+          });
+          dd.appendChild(opt);
+        });
+        dd.style.display = 'block';
+      }
+
+      function selectItem(inputEl, item) {
+        inputEl.value = item;
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        hideDropdown();
+      }
+
+      function hideDropdown() {
+        if (activeDropdown) {
+          activeDropdown.style.display = 'none';
+          activeDropdown.remove();
+          activeDropdown = null;
+        }
+        activeIdx = -1;
+        matches = [];
+      }
+
+      function highlightActive(dd) {
+        const items = dd.querySelectorAll('.inv-autocomplete-item');
+        items.forEach((el, i) => {
+          el.classList.toggle('active', i === activeIdx);
+        });
+      }
+
+      document.getElementById('inv-list').addEventListener('focusin', (e) => {
+        if (e.target.classList.contains('inv-item-name')) {
+          if (activeDropdown) hideDropdown();
+          activeDropdown = createDropdown();
+          e.target.parentNode.style.position = 'relative';
+          e.target.parentNode.appendChild(activeDropdown);
+        }
+      });
+
+      document.getElementById('inv-list').addEventListener('input', (e) => {
+        if (e.target.classList.contains('inv-item-name') && activeDropdown) {
+          const val = e.target.value.trim();
+          if (val.length > 0) {
+            renderMatches(e.target, activeDropdown, val);
+          } else {
+            hideDropdown();
+          }
+        }
+      });
+
+      document.getElementById('inv-list').addEventListener('keydown', (e) => {
+        if (!activeDropdown || activeDropdown.style.display === 'none') return;
+        if (!e.target.classList.contains('inv-item-name')) return;
+
+        const items = activeDropdown.querySelectorAll('.inv-autocomplete-item');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          activeIdx = (activeIdx + 1) % items.length;
+          highlightActive(activeDropdown);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          activeIdx = activeIdx <= 0 ? items.length - 1 : activeIdx - 1;
+          highlightActive(activeDropdown);
+        } else if (e.key === 'Enter') {
+          if (activeIdx >= 0 && matches[activeIdx]) {
+            e.preventDefault();
+            selectItem(e.target, matches[activeIdx]);
+          }
+        } else if (e.key === 'Escape') {
+          hideDropdown();
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (activeDropdown && !activeDropdown.contains(e.target)) {
+          hideDropdown();
+        }
+      });
+    }
+
+    initInventoryAutocomplete();
+
     (function () {
       const GEAR_DEFAULTS = {
         gp: 0, sp: 0,
