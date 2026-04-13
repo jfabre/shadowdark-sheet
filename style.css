@@ -648,10 +648,10 @@ body {
 }
 
 .enc-label {
-  font-family: var(--font-hdr);
-  font-size: 0.95rem;
+  font-family: var(--font-num);
+  font-size: 0.75rem;
   color: var(--accent);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
