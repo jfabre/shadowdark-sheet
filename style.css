@@ -324,6 +324,7 @@ body {
 .xp-row input:focus { border-color: var(--accent); }
 .xp-row input::-webkit-inner-spin-button,
 .xp-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.xp-row .field-label { margin-right: 8px; }
 .xp-sep { color: var(--muted); font-family: var(--font-num); }
 
 /* Section label */
