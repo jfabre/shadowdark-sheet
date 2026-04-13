@@ -848,17 +848,14 @@ body {
 .inv-del-btn:active { color: #c0392b; }
 
 .inv-autocomplete {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
+  position: fixed;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 4px;
   margin-top: 2px;
   max-height: 200px;
   overflow-y: auto;
-  z-index: 10;
+  z-index: 1000;
   display: none;
 }
 

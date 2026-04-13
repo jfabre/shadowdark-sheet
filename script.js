@@ -343,9 +343,9 @@
       }
 
       function selectItem(inputEl, item) {
+        hideDropdown();
         inputEl.value = item;
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
-        hideDropdown();
       }
 
       function hideDropdown() {
@@ -369,13 +369,21 @@
         if (e.target.classList.contains('inv-item-name')) {
           if (activeDropdown) hideDropdown();
           activeDropdown = createDropdown();
-          e.target.parentNode.style.position = 'relative';
-          e.target.parentNode.appendChild(activeDropdown);
+          const rect = e.target.getBoundingClientRect();
+          activeDropdown.style.position = 'fixed';
+          activeDropdown.style.top = rect.bottom + 'px';
+          activeDropdown.style.left = rect.left + 'px';
+          activeDropdown.style.width = rect.width + 'px';
+          document.body.appendChild(activeDropdown);
         }
       });
 
       document.getElementById('inv-list').addEventListener('input', (e) => {
         if (e.target.classList.contains('inv-item-name') && activeDropdown) {
+          const rect = e.target.getBoundingClientRect();
+          activeDropdown.style.top = rect.bottom + 'px';
+          activeDropdown.style.left = rect.left + 'px';
+          activeDropdown.style.width = rect.width + 'px';
           const val = e.target.value.trim();
           if (val.length > 0) {
             renderMatches(e.target, activeDropdown, val);
