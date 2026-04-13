@@ -72,6 +72,7 @@
         const mod = abilityMod(input.value);
         modEl.textContent = fmtMod(mod);
         coreAutoSave();
+        if (stat === 'DEX' && window.SD.refreshInit) window.SD.refreshInit();
       });
       // Tap cell to focus score input
       cell.addEventListener('click', e => {
@@ -1042,6 +1043,7 @@
       function refreshInit() {
         document.getElementById('cbt-init').textContent = fmt(getStatMod('DEX'));
       }
+      window.SD.refreshInit = refreshInit;
 
       // ── Attacks ──────────────────────────────────────────
       function renderAttacks() {
