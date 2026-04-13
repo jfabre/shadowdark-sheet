@@ -206,11 +206,25 @@ body {
 }
 .char-name-input::placeholder { color: var(--muted); opacity: 0.6; }
 
+.portrait-info-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  align-items: flex-start;
+}
+
+.portrait-info-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .identity-grid {
   display: grid;
   grid-template-columns: 1fr 60px 1fr;
   gap: 10px;
-  margin-bottom: 14px;
 }
 
 .field-group {
@@ -250,7 +264,6 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 14px;
 }
 
 .field-label {
@@ -291,9 +304,7 @@ body {
 
 /* Portrait section */
 .portrait-section {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 14px;
+  flex-shrink: 0;
 }
 
 .portrait-frame {

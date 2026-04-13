@@ -19,52 +19,58 @@
       <!-- Character name -->
       <input type="text" id="char-name" class="char-name-input" placeholder="Character Name" autocomplete="off" />
 
-      <!-- Class / Level / Ancestry -->
-      <div class="identity-grid">
-        <div class="field-group">
-          <label for="char-class">Class</label>
-          <input type="text" id="char-class" placeholder="Fighter" autocomplete="off" />
-        </div>
-        <div class="field-group">
-          <label for="char-level">Level</label>
-          <input type="number" id="char-level" min="1" max="10" value="1" />
-        </div>
-        <div class="field-group">
-          <label for="char-ancestry">Ancestry</label>
-          <select id="char-ancestry">
-            <option value="">—</option>
-            <option value="Human">Human</option>
-            <option value="Elf">Elf</option>
-            <option value="Dwarf">Dwarf</option>
-            <option value="Halfling">Halfling</option>
-            <option value="Half-Orc">Half-Orc</option>
-            <option value="Goblin">Goblin</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Alignment -->
-      <div class="field-row">
-        <span class="field-label">Alignment</span>
-        <div class="alignment-selector" id="alignment-selector">
-          <button class="align-btn" data-value="Lawful">Lawful</button>
-          <button class="align-btn" data-value="Neutral">Neutral</button>
-          <button class="align-btn" data-value="Chaotic">Chaotic</button>
-        </div>
-      </div>
-
-      <!-- Character portrait -->
-      <div class="portrait-section">
-        <div class="portrait-frame" id="portrait-frame" tabindex="0" role="button" aria-label="Choose portrait">
-          <img class="portrait-img" id="portrait-img" alt="Character portrait" />
-          <div class="portrait-placeholder" id="portrait-placeholder">
-            <span class="portrait-plus">＋</span>
-            <span class="portrait-text">Choose portrait</span>
+      <!-- Portrait + Identity/Alignment row -->
+      <div class="portrait-info-row">
+        <!-- Character portrait -->
+        <div class="portrait-section">
+          <div class="portrait-frame" id="portrait-frame" tabindex="0" role="button" aria-label="Choose portrait">
+            <img class="portrait-img" id="portrait-img" alt="Character portrait" />
+            <div class="portrait-placeholder" id="portrait-placeholder">
+              <span class="portrait-plus">＋</span>
+              <span class="portrait-text">Choose portrait</span>
+            </div>
+            <button class="portrait-clear" id="portrait-clear" aria-label="Remove portrait">✕</button>
           </div>
-          <button class="portrait-clear" id="portrait-clear" aria-label="Remove portrait">✕</button>
+          <input type="file" id="portrait-file" accept="image/*" hidden />
         </div>
-        <input type="file" id="portrait-file" accept="image/*" hidden />
+
+        <!-- Right column: identity + alignment -->
+        <div class="portrait-info-col">
+          <!-- Class / Level / Ancestry -->
+          <div class="identity-grid">
+            <div class="field-group">
+              <label for="char-class">Class</label>
+              <input type="text" id="char-class" placeholder="Fighter" autocomplete="off" />
+            </div>
+            <div class="field-group">
+              <label for="char-level">Level</label>
+              <input type="number" id="char-level" min="1" max="10" value="1" />
+            </div>
+            <div class="field-group">
+              <label for="char-ancestry">Ancestry</label>
+              <select id="char-ancestry">
+                <option value="">—</option>
+                <option value="Human">Human</option>
+                <option value="Elf">Elf</option>
+                <option value="Dwarf">Dwarf</option>
+                <option value="Halfling">Halfling</option>
+                <option value="Half-Orc">Half-Orc</option>
+                <option value="Goblin">Goblin</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Alignment -->
+          <div class="field-row">
+            <span class="field-label">Alignment</span>
+            <div class="alignment-selector" id="alignment-selector">
+              <button class="align-btn" data-value="Lawful">Lawful</button>
+              <button class="align-btn" data-value="Neutral">Neutral</button>
+              <button class="align-btn" data-value="Chaotic">Chaotic</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Ability scores 2×3 grid -->
