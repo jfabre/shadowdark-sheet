@@ -308,8 +308,8 @@ body {
 }
 
 .portrait-frame {
-  width: 120px;
-  height: 120px;
+  width: 160px;
+  height: 160px;
   border: 2px dashed var(--border);
   border-radius: 8px;
   position: relative;
@@ -397,9 +397,10 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 6px;
   min-width: 0;
   overflow: hidden;
+  width: 100%;
 }
 
 /* XP row */
