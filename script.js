@@ -779,7 +779,7 @@
       }
 
       // ── talents ────────────────────────────────────────
-      window.SD.renderTalents = function renderTalents(level) {
+      function renderTalents(level) {
         const list = document.getElementById('talents-list');
         const saved = load('talents', ['', '', '', '', '', '']);
         const ancestry = window.SD.character.ancestry || '';
@@ -861,6 +861,7 @@
           list.appendChild(row);
         });
       }
+      window.SD.renderTalents = renderTalents;
 
       // ── class features ─────────────────────────────────
       function renderFeatures(className) {
