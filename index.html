@@ -60,21 +60,21 @@
         <!-- populated by JS -->
       </div>
 
-      <!-- HP -->
-      <div class="hp-row">
-        <span class="field-label">HP</span>
-        <input type="number" id="hp-current" min="0" value="0" />
-        <span class="hp-sep">/</span>
-        <input type="number" id="hp-max" min="0" value="0" />
-      </div>
-
-      <!-- XP -->
-      <div class="xp-row">
-        <span class="field-label">XP</span>
-        <input type="number" id="char-xp" min="0" value="0" />
-        <span class="xp-sep">/</span>
-        <input type="number" id="char-xp-next" min="0" value="10" />
-        <span class="field-label" style="margin-left:4px;min-width:unset">next lvl</span>
+      <!-- HP and XP on same line -->
+      <div class="hp-xp-row">
+        <div class="hp-row">
+          <span class="field-label">HP</span>
+          <input type="number" id="hp-current" min="0" value="0" />
+          <span class="hp-sep">/</span>
+          <input type="number" id="hp-max" min="0" value="0" />
+        </div>
+        <div class="xp-row">
+          <span class="field-label">XP</span>
+          <input type="number" id="char-xp" min="0" value="0" />
+          <span class="xp-sep">/</span>
+          <input type="number" id="char-xp-next" min="0" value="10" />
+          <span class="field-label" style="margin-left:4px;min-width:unset">next lvl</span>
+        </div>
       </div>
 
       <!-- Luck tokens (Halfling racial) -->

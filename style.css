@@ -289,12 +289,19 @@ body {
   color: var(--accent);
 }
 
+/* HP and XP shared row */
+.hp-xp-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
 /* XP row */
 .xp-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 18px;
 }
 .xp-row input {
   background: var(--surface);
@@ -376,7 +383,6 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 14px;
 }
 .hp-row input {
   background: var(--surface);
