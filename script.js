@@ -608,6 +608,7 @@
           );
         }
 
+        allMatches.sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
         matches = allMatches.slice(0, 20);
 
         dd.innerHTML = '';
