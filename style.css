@@ -923,6 +923,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   justify-content: center;
 }
 
+.inv-del-btn:hover { color: #c05050; }
 .inv-del-btn:active { color: #c0392b; }
 
 .inv-autocomplete {
@@ -1483,6 +1484,7 @@ input:focus { border-color: var(--accent); }
 .btn-roll, .btn-trash {
   background: none;
   border: none;
+  color: var(--muted);
   cursor: pointer;
   font-size: 0.9rem;
   padding: 3px;
@@ -1490,6 +1492,7 @@ input:focus { border-color: var(--accent); }
   opacity: 0.7;
 }
 .btn-roll:active, .btn-trash:active { opacity: 1; }
+.btn-trash:hover { color: #c05050; opacity: 1; }
 
 .atk-result {
   grid-column: 1 / -1;
