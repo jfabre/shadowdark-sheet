@@ -6,12 +6,17 @@
 
     function onTaleSpireStateChange(event) {
       if (event.kind === 'hasInitialized') _tsReadyResolve();
+      // Force-flush storage before TaleSpire destroys the webview
+      if (event.kind === 'willShutdown' || event.kind === 'willEnterBackground') {
+        StorageAdapter.flush();
+      }
     }
 
-    // If TS was already injected+initialized before this script ran, resolve now.
-    // If not in TaleSpire at all, resolve on next frame so boot() doesn't block.
-    if (window.TS) _tsReadyResolve();
-    else requestAnimationFrame(function() { if (!window.TS) _tsReadyResolve(); });
+    // In TaleSpire, window.TS exists before page load but the API isn't ready
+    // until hasInitialized fires. Only resolve early for the browser case.
+    // Safety timeout: if hasInitialized was somehow missed, resolve after 3s.
+    if (window.TS) setTimeout(function() { _tsReadyResolve(); }, 3000);
+    else requestAnimationFrame(function() { _tsReadyResolve(); });
 
     // ── Storage Adapter ────────────────────────────────
     // Abstracts browser localStorage vs TaleSpire campaign storage.
@@ -20,14 +25,18 @@
     const StorageAdapter = (function() {
       const _cache = {};
       let _isTaleSpire = false;
+      let _dirty = false;
       let _debounceTimer = null;
-      const DEBOUNCE_MS = 500;
+      const DEBOUNCE_MS = 150;
 
-      function _flushToTaleSpire() {
-        if (!_isTaleSpire) return;
+      async function _flushToTaleSpire() {
+        if (!_isTaleSpire || !_dirty) return;
+        _dirty = false;
         try {
-          TS.localStorage.campaign.setBlob(JSON.stringify(_cache));
+          await TS.localStorage.campaign.setBlob(JSON.stringify(_cache));
         } catch (e) {
+          _dirty = true; // retry on next flush
+          if (window.TS && TS.debug) TS.debug.log('[StorageAdapter] write failed: ' + e);
           console.warn('[StorageAdapter] TaleSpire write failed:', e);
         }
       }
@@ -36,6 +45,13 @@
         if (!_isTaleSpire) return;
         clearTimeout(_debounceTimer);
         _debounceTimer = setTimeout(_flushToTaleSpire, DEBOUNCE_MS);
+      }
+
+      // Immediate flush — cancels any pending debounce. Called on shutdown.
+      function flush() {
+        if (!_isTaleSpire || !_dirty) return;
+        clearTimeout(_debounceTimer);
+        _flushToTaleSpire();
       }
 
       async function init() {
@@ -47,10 +63,14 @@
           try {
             const raw = await TS.localStorage.campaign.getBlob();
             if (raw) Object.assign(_cache, JSON.parse(raw));
+            if (TS.debug) TS.debug.log('[StorageAdapter] loaded ' + Object.keys(_cache).length + ' keys');
           } catch (e) {
-            // readFailed / notInCampaign — start with empty cache
+            if (TS.debug) TS.debug.log('[StorageAdapter] read failed: ' + e);
             console.warn('[StorageAdapter] TaleSpire read failed:', e);
           }
+          // Safety net: flush before the webview is destroyed
+          window.addEventListener('beforeunload', flush);
+          window.addEventListener('pagehide', flush);
         }
       }
 
@@ -64,6 +84,7 @@
       function setItem(key, value) {
         if (_isTaleSpire) {
           _cache[key] = value;
+          _dirty = true;
           _scheduleFlush();
         } else {
           localStorage.setItem(key, value);
@@ -73,6 +94,7 @@
       function removeItem(key) {
         if (_isTaleSpire) {
           delete _cache[key];
+          _dirty = true;
           _scheduleFlush();
         } else {
           localStorage.removeItem(key);
@@ -81,7 +103,7 @@
 
       function isTaleSpire() { return _isTaleSpire; }
 
-      return { init, getItem, setItem, removeItem, isTaleSpire };
+      return { init, getItem, setItem, removeItem, isTaleSpire, flush };
     })();
 
     // ── Boot ───────────────────────────────────────────
