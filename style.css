@@ -1438,7 +1438,7 @@ input:focus { border-color: var(--accent); }
 /* Attack list */
 .atk-cols-head, .atk-row {
   display: grid;
-  grid-template-columns: 2fr 3.5rem 1fr 1fr 52px;
+  grid-template-columns: 2fr 3.5rem 1fr 1fr auto;
   gap: 4px;
   align-items: center;
   padding: 0 2px;
@@ -1479,7 +1479,7 @@ input:focus { border-color: var(--accent); }
 
 .atk-stat { cursor: pointer; }
 
-.atk-row-btns { display: flex; gap: 2px; align-items: center; }
+.atk-row-btns { display: flex; gap: 2px; align-items: center; justify-content: flex-end; }
 
 .btn-roll, .btn-trash {
   background: none;
@@ -1487,7 +1487,7 @@ input:focus { border-color: var(--accent); }
   color: var(--muted);
   cursor: pointer;
   font-size: 0.9rem;
-  padding: 3px;
+  padding: 3px 0;
   line-height: 1;
   display: flex;
   align-items: center;
