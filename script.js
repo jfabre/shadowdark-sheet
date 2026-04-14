@@ -1507,8 +1507,8 @@
 
       atkListEl.addEventListener('focusin', e => {
         if (e.target.matches('.atk-f[data-f="name"]')) {
-          weaponCurrentRow = e.target.closest('.atk-row');
           showWeaponDropdown(e.target);
+          weaponCurrentRow = e.target.closest('.atk-row');
         }
       });
 
