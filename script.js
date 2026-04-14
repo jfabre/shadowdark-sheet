@@ -1166,6 +1166,15 @@
         ],
       };
 
+      const ANCESTRY_FEATURES = {
+        dwarf:    { languages: 'Common, Dwarvish', traits: [{ name: 'Stout', desc: 'Start with +2 HP. Roll hit points per level with advantage.' }] },
+        elf:      { languages: 'Common, Elvish, Sylvan', traits: [{ name: 'Farsight', desc: 'You get a +1 bonus to attack rolls with ranged weapons or a +1 bonus to spellcasting checks.' }] },
+        goblin:   { languages: 'Common, Goblin', traits: [{ name: 'Keen Senses', desc: "You can't be surprised." }] },
+        halfling: { languages: 'Common', traits: [{ name: 'Stealthy', desc: 'Once per day, you can become invisible for 3 rounds.' }] },
+        'half-orc': { languages: 'Common, Orcish', traits: [{ name: 'Mighty', desc: 'You have a +1 bonus to attack and damage rolls with melee weapons.' }] },
+        human:    { languages: 'Common + one additional common language', traits: [{ name: 'Ambitious', desc: 'You gain one additional talent roll at 1st level.' }] },
+      };
+
       const CLASS_FEATURES = {
         fighter: [
           { name: 'Hauler', desc: 'Add your Constitution modifier, if positive, to your gear slots.' },
@@ -1493,6 +1502,64 @@
         }
       }
 
+      function renderAncestryFeatures(ancestry) {
+        const body = document.getElementById('racial-features-body');
+        const key = (ancestry || '').toLowerCase().trim();
+        const data = ANCESTRY_FEATURES[key];
+
+        body.innerHTML = '';
+
+        if (data) {
+          if (data.languages) {
+            const langItem = document.createElement('div');
+            langItem.className = 'feature-item';
+            const langName = document.createElement('div');
+            langName.className = 'feature-name';
+            langName.textContent = 'Languages';
+            const langDesc = document.createElement('div');
+            langDesc.className = 'feature-desc';
+            langDesc.textContent = data.languages;
+            langItem.appendChild(langName);
+            langItem.appendChild(langDesc);
+            body.appendChild(langItem);
+          }
+          if (data.traits) {
+            data.traits.forEach(t => {
+              const item = document.createElement('div');
+              item.className = 'feature-item';
+              const name = document.createElement('div');
+              name.className = 'feature-name';
+              name.textContent = t.name;
+              const desc = document.createElement('div');
+              desc.className = 'feature-desc';
+              desc.textContent = t.desc;
+              item.appendChild(name);
+              item.appendChild(desc);
+              body.appendChild(item);
+            });
+          }
+        } else {
+          const item = document.createElement('div');
+          item.className = 'feature-item';
+          const name = document.createElement('div');
+          name.className = 'feature-name';
+          name.textContent = 'Ancestry Notes';
+          const textarea = document.createElement('textarea');
+          textarea.className = 'feature-notes-input auto-grow';
+          textarea.placeholder = 'Enter ancestry features and traits…';
+          textarea.value = load('ancestry_notes', '');
+          textarea.setAttribute('aria-label', 'Ancestry feature notes');
+          textarea.addEventListener('input', () => {
+            save('ancestry_notes', textarea.value);
+            autoGrow(textarea);
+          });
+          requestAnimationFrame(() => autoGrow(textarea));
+          item.appendChild(name);
+          item.appendChild(textarea);
+          body.appendChild(item);
+        }
+      }
+
       // ── deity visibility ────────────────────────────────
       function updateDeityVisibility(className) {
         const section = document.getElementById('deity-section');
@@ -1508,6 +1575,8 @@
         const langEl  = document.getElementById('char-languages');
         const toggle  = document.getElementById('features-toggle');
         const fbody   = document.getElementById('features-body');
+        const racialToggle = document.getElementById('racial-toggle');
+        const racialBody   = document.getElementById('racial-features-body');
 
         // Restore saved values
         bgEl.value    = load('background', '');
@@ -1518,9 +1587,11 @@
         // Read class/level from Core DOM (single source of truth)
         const currentClass = document.getElementById('char-class').value || '';
         const currentLevel = parseInt(document.getElementById('char-level').value, 10) || 1;
+        const currentAncestry = document.getElementById('char-ancestry').value || '';
 
         renderTalents(currentLevel);
         renderFeatures(currentClass);
+        renderAncestryFeatures(currentAncestry);
         updateDeityVisibility(currentClass);
 
         requestAnimationFrame(() => {
@@ -1539,10 +1610,11 @@
           renderTalents(parseInt(e.target.value, 10) || 1);
         });
         
-        // Re-render talents when ancestry changes (Human bonus slot)
-        document.getElementById('char-ancestry').addEventListener('change', () => {
+        // Re-render talents and racial features when ancestry changes
+        document.getElementById('char-ancestry').addEventListener('change', (e) => {
           const currentLevel = parseInt(document.getElementById('char-level').value, 10) || 1;
           renderTalents(currentLevel);
+          renderAncestryFeatures(e.target.value);
         });
 
         // Events
@@ -1571,6 +1643,15 @@
           toggle.setAttribute('aria-expanded', String(!expanded));
           fbody.classList.toggle('collapsed', expanded);
         });
+
+        // Collapsible racial features
+        if (racialToggle && racialBody) {
+          racialToggle.addEventListener('click', () => {
+            const expanded = racialToggle.getAttribute('aria-expanded') === 'true';
+            racialToggle.setAttribute('aria-expanded', String(!expanded));
+            racialBody.classList.toggle('collapsed', expanded);
+          });
+        }
       }
 
       // Run once DOM is ready (it is, since script is deferred-inline at body end)
