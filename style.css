@@ -78,6 +78,7 @@ html, body { height: 100%; }
 .guide-overlay[hidden] { display: none; }
 
 .guide-card {
+  position: relative;
   background: var(--surface);
   color: var(--fg);
   border: 1px solid var(--border);
@@ -87,6 +88,21 @@ html, body { height: 100%; }
   padding: 28px 24px 32px;
   box-shadow: 0 12px 48px rgba(0,0,0,0.65);
 }
+
+.guide-x {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  transition: color 0.15s;
+}
+.guide-x:hover { color: var(--accent); }
 
 .guide-title {
   font-family: var(--font-hdr);

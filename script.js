@@ -2057,6 +2057,7 @@
       function closeGuide() { overlay.hidden = true; }
 
       closeBtn.addEventListener('click', closeGuide);
+      document.getElementById('guide-x').addEventListener('click', closeGuide);
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) closeGuide();
       });
