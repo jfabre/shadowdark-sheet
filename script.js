@@ -161,9 +161,9 @@
 
     const CORE_CLASS_ICONS = {
       fighter: '⚔',
-      priest:  '✙',
-      thief:   '🗡',
-      wizard:  '🪄',
+      priest:  '✝',
+      thief:   '†',
+      wizard:  '✦',
     };
 
     function updateCoreIcon(className) {
