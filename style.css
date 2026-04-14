@@ -1461,11 +1461,12 @@ input:focus { border-color: var(--accent); }
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);
-  font-family: var(--font-hdr);
-  font-size: 0.85rem;
-  padding: 6px;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding: 8px 10px;
   resize: vertical;
-  min-height: 60px;
+  min-height: 70px;
 }
 .spell-desc-ta:focus { outline: none; border-color: var(--accent); }
 
