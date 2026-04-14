@@ -624,6 +624,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   font-size: 0.75rem;
   color: var(--accent);
   letter-spacing: 0.1em;
+  margin-right: 14px;
 }
 
 .currency-label--gp { color: #C9A84C; }
