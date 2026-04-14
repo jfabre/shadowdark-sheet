@@ -676,7 +676,6 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   -webkit-appearance: none;
   margin: 0;
 }
-}
 
 /* Encumbrance */
 .enc-header {
