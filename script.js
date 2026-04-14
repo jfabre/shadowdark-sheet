@@ -1795,7 +1795,7 @@
       });
 
       // Restore saved theme — already inside async boot(), storage is ready
-      const saved = StorageAdapter.getItem(THEME_KEY) || 'talespire';
+      const saved = StorageAdapter.getItem(THEME_KEY) || 'dungeon';
       applyTheme(saved);
     })();
 
