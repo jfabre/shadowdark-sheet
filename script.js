@@ -195,6 +195,7 @@
         if (stat === 'DEX' && window.SD.refreshInit) window.SD.refreshInit();
         if (stat === 'DEX' && window.SD.refreshAC) window.SD.refreshAC(true);
         if ((stat === 'STR' || stat === 'DEX') && window.SD.refreshAttackBonuses) window.SD.refreshAttackBonuses();
+        if (stat === 'STR' && window.SD.updateEncumbrance) window.SD.updateEncumbrance();
         // Debounced save — avoids expensive JSON.stringify on every keystroke
         clearTimeout(_abilitySaveTimer);
         _abilitySaveTimer = setTimeout(coreAutoSave, 300);
@@ -854,6 +855,7 @@
         bar.style.width = pct + '%';
         bar.classList.toggle('over-limit', used > max);
       }
+      window.SD.updateEncumbrance = updateEncumbrance;
 
       // ── Inventory rows ───────────────────────────────
       let rowIdCounter = 0;
