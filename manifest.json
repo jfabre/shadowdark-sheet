@@ -2,5 +2,13 @@
   "manifestVersion": 1,
   "name": "The Dark Spire",
   "description": "Shadowdark RPG character sheet for TaleSpire",
-  "version": "1.0.0"
+  "entryPoint": "/index.html",
+  "api": {
+    "version": "1.0.0"
+  },
+  "about": {
+    "authors": [
+      "Jeremy Fabre"
+    ]
+  }
 }
