@@ -1004,6 +1004,53 @@ body {
   opacity: 0.6;
 }
 
+/* Weapon autocomplete */
+.weapon-autocomplete {
+  position: fixed;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-top: 2px;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+}
+
+.weapon-ac-item {
+  padding: 6px 8px;
+  cursor: pointer;
+  font-family: var(--font-hdr);
+  font-size: 0.85rem;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.weapon-ac-item:hover,
+.weapon-ac-item.active {
+  background: var(--border);
+  color: var(--accent);
+}
+
+.weapon-ac-name {
+  font-weight: 500;
+}
+
+.weapon-ac-info {
+  font-size: 0.72em;
+  color: var(--muted);
+  font-family: var(--font-num);
+  letter-spacing: 0.02em;
+}
+
+.weapon-ac-item:hover .weapon-ac-info,
+.weapon-ac-item.active .weapon-ac-info {
+  color: var(--accent);
+  opacity: 0.8;
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 

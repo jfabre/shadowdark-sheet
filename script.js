@@ -1400,6 +1400,155 @@
       }
       window.SD.refreshAC = refreshAC;
 
+      // ── Weapon Data (Shadowdark Player Quickstart p.35) ─
+      const WEAPONS = [
+        { name: 'Bastard sword', damage: '1d8',  stat: 'STR', info: 'M · C · V, 2 slots' },
+        { name: 'Club',          damage: '1d4',  stat: 'STR', info: 'M · C' },
+        { name: 'Crossbow',      damage: '1d6',  stat: 'DEX', info: 'R · F · 2H, L' },
+        { name: 'Dagger',        damage: '1d4',  stat: 'STR', info: 'M/R · C/N · F, Th' },
+        { name: 'Greataxe',      damage: '1d8',  stat: 'STR', info: 'M · C · V, 2 slots' },
+        { name: 'Greatsword',    damage: '1d12', stat: 'STR', info: 'M · C · 2H, 2 slots' },
+        { name: 'Javelin',       damage: '1d4',  stat: 'STR', info: 'M/R · C/F · Th' },
+        { name: 'Longbow',       damage: '1d8',  stat: 'DEX', info: 'R · F · 2H' },
+        { name: 'Longsword',     damage: '1d8',  stat: 'STR', info: 'M · C' },
+        { name: 'Mace',          damage: '1d6',  stat: 'STR', info: 'M · C' },
+        { name: 'Shortbow',      damage: '1d4',  stat: 'DEX', info: 'R · F · 2H' },
+        { name: 'Shortsword',    damage: '1d6',  stat: 'STR', info: 'M · C' },
+        { name: 'Spear',         damage: '1d6',  stat: 'STR', info: 'M/R · C/N · Th' },
+        { name: 'Staff',         damage: '1d4',  stat: 'STR', info: 'M · C · 2H' },
+        { name: 'Warhammer',     damage: '1d10', stat: 'STR', info: 'M · C · 2H' },
+      ];
+
+      // ── Weapon Autocomplete ───────────────────────────────
+      let weaponDropdown = null;
+      let weaponMatches = [];
+      let weaponActiveIdx = -1;
+      let weaponCurrentRow = null;
+
+      function showWeaponDropdown(inputEl) {
+        hideWeaponDropdown();
+        const dd = document.createElement('div');
+        dd.className = 'weapon-autocomplete';
+        dd.setAttribute('role', 'listbox');
+        weaponDropdown = dd;
+        document.body.appendChild(dd);
+        positionWeaponDropdown(inputEl);
+        filterWeapons(inputEl, inputEl.value.trim());
+      }
+
+      function positionWeaponDropdown(inputEl) {
+        if (!weaponDropdown) return;
+        const rect = inputEl.getBoundingClientRect();
+        weaponDropdown.style.position = 'fixed';
+        weaponDropdown.style.top = rect.bottom + 'px';
+        weaponDropdown.style.left = rect.left + 'px';
+        weaponDropdown.style.width = Math.max(rect.width, 220) + 'px';
+      }
+
+      function filterWeapons(inputEl, query) {
+        if (!weaponDropdown) return;
+        weaponMatches = WEAPONS.filter(w =>
+          !query || w.name.toLowerCase().includes(query.toLowerCase())
+        );
+        weaponDropdown.innerHTML = '';
+        weaponActiveIdx = -1;
+        if (!weaponMatches.length) { weaponDropdown.style.display = 'none'; return; }
+        weaponMatches.forEach((w, i) => {
+          const opt = document.createElement('div');
+          opt.className = 'weapon-ac-item';
+          opt.setAttribute('role', 'option');
+          opt.dataset.idx = i;
+          opt.innerHTML =
+            `<span class="weapon-ac-name">${esc(w.name)}</span>` +
+            `<span class="weapon-ac-info">${esc(w.damage)} · ${esc(w.info)}</span>`;
+          opt.addEventListener('mousedown', e => { e.preventDefault(); selectWeapon(inputEl, w); });
+          weaponDropdown.appendChild(opt);
+        });
+        weaponDropdown.style.display = 'block';
+      }
+
+      function selectWeapon(inputEl, weapon) {
+        const row = weaponCurrentRow;
+        hideWeaponDropdown();
+        if (!row) return;
+        const idx = row._atkIdx;
+        const attacks = getCombat().attacks;
+        const atk = attacks[idx];
+        if (!atk) return;
+
+        atk.name = weapon.name;
+        atk.stat = weapon.stat;
+        atk.damage = weapon.damage;
+        atk.bonus = String(getStatMod(weapon.stat));
+
+        row.querySelector('[data-f="name"]').value = weapon.name;
+        row.querySelector('.atk-stat').value = weapon.stat;
+        row.querySelector('[data-f="bonus"]').value = atk.bonus;
+        row.querySelector('[data-f="damage"]').value = weapon.damage;
+        persist();
+      }
+
+      function hideWeaponDropdown() {
+        if (weaponDropdown) { weaponDropdown.remove(); weaponDropdown = null; }
+        weaponMatches = [];
+        weaponActiveIdx = -1;
+        weaponCurrentRow = null;
+      }
+
+      function highlightWeaponActive() {
+        if (!weaponDropdown) return;
+        weaponDropdown.querySelectorAll('.weapon-ac-item').forEach((el, i) => {
+          el.classList.toggle('active', i === weaponActiveIdx);
+        });
+      }
+
+      // Delegated listeners on attack list
+      const atkListEl = document.getElementById('cbt-attack-list');
+
+      atkListEl.addEventListener('focusin', e => {
+        if (e.target.matches('.atk-f[data-f="name"]')) {
+          weaponCurrentRow = e.target.closest('.atk-row');
+          showWeaponDropdown(e.target);
+        }
+      });
+
+      atkListEl.addEventListener('input', e => {
+        if (e.target.matches('.atk-f[data-f="name"]') && weaponDropdown) {
+          positionWeaponDropdown(e.target);
+          filterWeapons(e.target, e.target.value.trim());
+        }
+      });
+
+      atkListEl.addEventListener('keydown', e => {
+        if (!weaponDropdown || weaponDropdown.style.display === 'none') return;
+        if (!e.target.matches('.atk-f[data-f="name"]')) return;
+        const items = weaponDropdown.querySelectorAll('.weapon-ac-item');
+        if (!items.length) return;
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          weaponActiveIdx = (weaponActiveIdx + 1) % items.length;
+          highlightWeaponActive();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          weaponActiveIdx = weaponActiveIdx <= 0 ? items.length - 1 : weaponActiveIdx - 1;
+          highlightWeaponActive();
+        } else if (e.key === 'Enter') {
+          if (weaponActiveIdx >= 0 && weaponMatches[weaponActiveIdx]) {
+            e.preventDefault();
+            selectWeapon(e.target, weaponMatches[weaponActiveIdx]);
+          }
+        } else if (e.key === 'Escape') {
+          hideWeaponDropdown();
+        }
+      });
+
+      document.addEventListener('click', e => {
+        if (weaponDropdown && !weaponDropdown.contains(e.target) &&
+            !e.target.matches('.atk-f[data-f="name"]')) {
+          hideWeaponDropdown();
+        }
+      });
+
       // ── Attacks ──────────────────────────────────────────
       function renderAttacks() {
         const list = document.getElementById('cbt-attack-list');
@@ -1414,6 +1563,7 @@
         attacks.forEach((atk, idx) => {
           const row = document.createElement('div');
           row.className = 'atk-row';
+          row._atkIdx = idx;
           const stat = atk.stat || 'STR';
           const bonusVal = atk.bonus != null && atk.bonus !== '' ? atk.bonus : String(getStatMod(stat));
           row.innerHTML =
