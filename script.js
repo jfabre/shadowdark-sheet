@@ -866,7 +866,7 @@
         row.dataset.rowId = id;
         row.innerHTML = `
           <input type="text"   class="inv-item-name"  placeholder="Item"  value="${escHtml(data.name)}" />
-          <input type="number" class="inv-item-slots"  min="0" step="0.5" value="${data.slots}" />
+          <input type="number" class="inv-item-slots"  min="0" step="1" value="${data.slots}" />
           <input type="number" class="inv-item-qty"    min="1"            value="${data.qty}" />
           <input type="text"   class="inv-item-notes" placeholder="Notes" value="${escHtml(data.notes)}" />
           <button class="inv-del-btn" aria-label="Remove item">🗑</button>
