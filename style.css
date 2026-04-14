@@ -1478,7 +1478,7 @@ input:focus { border-color: var(--accent); }
 
 .atk-stat { cursor: pointer; }
 
-.atk-row-btns { display: flex; gap: 2px; align-items: center; justify-content: flex-end; }
+.atk-row-btns { display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin-right: 8px; }
 
 .btn-roll, .btn-trash {
   background: none;
