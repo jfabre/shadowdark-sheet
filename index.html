@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dungeon">
+<html lang="en" data-theme="talespire">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shadowdark Sheet</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -40,7 +40,13 @@
           <div class="identity-grid">
             <div class="field-group">
               <label for="char-class">Class</label>
-              <input type="text" id="char-class" placeholder="Fighter" autocomplete="off" />
+              <select id="char-class">
+                <option value="">—</option>
+                <option value="Fighter">Fighter</option>
+                <option value="Priest">Priest</option>
+                <option value="Thief">Thief</option>
+                <option value="Wizard">Wizard</option>
+              </select>
             </div>
             <div class="field-group">
               <label for="char-level">Level</label>
@@ -94,16 +100,24 @@
       <!-- AC / Initiative / Luck -->
       <div class="cbt-stats">
         <div class="cbt-stat-box">
-          <div class="cbt-stat-label">AC</div>
-          <input id="cbt-ac" type="number" class="cbt-stat-num" min="0" max="30" value="10" inputmode="numeric" />
+          <div class="cbt-stat-label">Armor Class</div>
+          <div class="cbt-stat-stepper">
+            <button class="cbt-step-btn cbt-step-down" aria-label="Decrease AC">−</button>
+            <input id="cbt-ac" type="number" class="cbt-stat-num" min="0" max="30" value="10" inputmode="numeric" />
+            <button class="cbt-step-btn cbt-step-up" aria-label="Increase AC">＋</button>
+          </div>
         </div>
         <div class="cbt-stat-box">
           <div class="cbt-stat-label">Initiative</div>
           <div id="cbt-init" class="cbt-stat-derived">+0</div>
         </div>
         <div class="cbt-stat-box">
-          <div class="cbt-stat-label">Luck</div>
-          <input id="luck-tokens" type="number" class="cbt-stat-num" min="0" max="3" value="0" inputmode="numeric" />
+          <div class="cbt-stat-label">Luck Token</div>
+          <div class="cbt-stat-stepper">
+            <button class="cbt-step-btn cbt-step-down" aria-label="Decrease luck">−</button>
+            <input id="luck-tokens" type="number" class="cbt-stat-num" min="0" max="3" value="0" inputmode="numeric" />
+            <button class="cbt-step-btn cbt-step-up" aria-label="Increase luck">＋</button>
+          </div>
         </div>
       </div>
 
@@ -155,6 +169,32 @@
         <div id="enc-breakdown" class="enc-breakdown">armor 0 · coins 0 · items 0</div>
       </section>
 
+      <!-- Currency -->
+      <section class="gear-section">
+        <div class="currency-row">
+          <div class="currency-field">
+            <span class="currency-label currency-label--gp">GP</span>
+            <div class="currency-stepper">
+              <button class="currency-btn currency-btn--minus" data-target="gear-gp" data-delta="-10">−10</button>
+              <button class="currency-btn currency-btn--minus" data-target="gear-gp" data-delta="-5">−5</button>
+              <input type="number" id="gear-gp" min="0" class="currency-input" value="0" />
+              <button class="currency-btn currency-btn--plus" data-target="gear-gp" data-delta="5">+5</button>
+              <button class="currency-btn currency-btn--plus" data-target="gear-gp" data-delta="10">+10</button>
+            </div>
+          </div>
+          <div class="currency-field">
+            <span class="currency-label currency-label--sp">SP</span>
+            <div class="currency-stepper">
+              <button class="currency-btn currency-btn--minus" data-target="gear-sp" data-delta="-10">−10</button>
+              <button class="currency-btn currency-btn--minus" data-target="gear-sp" data-delta="-5">−5</button>
+              <input type="number" id="gear-sp" min="0" class="currency-input" value="0" />
+              <button class="currency-btn currency-btn--plus" data-target="gear-sp" data-delta="5">+5</button>
+              <button class="currency-btn currency-btn--plus" data-target="gear-sp" data-delta="10">+10</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Armor Worn -->
       <section class="gear-section">
         <h3 class="gear-subhead">Armor Worn</h3>
@@ -191,20 +231,6 @@
           <label class="armor-check-field">
             <input type="checkbox" id="gear-shield" class="armor-check-input" />
             <span class="armor-check-label">Shield (+2 AC, +1 slot)</span>
-          </label>
-        </div>
-      </section>
-
-      <!-- Currency -->
-      <section class="gear-section">
-        <div class="currency-row">
-          <label class="currency-field">
-            <span class="currency-label currency-label--gp">GP</span>
-            <input type="number" id="gear-gp" min="0" class="currency-input" value="0" />
-          </label>
-          <label class="currency-field">
-            <span class="currency-label currency-label--sp">SP</span>
-            <input type="number" id="gear-sp" min="0" class="currency-input" value="0" />
           </label>
         </div>
       </section>
@@ -247,6 +273,16 @@
         <div id="features-body" class="features-body"></div>
       </div>
 
+      <!-- Racial Features (collapsible) -->
+      <div class="cls-section">
+        <button class="features-toggle" id="racial-toggle"
+                aria-expanded="true" aria-controls="racial-features-body">
+          <span class="cls-section-title">Racial Features</span>
+          <span class="toggle-arrow">▾</span>
+        </button>
+        <div id="racial-features-body" class="features-body"></div>
+      </div>
+
       <!-- Background -->
       <div class="cls-section">
         <div class="cls-section-hdr">
@@ -287,11 +323,33 @@
 
   </div>
 
+  <!-- ── Character Creation Guide modal ─────────────── -->
+  <div id="creation-guide" class="guide-overlay" hidden>
+    <div class="guide-card">
+      <button class="guide-x" id="guide-x" aria-label="Close">✕</button>
+      <h1 class="guide-title">⚔ Character Creation</h1>
+      <p class="guide-intro">Follow these steps to forge your adventurer.<br><a class="guide-link" href="https://www.thearcanelibrary.com/collections/shadowdark-core-rules/products/shadowdark-rpg-quickstart-set-pdf" target="_blank" rel="noopener">Get the free Quickstart Set ↗</a></p>
+      <ol class="guide-steps">
+        <li><strong>Name</strong> — Choose a worthy name.</li>
+        <li><strong>Background</strong> — Roll a d20 or pick a past that defines your skills.</li>
+        <li><strong>Stats</strong> — Roll 3d6 in order for STR, DEX, CON, INT, WIS, CHA. Reroll all six if none are 14+.</li>
+        <li><strong>Ancestry</strong> — Dwarf, Elf, Goblin, Halfling, Half-Orc, or Human. Each grants languages and a unique trait.</li>
+        <li><strong>Class</strong> — <em>Fighter</em> (all weapons &amp; armor, 1d8 HP), <em>Priest</em> (divine caster, 1d6 HP), <em>Thief</em> (stealth &amp; backstab, 1d4 HP), or <em>Wizard</em> (arcane caster, 1d4 HP).</li>
+        <li><strong>Alignment</strong> — Lawful (order), Neutral (balance), or Chaotic (destruction).</li>
+        <li><strong>Deity</strong> — Choose a god to worship (required for Priests).</li>
+        <li><strong>Gear</strong> — Carry up to your STR (min 10) in slots. Start with a Crawling Kit (7 gp) and buy weapons &amp; armor.</li>
+        <li><strong>Level Up</strong> — Earn current level × 10 XP. Talent roll at odd levels.</li>
+      </ol>
+      <button id="guide-close" class="guide-close-btn">Begin Your Adventure</button>
+    </div>
+  </div>
+
   <!-- ── Theme selector ──────────────────────────────── -->
-  <button id="theme-btn" aria-label="Choose theme" aria-expanded="false" aria-controls="theme-popover">⚜</button>
+  <button id="guide-reopen" aria-label="Character creation guide"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M476.72 51.375c-5.28 30.185-124.992 107.9-82.47 16.875c-80.216 45.38-107.557 23.42-78.53-5.656c-54.825 2.8-62.753 88.173-55.345 112.406l17.438 19.125c-2.14-31.218.404-48.445 19.5-71.47c13.764 20.614 18.495 33.702 52.062 6.97c-9.393 53.52 54.61 18.747 88.75 10.938c-15.248 14.048-35.153 32.723-38.875 55.468c-1.24 7.587 6.208 17.925 14.125 25.626c-9.443 2.236-41.474 8.91-38.563 26.22c2.912 17.31 12.14 11.885 3.5 15.28c-12.403 2.766-21.156 5.58-39.593-2.187l18.874 20.717c28.39 14.79 73.904 7.306 83.594-14.875c-14.778-1.22-27.125-4.674-33-11.53c44.022-8.34 66.764-39.243 85.78-75.032c-33.638 18.95-42.158 17.784-56 16.313c35.514-14.365 46.876-108.943 38.75-145.188zM246.874 186.063l-56.78 70.125l79.186 86.906l75.095-50l-97.5-107.03zm-62.344 90.125L21.657 467.625l21.438 23.53l205.75-144.374l-64.313-70.592z"/></svg></button>
+  <button id="theme-btn" aria-label="Choose theme" aria-expanded="false" aria-controls="theme-popover"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M263.844 40.344C234.1 213.202 145.594 248.03 145.594 369.22c0 60.804 60.106 105.5 118.25 105.5c59.45 0 115.937-41.803 115.937-99.533c0-116.332-85.2-162.312-115.936-334.843zm-58.28 217.094c-27.963 75.53-5.105 154.567 54.25 179.375c15.185 6.348 31.724 7.714 47.905 6.28c-116.134 49.787-185.836-79.816-102.158-185.656z"/></svg></button>
   <div id="theme-popover" role="dialog" aria-label="Theme selection">
     <div class="theme-swatches">
-      <button class="theme-swatch" data-theme="dungeon" aria-pressed="true" title="Dungeon">
+      <button class="theme-swatch" data-theme="dungeon" aria-pressed="false" title="Dungeon">
         <span class="theme-swatch-circle" style="background:#1a1510; border:1px solid #2a2520;"></span>
         <span class="theme-swatch-label">Dungeon</span>
       </button>
@@ -303,19 +361,31 @@
         <span class="theme-swatch-circle" style="background:#3d0808; border:1px solid #5a1010;"></span>
         <span class="theme-swatch-label">Blood Moon</span>
       </button>
+      <button class="theme-swatch" data-theme="talespire" aria-pressed="true" title="TaleSpire">
+        <span class="theme-swatch-circle" style="background:#1a1714; border:1px solid #e07830;"></span>
+        <span class="theme-swatch-label">TaleSpire</span>
+      </button>
+      <button class="theme-swatch" data-theme="frostgrave" aria-pressed="false" title="Frostgrave">
+        <span class="theme-swatch-circle" style="background:#080c14; border:1px solid #6aaad4;"></span>
+        <span class="theme-swatch-label">Frostgrave</span>
+      </button>
+      <button class="theme-swatch" data-theme="arcane" aria-pressed="false" title="Arcane">
+        <span class="theme-swatch-circle" style="background:#0c0812; border:1px solid #9b59b6;"></span>
+        <span class="theme-swatch-label">Arcane</span>
+      </button>
     </div>
   </div>
 
   <!-- ── Tab bar ─────────────────────────────────────── -->
   <nav id="tab-bar" role="tablist" aria-label="Character sheet sections">
     <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="panel-core"   data-panel="core">
-      <span class="tab-icon">⚔</span>CORE
+      <span class="tab-icon" id="core-tab-icon"><svg width="1em" height="1em" viewBox="0 0 512 512" fill="currentColor" style="vertical-align:-.15em"><path d="M19.75 14.438c59.538 112.29 142.51 202.35 232.28 292.718l3.626 3.75l.063-.062c21.827 21.93 44.04 43.923 66.405 66.25c-18.856 14.813-38.974 28.2-59.938 40.312l28.532 28.53l68.717-68.717c42.337 27.636 76.286 63.646 104.094 105.81l28.064-28.06c-42.47-27.493-79.74-60.206-106.03-103.876l68.936-68.938l-28.53-28.53c-11.115 21.853-24.413 42.015-39.47 60.593c-43.852-43.8-86.462-85.842-130.125-125.47c-.224-.203-.432-.422-.656-.625C183.624 122.75 108.515 63.91 19.75 14.437zm471.875 0c-83.038 46.28-154.122 100.78-221.97 161.156l22.814 21.562l56.81-56.812l13.22 13.187l-56.438 56.44l24.594 23.186c61.802-66.92 117.6-136.92 160.97-218.72zm-329.53 125.906l200.56 200.53a403 403 0 0 1-13.405 13.032L148.875 153.53zm-76.69 113.28l-28.5 28.532l68.907 68.906c-26.29 43.673-63.53 76.414-106 103.907l28.063 28.06c27.807-42.164 61.758-78.174 104.094-105.81l68.718 68.717l28.53-28.53c-20.962-12.113-41.08-25.5-59.937-40.313c17.865-17.83 35.61-35.433 53.157-52.97l-24.843-25.655l-55.47 55.467c-4.565-4.238-9.014-8.62-13.374-13.062l55.844-55.844l-24.53-25.374c-18.28 17.856-36.602 36.06-55.158 54.594c-15.068-18.587-28.38-38.758-39.5-60.625z"/></svg></span>CORE
     </button>
     <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="panel-gear"   data-panel="gear">
-      <span class="tab-icon">🎒</span>GEAR
+      <span class="tab-icon"><svg width="1em" height="1em" viewBox="0 0 512 512" fill="currentColor" style="vertical-align:-.15em"><path d="M186.438 20.56l-13.184 26.365q10.202-.39 20.47-.686l3.84-7.68h116.874l3.77 7.54q10.258.281 20.456.66l-13.102-26.2H186.437zm69.56 42.742c-45.757.056-91.452 1.566-135.38 4.363c-3.24 50.58-8.4 100.987-.786 145.824c89.297 12.395 180.102 12.985 272.764-.054c7.055-30.988 5.117-84.68-1.04-145.89c-43.974-2.893-89.73-4.3-135.558-4.244zm153.783 5.54c6.42 64.12 9.113 119.825-1.135 155.22l-1.61 5.56l-5.726.842c-98.8 14.528-195.613 13.81-290.605.002l-6.285-.914l-1.246-6.23c-9.89-49.49-4.085-102.785-.664-154.42c-4.89.354-9.765.72-14.602 1.107c-8.596 58.568-9.39 116.957-.05 175.292c110.24 12.088 222.275 12.205 336.203-.01c8.502-57.83 8.29-116.25-.017-175.313c-4.725-.4-9.485-.776-14.262-1.14zM255.966 92.3c32.526-.025 65.067 2.746 97.574 8.39l7.46 1.295v7.572c0 15.554 1.683 35.105-12.69 50.25c-9.912 10.444-25.655 17.337-51.31 20.585v18.164h-82v-18.452c-23.992-3.37-39.352-10.175-49.363-20.185C150.807 145.093 151 125.56 151 109.56v-7.594l7.484-1.278c32.444-5.54 64.955-8.362 97.48-8.386zm.012 17.994c-28.96.022-57.913 2.444-86.858 6.996c.265 12.28 1.635 22.296 9.243 29.904c5.914 5.914 16.952 11.416 36.637 14.582v-29.22h82v29.51c21.367-3.115 32.66-8.755 38.254-14.65c7.033-7.41 7.696-17.502 7.73-30.124c-29-4.63-58.006-7.02-87.007-6.998zM233 150.56v30h46v-30zm209.674 92.42a619 619 0 0 1-1.61 10.87c.214 2.352.42 4.706.63 7.06L471 290.213v-22.24l-28.326-24.995zm-373.485.12L41 267.973v22.24l29.318-29.318c.205-2.327.406-4.655.616-6.982a542 542 0 0 1-1.745-10.813m354.634 20.397a1638 1638 0 0 1-30.824 2.967v74.095h16v66h-16v80.615c10.318-.633 20.63-1.313 30.928-2.082c9.445-74.01 6.478-147.698-.104-221.596zm-335.576.03C81.725 338.09 78.58 412.1 88.06 485.1q15.487 1.184 30.94 2.145V406.56h-16v-66h16v-74.024a1537 1537 0 0 1-30.752-3.01zm286.752 4.4q-15.021 1.14-30 1.992v70.64h30zm-238 .085v72.547h30v-70.55a1557 1557 0 0 1-30-1.997m190 2.825c-47.65 2.173-94.984 2.19-142 .078v19.314c23.95-5.165 47.8-7.652 71.516-7.59c23.638.06 47.145 2.654 70.484 7.626v-19.43zM68.05 288.62L41 315.67v56.89h23.06c.376-27.987 1.88-55.975 3.99-83.94m375.948.047c2.12 27.872 3.61 55.83 3.957 83.892H471v-56.89zm-187.52 11.95c-23.68-.063-47.487 2.577-71.478 8.052v31.89h16v18.443c17.033 5.346 31.73 8.493 46 9.426v-2.87h18v2.868c14.27-.932 28.967-4.08 46-9.425V340.56h16v-31.866c-23.42-5.267-46.907-8.016-70.523-8.078zM121 358.558v30h22v-23h18v23h22v-30zm208 0v30h22v-23h18v23h22v-30zM201 377.8v28.76h-16v15.857c48.528 10.865 95.713 10.664 142 .045V406.56h-16V377.8c-16.332 4.747-31.283 7.52-46 8.326v11.433h-18v-11.434c-14.717-.806-29.668-3.58-46-8.326zM41 390.56v14h23.14q-.134-7-.163-14zm407.012 0a935 935 0 0 1-.18 14H471v-14zM137 406.56v19.798c6.137 7.214 11.222 9.77 14.934 9.844c3.734.075 8.697-2.122 15.066-9.79V406.56h-6v7h-18v-7zm208 0v19.798c6.137 7.214 11.222 9.77 14.934 9.844c3.734.075 8.697-2.122 15.066-9.79V406.56h-6v7h-18v-7zm-304 16v35.154c5.596 5.51 8.677 8.25 11.846 9.306c2.454.818 7.713 1.15 15.045 1.317c-1.544-15.25-2.586-30.51-3.204-45.778H41zm406.27 0c-.628 15.224-1.674 30.483-3.21 45.78c7.358-.168 12.635-.5 15.094-1.32c3.17-1.056 6.25-3.795 11.846-9.306V422.56zM185 440.842v49.498c47.55 1.51 94.877 1.446 142-.074V440.9c-46.316 10.03-93.74 10.185-142-.057zm-48 9.123v38.318q15.015.809 30 1.408v-39.678c-4.86 2.786-10.01 4.293-15.43 4.184c-5.192-.104-10.036-1.624-14.57-4.232m208 0v39.654c10.01-.403 20.01-.878 30-1.412v-38.194c-4.86 2.786-10.01 4.293-15.43 4.184c-5.192-.104-10.036-1.624-14.57-4.232"/></svg></span>GEAR
     </button>
     <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="panel-class"  data-panel="class">
-      <span class="tab-icon">📜</span>CLASS
+      <span class="tab-icon"><svg width="1em" height="1em" viewBox="0 0 512 512" fill="currentColor" style="vertical-align:-.15em"><path d="M311.9 47.95c-17.6 0-34.6.7-50.7 2.43L244.6 93.5l-4.9-40.04c-2.5.46-5 .94-7.5 1.47c-9.1 1.94-15.1 7.22-20.3 14.87s-8.9 17.5-12.1 26.6C191 121.5 184 148 178.4 175c6 5.1 12 10.3 17.9 15.4l30.7-17.6l33.8 26.1l51.9-19.7l61 24.5l-6.8 16.7l-54.4-21.8l-54.7 20.7l-32.2-24.9l-14.9 8.5c19.6 17.3 38.6 34.4 56.5 51.2l14-6.4l33.9 16.1l31.2-13.1l24.2 23.3l-12.4 13l-15.8-15.1l-27.6 11.7l-33-15.8c6.9 6.7 13.6 13.2 20.1 19.7l1.7 1.8l19.5 76.3l-7.8-5.7l-53 .4l-38.1-17.8l-42.4 14.6l-5.8-17l49.2-17l41.1 19.2l24.7-.2l-70.7-51.7c-19.7 4.6-39.4 2.8-58.1-3.7c-4.2 44.4-5.9 85.7-7 118.7c-.4 10.7 2.7 23 7.5 32.5c4.9 9.5 11.7 15.4 15 16.1c5.2 1.2 19 3.2 37.7 5.1l12.4-39l19.1 41.7c16.7 1.2 35 2 53.5 2.2c28.2.3 57.1-.9 82-4.7c15.8-2.3 29.6-6 40.7-10.4c-11.8-5.1-21.6-10.6-29.1-16.6c-11.1-8.9-18.2-19.3-17.3-30.9v.2c5.4-96.4 10.8-188.8 30.3-286l.1-.4l.1-.4c5.3-17.9 17.9-39.86 36.1-55.83c-13.9-2.06-28.6-4-43.7-5.66l-22.3 25.3l-2.2-27.7c-19-1.64-38.4-2.71-57.4-2.92h-5.7zm148.5 20.44c-4.7 3.69-9.2 8.03-13.3 12.73c12.1 8.18 21.4 23.38 21.8 36.98c.3 7.8-1.9 14.9-7.7 21.4c-5.8 6.4-15.6 12.4-31.6 15.8l3.8 17.6c18.6-4 32.3-11.5 41.2-21.4c9-9.9 12.7-22.2 12.3-34c-.6-19.3-11.1-37.59-26.5-49.11M25.44 71.91c-.24 1.61-.38 3.43-.38 5.62c.1 7.69 2.03 18.17 5.83 30.17c3.41 10.7 8.27 22.5 14.35 34.8c10.63-5.3 20.59-11 28.41-18.1c-4.42 12.5-10.15 24.7-18.6 36.5c4.14 7.2 8.63 14.4 13.45 21.5c10.64-5.3 20.72-13 29.52-26.1c-3.3 16-8.47 30.6-18.27 41.8c6.53 8.5 13.5 16.8 20.75 24.5c8.7-9.3 15.6-21 20.7-34.9c3.8 18.5 2.6 35.3-5.7 49.4c8 7.2 16.3 13.7 24.8 19.1c6.1-14 8.9-30.6 8.5-49.7c9.2 23.7 11.3 42.9 9.6 59.5c20.2 9.2 40.8 12 61.3 6.1l4.2-1.3l69.3 50.6l-5.9-22.8c-73-72.8-175.4-156.7-261.86-226.69M312.8 123.9l33.2 13.8l31.3-9.9l5.4 17.2l-37.5 11.9l-33.6-14l-28.8 8.1l-4.8-17.4zm107.3 236.2c-.7 0-1.3.1-2 .1c-3.5.1-7.2.5-11.1 1.3l3.4 17.6c12.2-2.3 20-.4 24.5 2.5c4.4 2.9 6.3 6.8 6.4 12.5c.1 9.3-7 23-23.3 32.5c5.4 2.9 11.9 5.9 19.3 8.7c14.4-11.6 22.1-26.8 22-41.4c-.1-10.7-5.2-21.2-14.6-27.4c-6.7-4.3-15-6.5-24.6-6.4"/></svg></span>CLASS
     </button>
   </nav>
 
