@@ -1389,6 +1389,9 @@ input:focus { border-color: var(--accent); }
 
 .cbt-stat-num:focus { outline: none; border-bottom-color: var(--accent); }
 
+#cbt-ac,
+#luck-tokens { border: 0; }
+
 .cbt-stat-derived {
   color: var(--accent);
   font-family: var(--font-num);
