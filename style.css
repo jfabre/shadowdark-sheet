@@ -498,6 +498,7 @@ body {
   outline: none;
   -moz-appearance: textfield;
 }
+.ability-score:focus { border: none; }
 .ability-score::-webkit-inner-spin-button,
 .ability-score::-webkit-outer-spin-button { -webkit-appearance: none; }
 .ability-mod {
