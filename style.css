@@ -82,7 +82,7 @@ html, body { height: 100%; }
   color: var(--fg);
   border: 1px solid var(--border);
   border-radius: 10px;
-  max-width: 520px;
+  max-width: 440px;
   width: 100%;
   padding: 24px 20px 28px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.6);
@@ -99,80 +99,26 @@ html, body { height: 100%; }
   text-align: center;
   color: var(--muted);
   font-size: 0.85rem;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
-.guide-section {
-  margin-bottom: 18px;
+.guide-steps {
+  padding-left: 1.4em;
+  margin: 0;
+  list-style: decimal;
 }
-.guide-section h2 {
-  font-family: var(--font-hdr);
-  font-size: 1.1rem;
-  color: var(--accent);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 3px;
-  margin-bottom: 6px;
-}
-.guide-section h3 {
-  font-family: var(--font-hdr);
-  font-size: 0.95rem;
+.guide-steps li {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-bottom: 8px;
   color: var(--fg);
-  margin: 10px 0 3px;
 }
-.guide-section p {
-  font-size: 0.82rem;
-  line-height: 1.45;
-  margin-bottom: 4px;
-}
-
-.guide-cols {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-.guide-cols > div { flex: 1; }
-.guide-cols > table { flex: 0 0 auto; }
-
-.guide-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.78rem;
-  margin-top: 6px;
-}
-.guide-table th,
-.guide-table td {
-  padding: 3px 6px;
-  border: 1px solid var(--border);
-  text-align: left;
-}
-.guide-table th {
-  background: var(--surface-alt, var(--border));
+.guide-steps li strong {
   color: var(--accent);
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
-.guide-table-compact {
-  width: auto;
-}
-.guide-table-compact td:first-child {
-  font-family: var(--font-num);
-  text-align: center;
-  white-space: nowrap;
-}
-
-.guide-details {
-  margin-top: 4px;
-}
-.guide-details summary {
-  font-size: 0.8rem;
+.guide-steps li em {
   color: var(--muted);
-  cursor: pointer;
-  user-select: none;
 }
-.guide-details summary:hover { color: var(--accent); }
-.guide-details[open] summary { color: var(--accent); }
 
 .guide-close-btn {
   display: block;
