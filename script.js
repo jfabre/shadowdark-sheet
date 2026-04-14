@@ -973,6 +973,15 @@
           updateEncumbrance();
         });
       });
+
+      document.querySelectorAll('.currency-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const input = document.getElementById(btn.dataset.target);
+          const delta = parseInt(btn.dataset.delta, 10);
+          input.value = Math.max(0, (parseFloat(input.value) || 0) + delta);
+          input.dispatchEvent(new Event('input'));
+        });
+      });
       ['gear-armor-type'].forEach(id => {
         document.getElementById(id).addEventListener('change', () => {
           collectAndSave();
