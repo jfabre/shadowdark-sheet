@@ -469,7 +469,7 @@ body {
 }
 .ability-cell {
   background: var(--surface);
-  border: none;
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 8px 6px;
   display: flex;
@@ -477,8 +477,9 @@ body {
   align-items: center;
   gap: 1px;
   cursor: text;
+  transition: border-color 0.15s;
 }
-.ability-cell:focus-within { outline: none; }
+.ability-cell:focus-within { border-color: var(--accent); }
 .ability-stat-name {
   font-family: var(--font-num);
   font-size: 0.6rem;
@@ -486,7 +487,8 @@ body {
   color: var(--muted);
   text-transform: uppercase;
 }
-.ability-score {
+.ability-score,
+input[type="number"].ability-score {
   background: transparent;
   border: none;
   color: var(--text);
@@ -495,9 +497,11 @@ body {
   width: 48px;
   text-align: center;
   outline: none;
+  padding: 0;
   -moz-appearance: textfield;
 }
-.ability-score:focus { border: none; }
+.ability-score:focus,
+input[type="number"].ability-score:focus { border: none; outline: none; }
 .ability-score::-webkit-inner-spin-button,
 .ability-score::-webkit-outer-spin-button { -webkit-appearance: none; }
 .ability-mod {
