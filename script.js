@@ -2047,5 +2047,25 @@
       });
     });
 
+    // ── Character Creation Guide ──────────────────────────────────────────
+    (function() {
+      const overlay = document.getElementById('creation-guide');
+      const closeBtn = document.getElementById('guide-close');
+      const reopenBtn = document.getElementById('guide-reopen');
+
+      function openGuide() { overlay.hidden = false; }
+      function closeGuide() { overlay.hidden = true; }
+
+      closeBtn.addEventListener('click', closeGuide);
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeGuide();
+      });
+      reopenBtn.addEventListener('click', openGuide);
+
+      // Auto-show when sheet is empty (no name and no class)
+      const c = window.SD.character;
+      if (!c.name && !c.class) openGuide();
+    })();
+
     })(); // end boot()
   

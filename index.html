@@ -313,7 +313,262 @@
 
   </div>
 
+  <!-- ── Character Creation Guide modal ─────────────── -->
+  <div id="creation-guide" class="guide-overlay" hidden>
+    <div class="guide-card">
+      <h1 class="guide-title">⚔ Character Creation</h1>
+      <p class="guide-intro">Follow these steps to forge your adventurer for the Shadowdark RPG.</p>
+
+      <!-- 1. Name -->
+      <section class="guide-section">
+        <h2>1. Name</h2>
+        <p>Choose a worthy name for your adventurer.</p>
+      </section>
+
+      <!-- 2. Background -->
+      <section class="guide-section">
+        <h2>2. Background</h2>
+        <p>Roll a d20 or choose from the table below.</p>
+        <table class="guide-table">
+          <thead><tr><th>d20</th><th>Background</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Urchin — grew up in the merciless streets</td></tr>
+            <tr><td>2</td><td>Wanted — a price on your head, but you have allies</td></tr>
+            <tr><td>3</td><td>Cult Initiate — you know blasphemous secrets</td></tr>
+            <tr><td>4</td><td>Thieves' Guild — connections, contacts, and debts</td></tr>
+            <tr><td>5</td><td>Banished — cast out for supposed crimes</td></tr>
+            <tr><td>6</td><td>Orphaned — an unusual guardian raised you</td></tr>
+            <tr><td>7</td><td>Wizard's Apprentice — a knack for magic</td></tr>
+            <tr><td>8</td><td>Jeweler — appraise value and authenticity</td></tr>
+            <tr><td>9</td><td>Herbalist — plants, medicines, and poisons</td></tr>
+            <tr><td>10</td><td>Barbarian — you left the horde, but it never left you</td></tr>
+            <tr><td>11</td><td>Mercenary — fought friend and foe for coin</td></tr>
+            <tr><td>12</td><td>Sailor — pirate, privateer, or merchant</td></tr>
+            <tr><td>13</td><td>Acolyte — trained in religious rites</td></tr>
+            <tr><td>14</td><td>Soldier — served in an organized army</td></tr>
+            <tr><td>15</td><td>Ranger — the woods and wilds are your home</td></tr>
+            <tr><td>16</td><td>Scout — survived on stealth and observation</td></tr>
+            <tr><td>17</td><td>Minstrel — traveled far with charm and talent</td></tr>
+            <tr><td>18</td><td>Scholar — ancient history and lore</td></tr>
+            <tr><td>19</td><td>Noble — a famous name opens many doors</td></tr>
+            <tr><td>20</td><td>Chirurgeon — anatomy, surgery, and first aid</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 3. Stats -->
+      <section class="guide-section">
+        <h2>3. Stats</h2>
+        <p>Roll <strong>3d6 in order</strong> for each stat. If none are 14+, you may reroll all six.</p>
+        <div class="guide-cols">
+          <div>
+            <p><strong>STR</strong> — fight, bash, swim</p>
+            <p><strong>DEX</strong> — shoot, sneak, balance</p>
+            <p><strong>CON</strong> — endure, resist</p>
+            <p><strong>INT</strong> — wizard spells, lore</p>
+            <p><strong>WIS</strong> — priest spells, perception</p>
+            <p><strong>CHA</strong> — persuade, resist mental</p>
+          </div>
+          <table class="guide-table guide-table-compact">
+            <thead><tr><th>Stat</th><th>Mod</th></tr></thead>
+            <tbody>
+              <tr><td>1–3</td><td>−4</td></tr>
+              <tr><td>4–5</td><td>−3</td></tr>
+              <tr><td>6–7</td><td>−2</td></tr>
+              <tr><td>8–9</td><td>−1</td></tr>
+              <tr><td>10–11</td><td>0</td></tr>
+              <tr><td>12–13</td><td>+1</td></tr>
+              <tr><td>14–15</td><td>+2</td></tr>
+              <tr><td>16–17</td><td>+3</td></tr>
+              <tr><td>18+</td><td>+4</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 4. Ancestry -->
+      <section class="guide-section">
+        <h2>4. Ancestry</h2>
+        <table class="guide-table">
+          <thead><tr><th>Ancestry</th><th>Languages</th><th>Trait</th></tr></thead>
+          <tbody>
+            <tr><td>Dwarf</td><td>Common, Dwarvish</td><td><strong>Stout</strong> — +2 HP, roll HP/level with advantage</td></tr>
+            <tr><td>Elf</td><td>Common, Elvish, Sylvan</td><td><strong>Farsight</strong> — +1 ranged attack or spellcasting</td></tr>
+            <tr><td>Goblin</td><td>Common, Goblin</td><td><strong>Keen Senses</strong> — can't be surprised</td></tr>
+            <tr><td>Halfling</td><td>Common</td><td><strong>Stealthy</strong> — invisible for 3 rounds, 1/day</td></tr>
+            <tr><td>Half-Orc</td><td>Common, Orcish</td><td><strong>Mighty</strong> — +1 melee attack and damage</td></tr>
+            <tr><td>Human</td><td>Common + one extra</td><td><strong>Ambitious</strong> — one extra talent roll at 1st level</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 5. Class -->
+      <section class="guide-section">
+        <h2>5. Class</h2>
+
+        <h3>Fighter</h3>
+        <p>Weapons: All · Armor: All + shields · HP: 1d8/level</p>
+        <p><strong>Hauler</strong> — add CON mod (if positive) to gear slots.
+           <strong>Weapon Mastery</strong> — +1 atk/dmg with one weapon type + half level.
+           <strong>Grit</strong> — advantage on STR or DEX checks vs. opposing force.</p>
+        <details class="guide-details"><summary>Fighter Talents (2d6)</summary>
+          <table class="guide-table guide-table-compact">
+            <tbody>
+              <tr><td>2</td><td>Weapon Mastery with one additional type</td></tr>
+              <tr><td>3–6</td><td>+1 melee and ranged attacks</td></tr>
+              <tr><td>7–9</td><td>+2 to STR, DEX, or CON</td></tr>
+              <tr><td>10–11</td><td>+1 AC from one armor type</td></tr>
+              <tr><td>12</td><td>Choose a talent or +2 to stats</td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <h3>Priest</h3>
+        <p>Weapons: Club, crossbow, dagger, mace, longsword, staff, warhammer · Armor: All + shields · HP: 1d6/level</p>
+        <p><strong>Turn Undead</strong> — know the turn undead spell (free).
+           <strong>Deity</strong> — choose a god matching your alignment.
+           <strong>Spellcasting</strong> — start with 2 tier-1 priest spells.</p>
+        <details class="guide-details"><summary>Priest Talents (2d6)</summary>
+          <table class="guide-table guide-table-compact">
+            <tbody>
+              <tr><td>2</td><td>Advantage on casting one known spell</td></tr>
+              <tr><td>3–6</td><td>+1 melee or ranged attacks</td></tr>
+              <tr><td>7–9</td><td>+1 priest spellcasting checks</td></tr>
+              <tr><td>10–11</td><td>+2 to STR or WIS</td></tr>
+              <tr><td>12</td><td>Choose a talent or +2 to stats</td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <h3>Thief</h3>
+        <p>Weapons: Club, crossbow, dagger, shortbow, shortsword · Armor: Leather, mithral chainmail · HP: 1d4/level</p>
+        <p><strong>Backstab</strong> — extra weapon die vs. unaware targets + half level dice.
+           <strong>Thievery</strong> — advantage on climbing, sneaking, disguises, traps, locks, pickpocketing.</p>
+        <details class="guide-details"><summary>Thief Talents (2d6)</summary>
+          <table class="guide-table guide-table-compact">
+            <tbody>
+              <tr><td>2</td><td>Advantage on initiative rolls</td></tr>
+              <tr><td>3–5</td><td>Backstab deals +1 die of damage</td></tr>
+              <tr><td>6–9</td><td>+2 to STR, DEX, or CHA</td></tr>
+              <tr><td>10–11</td><td>+1 melee and ranged attacks</td></tr>
+              <tr><td>12</td><td>Choose a talent or +2 to stats</td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <h3>Wizard</h3>
+        <p>Weapons: Dagger, staff · Armor: None · HP: 1d4/level</p>
+        <p><strong>Languages</strong> — know 2 extra common + 2 rare languages.
+           <strong>Learning Spells</strong> — learn from scrolls (DC 15 INT check).
+           <strong>Spellcasting</strong> — start with 3 tier-1 wizard spells.</p>
+        <details class="guide-details"><summary>Wizard Talents (2d6)</summary>
+          <table class="guide-table guide-table-compact">
+            <tbody>
+              <tr><td>2</td><td>Make one random magic item</td></tr>
+              <tr><td>3–7</td><td>+2 INT or +1 wizard spellcasting</td></tr>
+              <tr><td>8–9</td><td>Advantage on casting one known spell</td></tr>
+              <tr><td>10–11</td><td>Learn one additional wizard spell</td></tr>
+              <tr><td>12</td><td>Choose a talent or +2 to stats</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </section>
+
+      <!-- 6. Alignment -->
+      <section class="guide-section">
+        <h2>6. Alignment</h2>
+        <p><strong>Lawful</strong> — fairness, order, virtue.
+           <strong>Neutral</strong> — balance, the natural cycle.
+           <strong>Chaotic</strong> — destruction, ambition, wickedness.</p>
+      </section>
+
+      <!-- 7. Deity -->
+      <section class="guide-section">
+        <h2>7. Deity</h2>
+        <table class="guide-table">
+          <thead><tr><th>Deity</th><th>Align</th><th>Domain</th></tr></thead>
+          <tbody>
+            <tr><td>Saint Terragnis</td><td>Lawful</td><td>Righteousness, justice</td></tr>
+            <tr><td>Madeera the Covenant</td><td>Lawful</td><td>Law, cosmic order</td></tr>
+            <tr><td>Gede</td><td>Neutral</td><td>Feasts, mirth, the wilds</td></tr>
+            <tr><td>Ord</td><td>Neutral</td><td>Magic, knowledge, secrets</td></tr>
+            <tr><td>Memnon</td><td>Chaotic</td><td>Chaos, destruction</td></tr>
+            <tr><td>Ramlaat</td><td>Chaotic</td><td>War, the horde</td></tr>
+            <tr><td>Shune the Vile</td><td>Chaotic</td><td>Sorcery, dark secrets</td></tr>
+            <tr><td colspan="3"><em>The Lost (×2) — forgotten, forbidden</em></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 8. Gear -->
+      <section class="guide-section">
+        <h2>8. Gear</h2>
+        <p>You can carry items equal to your STR stat or 10, whichever is higher. Start with a <strong>Crawling Kit</strong> (7 gp, 7 slots): backpack, flint &amp; steel, 2 torches, 3 rations, 10 iron spikes, grappling hook, 60' rope.</p>
+
+        <details class="guide-details"><summary>Armor</summary>
+          <table class="guide-table guide-table-compact">
+            <thead><tr><th>Armor</th><th>Cost</th><th>Slots</th><th>AC</th><th>Properties</th></tr></thead>
+            <tbody>
+              <tr><td>Leather</td><td>10 gp</td><td>1</td><td>11+DEX</td><td>—</td></tr>
+              <tr><td>Chainmail</td><td>60 gp</td><td>2</td><td>13+DEX</td><td>Disadv stealth/swim</td></tr>
+              <tr><td>Plate mail</td><td>130 gp</td><td>3</td><td>15</td><td>No swim, disadv stealth</td></tr>
+              <tr><td>Shield</td><td>10 gp</td><td>1</td><td>+2</td><td>One hand</td></tr>
+              <tr><td>Mithral</td><td>×4</td><td>−1</td><td>—</td><td>No penalty stealth/swim</td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <details class="guide-details"><summary>Weapons</summary>
+          <table class="guide-table guide-table-compact">
+            <thead><tr><th>Weapon</th><th>Cost</th><th>Dmg</th><th>Properties</th></tr></thead>
+            <tbody>
+              <tr><td>Bastard sword</td><td>10 gp</td><td>1d8/1d10</td><td>Versatile, 2 slots</td></tr>
+              <tr><td>Club</td><td>5 cp</td><td>1d4</td><td>—</td></tr>
+              <tr><td>Crossbow</td><td>8 gp</td><td>1d6</td><td>2H, Loading, Far</td></tr>
+              <tr><td>Dagger</td><td>1 gp</td><td>1d4</td><td>Finesse, Thrown</td></tr>
+              <tr><td>Greataxe</td><td>10 gp</td><td>1d8/1d10</td><td>Versatile, 2 slots</td></tr>
+              <tr><td>Greatsword</td><td>12 gp</td><td>1d12</td><td>2H, 2 slots</td></tr>
+              <tr><td>Javelin</td><td>5 sp</td><td>1d4</td><td>Thrown, Far</td></tr>
+              <tr><td>Longbow</td><td>8 gp</td><td>1d8</td><td>2H, Far</td></tr>
+              <tr><td>Longsword</td><td>9 gp</td><td>1d8</td><td>—</td></tr>
+              <tr><td>Mace</td><td>5 gp</td><td>1d6</td><td>—</td></tr>
+              <tr><td>Shortbow</td><td>6 gp</td><td>1d4</td><td>2H, Far</td></tr>
+              <tr><td>Shortsword</td><td>7 gp</td><td>1d6</td><td>—</td></tr>
+              <tr><td>Spear</td><td>5 sp</td><td>1d6</td><td>Thrown, Near</td></tr>
+              <tr><td>Staff</td><td>5 sp</td><td>1d4</td><td>2H</td></tr>
+              <tr><td>Warhammer</td><td>10 gp</td><td>1d10</td><td>2H</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </section>
+
+      <!-- 9. Level Advancement -->
+      <section class="guide-section">
+        <h2>9. Level Advancement</h2>
+        <p>To level up, earn <strong>current level × 10 XP</strong>. XP resets to 0 after leveling.</p>
+        <table class="guide-table guide-table-compact">
+          <thead><tr><th>Level</th><th>XP Needed</th><th>Talent?</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>10</td><td>+1</td></tr>
+            <tr><td>2</td><td>20</td><td>—</td></tr>
+            <tr><td>3</td><td>30</td><td>+1</td></tr>
+            <tr><td>4</td><td>40</td><td>—</td></tr>
+            <tr><td>5</td><td>50</td><td>+1</td></tr>
+            <tr><td>6</td><td>60</td><td>—</td></tr>
+            <tr><td>7</td><td>70</td><td>+1</td></tr>
+            <tr><td>8</td><td>80</td><td>—</td></tr>
+            <tr><td>9</td><td>90</td><td>+1</td></tr>
+            <tr><td>10</td><td>100</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <button id="guide-close" class="guide-close-btn">Begin Your Adventure</button>
+    </div>
+  </div>
+
   <!-- ── Theme selector ──────────────────────────────── -->
+  <button id="guide-reopen" aria-label="Character creation guide"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M125.126 18.563c-21.983.39-42.358 10.795-53.814 31.687L18.5 149.156L194.188 237L247 138.094c11.456-20.892 9.94-44.54-1.5-63.406c28.32-20.04 63.024-31.98 100.25-33.032c-4.244-1.48-8.626-2.685-13.156-3.562c-18.636-3.612-38.16-2.73-55.75 3.312c-8.54-12.16-21.035-21.244-36.344-24.22c-15.31-2.974-31.213.367-44 8.845c2.28-5.67 2.83-11.915 1.094-18.062c-1.497-5.302-4.555-9.96-8.5-13.5c-14.45 3.44-28.158 8.764-40.906 15.78c-3.9-1.25-8.003-1.97-12.188-2.03c-3.625-.053-7.284.336-10.875 1.344m260.343 110.812c-39.36.527-76.394 15.55-105.907 41.375l30 17.313c21.16-14.893 46.47-23.278 73.218-22.844c67.44 1.1 122.478 56.638 122.876 124.093c.325 54.91-34.405 101.69-82.47 118.657l.002.03l-58.875 19.688l62.438 10.156c.397.054.79.13 1.188.188c-6.546 10.77-14.65 20.53-24.032 28.94l24.656 42.718c49.155-36.085 81.234-94.46 80.78-160.157c-.603-90.488-66.92-165.01-152.905-185.968l-.094.03c-6.19-1.71-12.504-3.133-18.937-4.156c15.378-17.2 28.63-21.673 48.062-30.063M125 158.155c-41.342 0-75 33.658-75 75c0 41.344 33.658 75 75 75s75-33.656 75-75c0-41.342-33.658-75-75-75m.156 18.688c31.065 0 56.188 25.154 56.188 56.22c0 31.065-25.123 56.218-56.188 56.218c-31.064 0-56.22-25.153-56.22-56.22c0-31.065 25.156-56.218 56.22-56.218M73.657 329.47l-36.562 63.78l26.78 15.375l36.594-63.782zm81.344.436l-36.594 63.78l27.344 15.69l36.563-63.782zm-115.125 66.25l-21.22 37.03l27.345 15.69l21.22-37.064zm81.344.438l-21.22 37.062l27.344 15.656l21.22-37.03z"/></svg></button>
   <button id="theme-btn" aria-label="Choose theme" aria-expanded="false" aria-controls="theme-popover"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M263.844 40.344C234.1 213.202 145.594 248.03 145.594 369.22c0 60.804 60.106 105.5 118.25 105.5c59.45 0 115.937-41.803 115.937-99.533c0-116.332-85.2-162.312-115.936-334.843zm-58.28 217.094c-27.963 75.53-5.105 154.567 54.25 179.375c15.185 6.348 31.724 7.714 47.905 6.28c-116.134 49.787-185.836-79.816-102.158-185.656z"/></svg></button>
   <div id="theme-popover" role="dialog" aria-label="Theme selection">
     <div class="theme-swatches">
