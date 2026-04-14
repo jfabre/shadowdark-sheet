@@ -273,9 +273,6 @@ body {
   background-position: right 8px center;
   padding-right: 24px;
 }
-.field-group input[type="number"] { -moz-appearance: textfield; }
-.field-group input[type="number"]::-webkit-inner-spin-button,
-.field-group input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
 .field-row {
   display: flex;
@@ -1049,6 +1046,17 @@ body {
 .weapon-ac-item.active .weapon-ac-info {
   color: var(--accent);
   opacity: 0.8;
+}
+
+input[type="number"] {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--font-num);
+  font-size: 0.85rem;
+  padding: 4px 6px;
+  -moz-appearance: textfield;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
