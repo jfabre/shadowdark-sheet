@@ -70,7 +70,6 @@ html, body { height: 100%; }
   z-index: 200;
   background: rgba(0,0,0,0.75);
   display: flex;
-  align-items: center;
   justify-content: center;
   padding: 20px 12px;
   overflow-y: auto;
@@ -85,8 +84,10 @@ html, body { height: 100%; }
   border-radius: 12px;
   max-width: 420px;
   width: 100%;
+  margin: auto;
   padding: 28px 24px 32px;
   box-shadow: 0 12px 48px rgba(0,0,0,0.65);
+  flex-shrink: 0;
 }
 
 .guide-x {
