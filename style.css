@@ -1308,6 +1308,30 @@ input:focus { border-color: var(--accent); }
   margin-bottom: 2px;
 }
 
+.cbt-stat-stepper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.cbt-step-btn {
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  color: var(--accent);
+  font-family: var(--font-num);
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 2px 5px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.cbt-step-btn:hover  { opacity: 1; background: color-mix(in srgb, var(--accent) 15%, transparent); }
+.cbt-step-btn:active { opacity: 1; background: color-mix(in srgb, var(--accent) 30%, transparent); }
+
 .cbt-stat-num {
   width: 100%;
   background: transparent;
@@ -1318,7 +1342,13 @@ input:focus { border-color: var(--accent); }
   font-size: 1.25rem;
   text-align: center;
   padding: 1px 0;
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
+
+.cbt-stat-num::-webkit-inner-spin-button,
+.cbt-stat-num::-webkit-outer-spin-button { -webkit-appearance: none; }
 
 .cbt-stat-num:focus { outline: none; border-bottom-color: var(--accent); }
 

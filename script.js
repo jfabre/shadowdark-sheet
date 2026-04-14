@@ -1830,5 +1830,20 @@
       applyTheme(saved);
     })();
 
+    // ── Custom stepper buttons for AC and Luck ──────────────────────────────
+    document.querySelectorAll('.cbt-stat-stepper').forEach(stepper => {
+      const input = stepper.querySelector('input[type="number"]');
+      stepper.querySelectorAll('.cbt-step-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const step  = btn.classList.contains('cbt-step-up') ? 1 : -1;
+          const min   = input.min !== '' ? Number(input.min) : -Infinity;
+          const max   = input.max !== '' ? Number(input.max) :  Infinity;
+          const next  = Math.min(max, Math.max(min, (Number(input.value) || 0) + step));
+          input.value = next;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+      });
+    });
+
     })(); // end boot()
   
