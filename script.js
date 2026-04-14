@@ -195,7 +195,7 @@
         if (stat === 'DEX' && window.SD.refreshInit) window.SD.refreshInit();
         if (stat === 'DEX' && window.SD.refreshAC) window.SD.refreshAC(true);
         if ((stat === 'STR' || stat === 'DEX') && window.SD.refreshAttackBonuses) window.SD.refreshAttackBonuses();
-        if (stat === 'STR' && window.SD.updateEncumbrance) window.SD.updateEncumbrance();
+        if ((stat === 'STR' || stat === 'CON') && window.SD.updateEncumbrance) window.SD.updateEncumbrance();
         // Debounced save — avoids expensive JSON.stringify on every keystroke
         clearTimeout(_abilitySaveTimer);
         _abilitySaveTimer = setTimeout(coreAutoSave, 300);
@@ -817,6 +817,14 @@
       }
 
       // ── Encumbrance bar ──────────────────────────────
+      function getHaulerBonus() {
+        const cls = (document.getElementById('char-class').value || '').toLowerCase();
+        if (cls !== 'fighter') return 0;
+        const con = (window.SD.character.abilities || {}).CON ?? 10;
+        const mod = Math.floor((con - 10) / 2);
+        return Math.max(0, mod);
+      }
+
       function updateEncumbrance() {
         // Item slots from inventory rows
         const rows = document.querySelectorAll('#inv-list .inv-row');
@@ -839,8 +847,10 @@
         const totalCoins = gp + sp;
         const coinSlots = Math.max(0, Math.ceil((totalCoins - 100) / 100));
 
-        // Bonus slots (Hauler talent / DM ruling)
-        const bonusSlots = parseFloat(document.getElementById('enc-bonus').value) || 0;
+        // Bonus slots: Hauler (auto for Fighters) + manual override
+        const haulerBonus = getHaulerBonus();
+        const manualBonus = parseFloat(document.getElementById('enc-bonus').value) || 0;
+        const bonusSlots = haulerBonus + manualBonus;
 
         const used = armorSlots + coinSlots + itemSlots;
         const max = getStrMax() + bonusSlots;
@@ -1321,6 +1331,7 @@
         document.getElementById('char-class').addEventListener('change', (e) => {
           renderFeatures(e.target.value);
           updateDeityVisibility(e.target.value);
+          if (window.SD.updateEncumbrance) window.SD.updateEncumbrance();
         });
         document.getElementById('char-level').addEventListener('input', (e) => {
           renderTalents(parseInt(e.target.value, 10) || 1);
