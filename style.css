@@ -103,6 +103,13 @@ html, body { height: 100%; }
   font-style: italic;
   margin-bottom: 20px;
 }
+.guide-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-style: normal;
+  font-size: 0.78rem;
+}
+.guide-link:hover { text-decoration: underline; }
 
 .guide-steps {
   padding: 0;
