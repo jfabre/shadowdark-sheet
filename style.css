@@ -1216,6 +1216,40 @@ input:focus { border-color: var(--accent); }
 
 .talent-clear:hover { color: #c05050; }
 
+/* Talent autocomplete */
+.talent-autocomplete {
+  position: fixed;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-top: 2px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+}
+
+.talent-autocomplete-item {
+  padding: 6px 8px;
+  cursor: pointer;
+  font-family: var(--font-hdr);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.talent-autocomplete-item:hover,
+.talent-autocomplete-item.active {
+  background: var(--border);
+  color: var(--accent);
+}
+
+.talent-ac-roll {
+  margin-right: 6px;
+  color: var(--muted);
+  font-family: var(--font-num);
+  font-size: 0.8em;
+}
+
 /* Feature items */
 .feature-item {
   border-left: 2px solid var(--border);

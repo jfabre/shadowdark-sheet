@@ -1113,6 +1113,37 @@
     (function () {
       const TALENT_LEVELS = [1, 3, 5, 7, 9];
 
+      const CLASS_TALENTS = {
+        fighter: [
+          { roll: '2',     text: 'Gain Weapon Mastery with one additional weapon type' },
+          { roll: '3–6',   text: '+1 to melee and ranged attacks' },
+          { roll: '7–9',   text: '+2 to Strength, Dexterity, or Constitution stat' },
+          { roll: '10–11', text: '+1 AC from a chosen armor type' },
+          { roll: '12',    text: 'Choose a talent or +2 points to distribute to stats' },
+        ],
+        priest: [
+          { roll: '2',     text: 'Gain advantage on casting one spell you know' },
+          { roll: '3–6',   text: '+1 to melee or ranged attacks' },
+          { roll: '7–9',   text: '+1 to priest spellcasting checks' },
+          { roll: '10–11', text: '+2 to Strength or Wisdom stat' },
+          { roll: '12',    text: 'Choose a talent or +2 points to distribute to stats' },
+        ],
+        thief: [
+          { roll: '2',     text: 'Gain advantage on initiative rolls' },
+          { roll: '3–5',   text: 'Backstab deals +1 dice of damage' },
+          { roll: '6–9',   text: '+2 to Strength, Dexterity, or Charisma stat' },
+          { roll: '10–11', text: '+1 to melee and ranged attacks' },
+          { roll: '12',    text: 'Choose a talent or +2 points to distribute to stats' },
+        ],
+        wizard: [
+          { roll: '2',     text: 'Make one random magic item' },
+          { roll: '3–7',   text: '+2 to Intelligence stat or +1 to wizard spellcasting checks' },
+          { roll: '8–9',   text: 'Gain advantage on casting one spell you know' },
+          { roll: '10–11', text: 'Learn one additional wizard spell of any tier you know' },
+          { roll: '12',    text: 'Choose a talent or +2 points to distribute to stats' },
+        ],
+      };
+
       const CLASS_FEATURES = {
         fighter: [
           { name: 'Hauler', desc: 'Add your Constitution modifier, if positive, to your gear slots.' },
@@ -1241,6 +1272,146 @@
         });
       }
       window.SD.renderTalents = renderTalents;
+
+      // ── talent autocomplete ─────────────────────────────
+      function initTalentAutocomplete() {
+        let activeDropdown = null;
+        let activeIdx = -1;
+        let matches = [];
+
+        function createDropdown() {
+          const dd = document.createElement('div');
+          dd.className = 'talent-autocomplete';
+          dd.setAttribute('role', 'listbox');
+          return dd;
+        }
+
+        function getTalents() {
+          const cls = (document.getElementById('char-class').value || '').toLowerCase();
+          return CLASS_TALENTS[cls] || [];
+        }
+
+        function renderMatches(inputEl, dd, query) {
+          const talents = getTalents();
+          matches = talents.filter(t =>
+            !query || t.text.toLowerCase().includes(query.toLowerCase())
+          );
+          dd.innerHTML = '';
+          activeIdx = -1;
+          if (!matches.length) {
+            dd.style.display = 'none';
+            return;
+          }
+          matches.forEach((t, i) => {
+            const opt = document.createElement('div');
+            opt.className = 'talent-autocomplete-item';
+            opt.setAttribute('role', 'option');
+            opt.dataset.idx = i;
+            const rollSpan = document.createElement('span');
+            rollSpan.className = 'talent-ac-roll';
+            rollSpan.textContent = t.roll;
+            const textSpan = document.createElement('span');
+            textSpan.textContent = t.text;
+            opt.appendChild(rollSpan);
+            opt.appendChild(textSpan);
+            opt.addEventListener('mousedown', (e) => {
+              e.preventDefault();
+              selectItem(inputEl, t.text);
+            });
+            dd.appendChild(opt);
+          });
+          dd.style.display = 'block';
+        }
+
+        function selectItem(inputEl, text) {
+          hideDropdown();
+          inputEl.value = text;
+          inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        function hideDropdown() {
+          if (activeDropdown) {
+            activeDropdown.style.display = 'none';
+            activeDropdown.remove();
+            activeDropdown = null;
+          }
+          activeIdx = -1;
+          matches = [];
+        }
+
+        function highlightActive(dd) {
+          const items = dd.querySelectorAll('.talent-autocomplete-item');
+          items.forEach((el, i) => {
+            el.classList.toggle('active', i === activeIdx);
+          });
+        }
+
+        const talentsList = document.getElementById('talents-list');
+
+        talentsList.addEventListener('focusin', (e) => {
+          if (e.target.classList.contains('talent-input')) {
+            if (activeDropdown) hideDropdown();
+            activeDropdown = createDropdown();
+            const rect = e.target.getBoundingClientRect();
+            activeDropdown.style.position = 'fixed';
+            activeDropdown.style.top = rect.bottom + 'px';
+            activeDropdown.style.left = rect.left + 'px';
+            activeDropdown.style.width = rect.width + 'px';
+            document.body.appendChild(activeDropdown);
+            renderMatches(e.target, activeDropdown, e.target.value.trim());
+          }
+        });
+
+        talentsList.addEventListener('input', (e) => {
+          if (e.target.classList.contains('talent-input') && activeDropdown) {
+            const rect = e.target.getBoundingClientRect();
+            activeDropdown.style.top = rect.bottom + 'px';
+            activeDropdown.style.left = rect.left + 'px';
+            activeDropdown.style.width = rect.width + 'px';
+            renderMatches(e.target, activeDropdown, e.target.value.trim());
+          }
+        });
+
+        talentsList.addEventListener('keydown', (e) => {
+          if (!activeDropdown || activeDropdown.style.display === 'none') return;
+          if (!e.target.classList.contains('talent-input')) return;
+
+          const items = activeDropdown.querySelectorAll('.talent-autocomplete-item');
+          if (!items.length) return;
+
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIdx = (activeIdx + 1) % items.length;
+            highlightActive(activeDropdown);
+            items[activeIdx]?.scrollIntoView({ block: 'nearest' });
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIdx = activeIdx <= 0 ? items.length - 1 : activeIdx - 1;
+            highlightActive(activeDropdown);
+            items[activeIdx]?.scrollIntoView({ block: 'nearest' });
+          } else if (e.key === 'Enter') {
+            if (activeIdx >= 0 && matches[activeIdx]) {
+              e.preventDefault();
+              selectItem(e.target, matches[activeIdx].text);
+            }
+          } else if (e.key === 'Escape' || e.key === 'Tab') {
+            hideDropdown();
+          }
+        });
+
+        talentsList.addEventListener('focusout', () => {
+          setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
+        });
+
+        document.addEventListener('click', (e) => {
+          if (activeDropdown && !activeDropdown.contains(e.target) &&
+              !e.target.classList.contains('talent-input')) {
+            hideDropdown();
+          }
+        });
+      }
+
+      initTalentAutocomplete();
 
       // ── class features ─────────────────────────────────
       function renderFeatures(className) {
