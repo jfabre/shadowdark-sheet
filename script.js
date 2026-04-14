@@ -190,6 +190,7 @@
         coreAutoSave();
         if (stat === 'DEX' && window.SD.refreshInit) window.SD.refreshInit();
         if (stat === 'DEX' && window.SD.refreshAC) window.SD.refreshAC();
+        if ((stat === 'STR' || stat === 'DEX') && window.SD.refreshAttackBonuses) window.SD.refreshAttackBonuses();
       });
       // Tap cell to focus score input
       cell.addEventListener('click', e => {
@@ -1400,6 +1401,15 @@
       }
       window.SD.refreshAC = refreshAC;
 
+      function refreshAttackBonuses() {
+        document.querySelectorAll('.atk-row').forEach(row => {
+          const statSel = row.querySelector('.atk-stat');
+          const bonusSpn = row.querySelector('.atk-bonus');
+          if (statSel && bonusSpn) bonusSpn.textContent = fmt(getStatMod(statSel.value));
+        });
+      }
+      window.SD.refreshAttackBonuses = refreshAttackBonuses;
+
       // ── Weapon Data (Shadowdark Player Quickstart p.35) ─
       const WEAPONS = [
         { name: 'Bastard sword', damage: '1d8',  stat: 'STR', info: 'M · C · V, 2 slots' },
@@ -1479,11 +1489,10 @@
         atk.name = weapon.name;
         atk.stat = weapon.stat;
         atk.damage = weapon.damage;
-        atk.bonus = String(getStatMod(weapon.stat));
 
         row.querySelector('[data-f="name"]').value = weapon.name;
         row.querySelector('.atk-stat').value = weapon.stat;
-        row.querySelector('[data-f="bonus"]').value = atk.bonus;
+        row.querySelector('.atk-bonus').textContent = fmt(getStatMod(weapon.stat));
         row.querySelector('[data-f="damage"]').value = weapon.damage;
         persist();
       }
@@ -1565,14 +1574,14 @@
           row.className = 'atk-row';
           row._atkIdx = idx;
           const stat = atk.stat || 'STR';
-          const bonusVal = atk.bonus != null && atk.bonus !== '' ? atk.bonus : String(getStatMod(stat));
+          const bonusVal = fmt(getStatMod(stat));
           row.innerHTML =
             `<input class="atk-f" placeholder="Weapon"  value="${esc(atk.name)}"   data-f="name"   />` +
             `<select class="atk-stat" title="Attack stat">` +
               `<option value="STR"${stat === 'STR' ? ' selected' : ''}>STR</option>` +
               `<option value="DEX"${stat === 'DEX' ? ' selected' : ''}>DEX</option>` +
             `</select>` +
-            `<input class="atk-f" placeholder="0"   value="${esc(bonusVal)}"  data-f="bonus"  inputmode="numeric" />` +
+            `<span class="atk-bonus">${bonusVal}</span>` +
             `<input class="atk-f" placeholder="1d6" value="${esc(atk.damage)}" data-f="damage" />` +
             `<div class="atk-row-btns">` +
               `<button class="btn-roll"  title="Roll attack &amp; damage">🎲</button>` +
@@ -1585,11 +1594,10 @@
           });
 
           const statSel  = row.querySelector('.atk-stat');
-          const bonusInp = row.querySelector('[data-f="bonus"]');
+          const bonusSpn = row.querySelector('.atk-bonus');
           statSel.addEventListener('change', () => {
-            atk.stat  = statSel.value;
-            atk.bonus = String(getStatMod(statSel.value));
-            bonusInp.value = atk.bonus;
+            atk.stat = statSel.value;
+            bonusSpn.textContent = fmt(getStatMod(statSel.value));
             persist();
           });
 
@@ -1616,8 +1624,8 @@
       }
 
       function rollAttack(atk, row) {
-        const rawBonus = String(atk.bonus ?? '').replace(/\s/g, '');
-        const bonusStr = /^[+-]/.test(rawBonus) ? rawBonus : (rawBonus ? `+${rawBonus}` : '+0');
+        const bonusN = getStatMod(atk.stat || 'STR');
+        const bonusStr = bonusN >= 0 ? `+${bonusN}` : `${bonusN}`;
         const dmg  = atk.damage || '1d4';
         const name = atk.name || 'Attack';
 
@@ -1715,7 +1723,7 @@
 
         document.getElementById('cbt-add-attack').addEventListener('click', () => {
           const stat = 'STR';
-          getCombat().attacks.push({ id: uid(), name: '', stat, bonus: String(getStatMod(stat)), damage: '' });
+          getCombat().attacks.push({ id: uid(), name: '', stat, damage: '' });
           persist();
           renderAttacks();
         });

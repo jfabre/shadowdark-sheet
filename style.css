@@ -1375,7 +1375,7 @@ input:focus { border-color: var(--accent); }
   padding: 4px 2px;
 }
 
-.atk-row input, .atk-stat {
+.atk-row input, .atk-stat, .atk-bonus {
   background: transparent;
   border: none;
   border-bottom: 1px solid transparent;
@@ -1389,6 +1389,11 @@ input:focus { border-color: var(--accent); }
   appearance: none;
 }
 .atk-row input:focus, .atk-stat:focus { outline: none; border-bottom-color: var(--accent); }
+
+.atk-bonus {
+  text-align: center;
+  color: var(--muted);
+}
 
 .atk-stat { cursor: pointer; }
 
