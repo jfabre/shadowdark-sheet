@@ -355,17 +355,21 @@
 
       let filePickerOpen = false;
 
-      frame.addEventListener('click', (e) => {
-        if (e.target === clearBtn || filePickerOpen) return;
+      function openFilePicker() {
+        if (filePickerOpen) return;
         filePickerOpen = true;
         fileInput.click();
+      }
+
+      frame.addEventListener('click', (e) => {
+        if (e.target === clearBtn) return;
+        openFilePicker();
       });
 
       frame.addEventListener('keydown', (e) => {
-        if ((e.key === 'Enter' || e.key === ' ') && !filePickerOpen) {
+        if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          filePickerOpen = true;
-          fileInput.click();
+          openFilePicker();
         }
       });
 
@@ -377,10 +381,7 @@
         fileInput.value = '';
       });
 
-      // Reset flag if user cancels the picker (no change event fires on cancel in some browsers)
-      fileInput.addEventListener('click', () => {
-        setTimeout(() => { filePickerOpen = false; }, 60000);
-      });
+      fileInput.addEventListener('cancel', () => { filePickerOpen = false; });
 
       clearBtn.addEventListener('click', (e) => {
         e.stopPropagation();
