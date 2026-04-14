@@ -3,7 +3,10 @@
   "name": "The Dark Spire - Character Sheet",
   "description": "The best Shadowdark RPG character sheet for TaleSpire",
   "entryPoint": "/index.html",
-  "version": "1.1.0",
+  "version": "0.5.0",
+  "environment": { 
+    "loadTargetBehavior": "popup"
+  },
   "about": {
     "authors": [
       "Jeremy Fabre"
