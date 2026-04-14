@@ -159,6 +159,18 @@
     // ── CORE tab ───────────────────────────────────────
     const ABILITY_STATS = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
 
+    const CORE_CLASS_ICONS = {
+      fighter: '⚔',
+      priest:  '✙',
+      thief:   '🗡',
+      wizard:  '🪄',
+    };
+
+    function updateCoreIcon(className) {
+      const el = document.getElementById('core-tab-icon');
+      if (el) el.textContent = CORE_CLASS_ICONS[(className || '').toLowerCase()] || '⚔';
+    }
+
     function abilityMod(score) {
       return Math.floor((Number(score) - 10) / 2);
     }
@@ -288,6 +300,7 @@
     }
 
     coreLoad();
+    updateCoreIcon(document.getElementById('char-class').value);
 
     // ── Portrait ─────────────────────────────────────────
     (function () {
@@ -1510,6 +1523,7 @@
         document.getElementById('char-class').addEventListener('change', (e) => {
           renderFeatures(e.target.value);
           updateDeityVisibility(e.target.value);
+          updateCoreIcon(e.target.value);
           if (window.SD.updateEncumbrance) window.SD.updateEncumbrance();
         });
         document.getElementById('char-level').addEventListener('input', (e) => {
