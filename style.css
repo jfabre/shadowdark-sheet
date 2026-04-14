@@ -36,6 +36,33 @@ html, body { height: 100%; }
   --border:   #2d1015;
 }
 
+[data-theme='talespire'] {
+  --bg:       #1a1714;
+  --text:     #f0e4cc;
+  --accent:   #e07830;
+  --muted:    #7a6650;
+  --surface:  #242018;
+  --border:   #3a3028;
+}
+
+[data-theme='frostgrave'] {
+  --bg:       #080c14;
+  --text:     #d0dde8;
+  --accent:   #6aaad4;
+  --muted:    #4a5a6b;
+  --surface:  #0e1420;
+  --border:   #1a2535;
+}
+
+[data-theme='arcane'] {
+  --bg:       #0c0812;
+  --text:     #dcd0e8;
+  --accent:   #9b59b6;
+  --muted:    #5a4a6b;
+  --surface:  #140e1e;
+  --border:   #251a35;
+}
+
 /* ── Theme selector ─────────────────────────────────── */
 #theme-btn {
   position: fixed;
@@ -238,7 +265,14 @@ body {
 }
 .field-group input:focus,
 .field-group select:focus { border-color: var(--accent); }
-.field-group select { appearance: none; cursor: pointer; }
+.field-group select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+}
 .field-group input[type="number"] { -moz-appearance: textfield; }
 .field-group input[type="number"]::-webkit-inner-spin-button,
 .field-group input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }

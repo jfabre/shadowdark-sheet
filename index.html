@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dungeon">
+<html lang="en" data-theme="talespire">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -40,7 +40,13 @@
           <div class="identity-grid">
             <div class="field-group">
               <label for="char-class">Class</label>
-              <input type="text" id="char-class" placeholder="Fighter" autocomplete="off" />
+              <select id="char-class">
+                <option value="">—</option>
+                <option value="Fighter">Fighter</option>
+                <option value="Priest">Priest</option>
+                <option value="Thief">Thief</option>
+                <option value="Wizard">Wizard</option>
+              </select>
             </div>
             <div class="field-group">
               <label for="char-level">Level</label>
@@ -291,7 +297,7 @@
   <button id="theme-btn" aria-label="Choose theme" aria-expanded="false" aria-controls="theme-popover">⚜</button>
   <div id="theme-popover" role="dialog" aria-label="Theme selection">
     <div class="theme-swatches">
-      <button class="theme-swatch" data-theme="dungeon" aria-pressed="true" title="Dungeon">
+      <button class="theme-swatch" data-theme="dungeon" aria-pressed="false" title="Dungeon">
         <span class="theme-swatch-circle" style="background:#1a1510; border:1px solid #2a2520;"></span>
         <span class="theme-swatch-label">Dungeon</span>
       </button>
@@ -302,6 +308,18 @@
       <button class="theme-swatch" data-theme="blood-moon" aria-pressed="false" title="Blood Moon">
         <span class="theme-swatch-circle" style="background:#3d0808; border:1px solid #5a1010;"></span>
         <span class="theme-swatch-label">Blood Moon</span>
+      </button>
+      <button class="theme-swatch" data-theme="talespire" aria-pressed="true" title="TaleSpire">
+        <span class="theme-swatch-circle" style="background:#1a1714; border:1px solid #e07830;"></span>
+        <span class="theme-swatch-label">TaleSpire</span>
+      </button>
+      <button class="theme-swatch" data-theme="frostgrave" aria-pressed="false" title="Frostgrave">
+        <span class="theme-swatch-circle" style="background:#080c14; border:1px solid #6aaad4;"></span>
+        <span class="theme-swatch-label">Frostgrave</span>
+      </button>
+      <button class="theme-swatch" data-theme="arcane" aria-pressed="false" title="Arcane">
+        <span class="theme-swatch-circle" style="background:#0c0812; border:1px solid #9b59b6;"></span>
+        <span class="theme-swatch-label">Arcane</span>
       </button>
     </div>
   </div>

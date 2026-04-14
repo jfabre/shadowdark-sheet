@@ -121,10 +121,12 @@
     }
 
     // Wire up auto-save for plain inputs
-    ['char-name','char-class','char-level','char-xp','char-xp-next',
+    ['char-name','char-level','char-xp','char-xp-next',
      'hp-current','hp-max','luck-tokens'].forEach(id => {
       document.getElementById(id).addEventListener('input', coreAutoSave);
     });
+    // char-class is a <select>, fires 'change'
+    document.getElementById('char-class').addEventListener('change', coreAutoSave);
 
     // Load saved values into CORE fields
     function coreLoad() {
@@ -476,22 +478,20 @@
         const charClass = (document.getElementById('char-class').value || '').toLowerCase().trim();
         const isPriest = charClass === 'priest';
         const isWizard = charClass === 'wizard';
+        const isCaster = isPriest || isWizard;
 
-        const allMatches = SPELL_DB.filter(spell =>
-          spell.name.toLowerCase().includes(query.toLowerCase())
+        let allMatches = SPELL_DB.filter(spell =>
+          !query || spell.name.toLowerCase().includes(query.toLowerCase())
         );
 
-        if (isPriest || isWizard) {
-          allMatches.sort((a, b) => {
-            const aMatch = a.classes.some(c => c.toLowerCase() === charClass);
-            const bMatch = b.classes.some(c => c.toLowerCase() === charClass);
-            if (aMatch && !bMatch) return -1;
-            if (!aMatch && bMatch) return 1;
-            return 0;
-          });
+        // Filter to class spells when a caster class is selected
+        if (isCaster) {
+          allMatches = allMatches.filter(spell =>
+            spell.classes.some(c => c.toLowerCase() === charClass)
+          );
         }
 
-        matches = allMatches.slice(0, 8);
+        matches = allMatches.slice(0, 20);
 
         dd.innerHTML = '';
         activeIdx = -1;
@@ -512,10 +512,6 @@
 
           const infoSpan = document.createElement('span');
           infoSpan.className = 'spell-ac-info';
-          const classMatch = spell.classes.some(c => c.toLowerCase() === charClass);
-          if (!classMatch && (isPriest || isWizard)) {
-            opt.classList.add('spell-ac-other');
-          }
           infoSpan.textContent = `T${spell.tier} · ${spell.classes.join('/')}`;
 
           opt.appendChild(nameSpan);
@@ -531,16 +527,17 @@
       }
 
       function selectSpell(inputEl, spell) {
+        const spellItem = currentSpellItem;
         hideDropdown();
         inputEl.value = spell.name;
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
 
-        if (currentSpellItem) {
-          const tierInp = currentSpellItem.querySelector('.sp-tier');
-          const rangeInp = currentSpellItem.querySelector('.sp-range');
-          const durInp = currentSpellItem.querySelector('.sp-dur');
-          const descTa = currentSpellItem.querySelector('.spell-desc-ta');
-          const badge = currentSpellItem.querySelector('.spell-tier-badge');
+        if (spellItem) {
+          const tierInp = spellItem.querySelector('.sp-tier');
+          const rangeInp = spellItem.querySelector('.sp-range');
+          const durInp = spellItem.querySelector('.sp-dur');
+          const descTa = spellItem.querySelector('.spell-desc-ta');
+          const badge = spellItem.querySelector('.spell-tier-badge');
 
           if (tierInp) {
             tierInp.value = spell.tier;
@@ -561,8 +558,7 @@
           }
 
           const spellData = getCombat().spells;
-          const itemEl = currentSpellItem;
-          const idx = Array.from(document.querySelectorAll('.spell-item')).indexOf(itemEl);
+          const idx = Array.from(document.querySelectorAll('.spell-item')).indexOf(spellItem);
           if (idx >= 0 && spellData[idx]) {
             spellData[idx].tier = spell.tier;
             spellData[idx].range = spell.range;
@@ -602,6 +598,8 @@
           activeDropdown.style.left = rect.left + 'px';
           activeDropdown.style.width = Math.max(rect.width, 200) + 'px';
           document.body.appendChild(activeDropdown);
+          // Show class-filtered spells immediately on focus
+          renderMatches(e.target, activeDropdown, e.target.value.trim());
         }
       });
 
@@ -611,12 +609,7 @@
           activeDropdown.style.top = rect.bottom + 'px';
           activeDropdown.style.left = rect.left + 'px';
           activeDropdown.style.width = Math.max(rect.width, 200) + 'px';
-          const val = e.target.value.trim();
-          if (val.length > 0) {
-            renderMatches(e.target, activeDropdown, val);
-          } else {
-            hideDropdown();
-          }
+          renderMatches(e.target, activeDropdown, e.target.value.trim());
         }
       });
 
@@ -1178,7 +1171,7 @@
         });
 
         // Re-render when Core class/level change
-        document.getElementById('char-class').addEventListener('input', (e) => {
+        document.getElementById('char-class').addEventListener('change', (e) => {
           renderFeatures(e.target.value);
           updateDeityVisibility(e.target.value);
         });
@@ -1514,7 +1507,7 @@
 
       // Restore saved theme on DOMContentLoaded (default: dungeon)
       document.addEventListener('DOMContentLoaded', function() {
-        const saved = localStorage.getItem(THEME_KEY) || 'dungeon';
+        const saved = localStorage.getItem(THEME_KEY) || 'talespire';
         applyTheme(saved);
       });
     })();
