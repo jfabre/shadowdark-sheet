@@ -1,3 +1,97 @@
+    // ── TaleSpire API readiness ──────────────────────────
+    // The manifest subscribes to symbiote.onStateChangeEvent.
+    // This global handler resolves a Promise when the API is initialized.
+    var _tsReadyResolve;
+    var _tsReadyPromise = new Promise(function(resolve) { _tsReadyResolve = resolve; });
+
+    function onTaleSpireStateChange(event) {
+      if (event.kind === 'hasInitialized') _tsReadyResolve();
+    }
+
+    // If TS was already injected+initialized before this script ran, resolve now.
+    // If not in TaleSpire at all, resolve on next frame so boot() doesn't block.
+    if (window.TS) _tsReadyResolve();
+    else requestAnimationFrame(function() { if (!window.TS) _tsReadyResolve(); });
+
+    // ── Storage Adapter ────────────────────────────────
+    // Abstracts browser localStorage vs TaleSpire campaign storage.
+    // In TaleSpire, all keys are packed into a single JSON blob
+    // stored via TS.localStorage.campaign.setBlob/getBlob.
+    const StorageAdapter = (function() {
+      const _cache = {};
+      let _isTaleSpire = false;
+      let _debounceTimer = null;
+      const DEBOUNCE_MS = 500;
+
+      function _flushToTaleSpire() {
+        if (!_isTaleSpire) return;
+        try {
+          TS.localStorage.campaign.setBlob(JSON.stringify(_cache));
+        } catch (e) {
+          console.warn('[StorageAdapter] TaleSpire write failed:', e);
+        }
+      }
+
+      function _scheduleFlush() {
+        if (!_isTaleSpire) return;
+        clearTimeout(_debounceTimer);
+        _debounceTimer = setTimeout(_flushToTaleSpire, DEBOUNCE_MS);
+      }
+
+      async function init() {
+        _isTaleSpire = !!(window.TS &&
+                          window.TS.localStorage &&
+                          window.TS.localStorage.campaign);
+
+        if (_isTaleSpire) {
+          try {
+            const raw = await TS.localStorage.campaign.getBlob();
+            if (raw) Object.assign(_cache, JSON.parse(raw));
+          } catch (e) {
+            // readFailed / notInCampaign — start with empty cache
+            console.warn('[StorageAdapter] TaleSpire read failed:', e);
+          }
+        }
+      }
+
+      function getItem(key) {
+        if (_isTaleSpire) {
+          return _cache[key] !== undefined ? _cache[key] : null;
+        }
+        return localStorage.getItem(key);
+      }
+
+      function setItem(key, value) {
+        if (_isTaleSpire) {
+          _cache[key] = value;
+          _scheduleFlush();
+        } else {
+          localStorage.setItem(key, value);
+        }
+      }
+
+      function removeItem(key) {
+        if (_isTaleSpire) {
+          delete _cache[key];
+          _scheduleFlush();
+        } else {
+          localStorage.removeItem(key);
+        }
+      }
+
+      function isTaleSpire() { return _isTaleSpire; }
+
+      return { init, getItem, setItem, removeItem, isTaleSpire };
+    })();
+
+    // ── Boot ───────────────────────────────────────────
+    // Wrapped in async IIFE so TaleSpire's async getBlob() resolves
+    // before any UI reads from storage. Browser mode resolves instantly.
+    (async function boot() {
+    // Wait for TaleSpire API to initialize (instant in browser mode)
+    await _tsReadyPromise;
+    await StorageAdapter.init();
+
     // ── Tab switching ──────────────────────────────────
     const tabBtns   = document.querySelectorAll('.tab-btn');
     const tabPanels = document.querySelectorAll('.tab-panel');
@@ -22,7 +116,7 @@
 
     function loadCharacter() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = StorageAdapter.getItem(STORAGE_KEY);
         return raw ? JSON.parse(raw) : {};
       } catch {
         return {};
@@ -31,7 +125,7 @@
 
     function saveCharacter(data) {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        StorageAdapter.setItem(STORAGE_KEY, JSON.stringify(data));
       } catch (e) {
         console.warn('Could not save character data:', e);
       }
@@ -174,7 +268,7 @@
       const fileInput = document.getElementById('portrait-file');
 
       function loadPortrait() {
-        const data = localStorage.getItem(PORTRAIT_KEY);
+        const data = StorageAdapter.getItem(PORTRAIT_KEY);
         if (data) {
           img.src = data;
           img.style.display = 'block';
@@ -187,14 +281,14 @@
 
       function savePortrait(dataUrl) {
         try {
-          localStorage.setItem(PORTRAIT_KEY, dataUrl);
+          StorageAdapter.setItem(PORTRAIT_KEY, dataUrl);
         } catch (e) {
           console.warn('Could not save portrait:', e);
         }
       }
 
       function clearPortrait() {
-        localStorage.removeItem(PORTRAIT_KEY);
+        StorageAdapter.removeItem(PORTRAIT_KEY);
         img.src = '';
         img.style.display = 'none';
         placeholder.style.display = 'flex';
@@ -1477,7 +1571,7 @@
         swatches.forEach(s => {
           s.setAttribute('aria-pressed', s.dataset.theme === theme ? 'true' : 'false');
         });
-        localStorage.setItem(THEME_KEY, theme);
+        StorageAdapter.setItem(THEME_KEY, theme);
         setTimeout(() => root.classList.remove('theme-switching'), 300);
       }
 
@@ -1505,10 +1599,10 @@
         });
       });
 
-      // Restore saved theme on DOMContentLoaded (default: dungeon)
-      document.addEventListener('DOMContentLoaded', function() {
-        const saved = localStorage.getItem(THEME_KEY) || 'talespire';
-        applyTheme(saved);
-      });
+      // Restore saved theme — already inside async boot(), storage is ready
+      const saved = StorageAdapter.getItem(THEME_KEY) || 'talespire';
+      applyTheme(saved);
     })();
+
+    })(); // end boot()
   

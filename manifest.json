@@ -3,10 +3,18 @@
   "name": "The Dark Spire",
   "description": "Shadowdark RPG character sheet for TaleSpire",
   "entryPoint": "/index.html",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "about": {
     "authors": [
       "Jeremy Fabre"
     ]
+  },
+  "api": {
+    "version": "0.1",
+    "subscriptions": {
+      "symbiote": {
+        "onStateChangeEvent": "onTaleSpireStateChange"
+      }
+    }
   }
 }
