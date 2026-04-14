@@ -27,7 +27,7 @@
       let _isTaleSpire = false;
       let _dirty = false;
       let _debounceTimer = null;
-      const DEBOUNCE_MS = 150;
+      const DEBOUNCE_MS = 500;
 
       async function _flushToTaleSpire() {
         if (!_isTaleSpire || !_dirty) return;
@@ -184,13 +184,20 @@
       const input = cell.querySelector('.ability-score');
       const modEl = cell.querySelector('.ability-mod');
 
+      let _abilitySaveTimer = null;
       input.addEventListener('input', () => {
+        // Visual updates — synchronous for instant feedback
         const mod = abilityMod(input.value);
         modEl.textContent = fmtMod(mod);
-        coreAutoSave();
+        // Update in-memory model immediately (cheap)
+        if (!window.SD.character.abilities) window.SD.character.abilities = {};
+        window.SD.character.abilities[stat] = Number(input.value) || 10;
         if (stat === 'DEX' && window.SD.refreshInit) window.SD.refreshInit();
-        if (stat === 'DEX' && window.SD.refreshAC) window.SD.refreshAC();
+        if (stat === 'DEX' && window.SD.refreshAC) window.SD.refreshAC(true);
         if ((stat === 'STR' || stat === 'DEX') && window.SD.refreshAttackBonuses) window.SD.refreshAttackBonuses();
+        // Debounced save — avoids expensive JSON.stringify on every keystroke
+        clearTimeout(_abilitySaveTimer);
+        _abilitySaveTimer = setTimeout(coreAutoSave, 300);
       });
       // Tap cell to focus score input
       cell.addEventListener('click', e => {
@@ -1408,7 +1415,7 @@
       }
       window.SD.refreshInit = refreshInit;
 
-      function refreshAC() {
+      function refreshAC(skipPersist) {
         const armorType = document.getElementById('gear-armor-type').value;
         const shield = document.getElementById('gear-shield').checked;
         const dexMod = getStatMod('DEX');
@@ -1417,7 +1424,7 @@
         const ac = (armorAC[armorType] || 10) + (usesDex ? dexMod : 0) + (shield ? 2 : 0);
         document.getElementById('cbt-ac').value = ac;
         getCombat().ac = ac;
-        persist();
+        if (!skipPersist) persist();
       }
       window.SD.refreshAC = refreshAC;
 
