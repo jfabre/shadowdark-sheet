@@ -919,6 +919,57 @@ body {
   font-size: 0.9em;
 }
 
+/* Spell autocomplete */
+.spell-autocomplete {
+  position: fixed;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-top: 2px;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+}
+
+.spell-autocomplete-item {
+  padding: 6px 8px;
+  cursor: pointer;
+  font-family: var(--font-hdr);
+  font-size: 0.85rem;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spell-autocomplete-item:hover,
+.spell-autocomplete-item.active {
+  background: var(--border);
+  color: var(--accent);
+}
+
+.spell-ac-name {
+  font-weight: 500;
+}
+
+.spell-ac-info {
+  font-size: 0.72em;
+  color: var(--muted);
+  font-family: var(--font-num);
+  letter-spacing: 0.02em;
+}
+
+.spell-autocomplete-item:hover .spell-ac-info,
+.spell-autocomplete-item.active .spell-ac-info {
+  color: var(--accent);
+  opacity: 0.8;
+}
+
+.spell-autocomplete-item.spell-ac-other {
+  opacity: 0.6;
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 

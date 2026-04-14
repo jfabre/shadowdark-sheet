@@ -422,6 +422,239 @@
 
     initInventoryAutocomplete();
 
+    const SPELL_DB = [
+      { name: 'Cure Wounds', tier: 1, classes: ['Priest'], duration: 'Instant', range: 'Close', desc: 'Touch restores ebbing life. Roll d6s equal to 1 + half level (rounded down). Target regains that many HP.' },
+      { name: 'Holy Weapon', tier: 1, classes: ['Priest'], duration: '5 rounds', range: 'Close', desc: 'Weapon becomes magical, +1 to attack and damage rolls.' },
+      { name: 'Light', tier: 1, classes: ['Priest', 'Wizard'], duration: '1 hour real time', range: 'Close', desc: 'Object glows with bright heatless light, illuminating near distance.' },
+      { name: 'Protection From Evil', tier: 1, classes: ['Priest', 'Wizard'], duration: 'Focus', range: 'Close', desc: 'Chaotic beings have disadv on attacks/spellcasting vs target. Can\'t possess/compel/beguile. On possessed target, entity makes CHA check vs spellcasting check.' },
+      { name: 'Shield of Faith', tier: 1, classes: ['Priest'], duration: '5 rounds', range: 'Self', desc: '+2 bonus to AC.' },
+      { name: 'Turn Undead', tier: 1, classes: ['Priest'], duration: 'Instant', range: 'Near', desc: 'Undead must make CHA check vs spellcasting check. Fail by 10+ and <= your level = destroyed. Otherwise flees 5 rounds.' },
+      { name: 'Augury', tier: 2, classes: ['Priest'], duration: 'Instant', range: 'Self', desc: 'Ask GM one question about course of action. GM says weal or woe.' },
+      { name: 'Bless', tier: 2, classes: ['Priest'], duration: 'Instant', range: 'Close', desc: 'One creature gains a luck token.' },
+      { name: 'Blind/Deafen', tier: 2, classes: ['Priest'], duration: 'Focus', range: 'Near', desc: 'Blind or deafen one creature. Disadvantage on tasks requiring lost sense.' },
+      { name: 'Cleansing Weapon', tier: 2, classes: ['Priest'], duration: '5 rounds', range: 'Close', desc: 'Weapon wreathed in purifying flames. +1d4 damage (1d6 vs undead).' },
+      { name: 'Smite', tier: 2, classes: ['Priest'], duration: 'Instant', range: 'Near', desc: 'Punishing flames on creature you can see. 1d6 damage.' },
+      { name: 'Zone of Truth', tier: 2, classes: ['Priest'], duration: 'Focus', range: 'Near', desc: 'Creature can\'t utter a deliberate lie while in range.' },
+      { name: 'Alarm', tier: 1, classes: ['Wizard'], duration: '1 day', range: 'Close', desc: 'Set magical alarm on object. Bell sounds in head if unauthorized creature touches it.' },
+      { name: 'Burning Hands', tier: 1, classes: ['Wizard'], duration: 'Instant', range: 'Close', desc: 'Circle of flame in close area. 1d6 damage. Flammable objects ignite.' },
+      { name: 'Charm Person', tier: 1, classes: ['Wizard'], duration: '1d8 days', range: 'Near', desc: 'Beguile one humanoid LV 2 or less. Regards you as friend.' },
+      { name: 'Detect Magic', tier: 1, classes: ['Wizard'], duration: 'Focus', range: 'Near', desc: 'Sense magic within near range. Focus 2 rounds for properties.' },
+      { name: 'Feather Fall', tier: 1, classes: ['Wizard'], duration: 'Instant', range: 'Self', desc: 'Cast when falling. Land safely.' },
+      { name: 'Floating Disk', tier: 1, classes: ['Wizard'], duration: '10 rounds', range: 'Near', desc: 'Carries up to 20 gear slots. Hovers at waist level, stays within near.' },
+      { name: 'Hold Portal', tier: 1, classes: ['Wizard'], duration: '10 rounds', range: 'Near', desc: 'Hold portal closed. STR check vs spellcasting to open. Knock ends it.' },
+      { name: 'Mage Armor', tier: 1, classes: ['Wizard'], duration: '10 rounds', range: 'Self', desc: 'AC becomes 14 (18 on crit spellcasting check).' },
+      { name: 'Magic Missile', tier: 1, classes: ['Wizard'], duration: 'Instant', range: 'Far', desc: 'Advantage on cast check. 1d4 damage to one target.' },
+      { name: 'Sleep', tier: 1, classes: ['Wizard'], duration: 'Instant', range: 'Near', desc: 'Near-sized cube. Living creatures LV 2 or less fall asleep.' },
+      { name: 'Acid Arrow', tier: 2, classes: ['Wizard'], duration: 'Focus', range: 'Far', desc: 'Corrosive bolt, 1d6 damage/round while focusing.' },
+      { name: 'Alter Self', tier: 2, classes: ['Wizard'], duration: '5 rounds', range: 'Self', desc: 'Change physical form, gain one anatomical feature.' },
+      { name: 'Detect Thoughts', tier: 2, classes: ['Priest', 'Wizard'], duration: 'Focus', range: 'Near', desc: 'Learn target\'s thoughts each round. Target WIS check vs spellcasting to notice.' },
+      { name: 'Fixed Object', tier: 2, classes: ['Wizard'], duration: '5 rounds', range: 'Close', desc: 'Object <= 5 lbs fixed in place. Supports up to 5000 lbs.' },
+      { name: 'Hold Person', tier: 2, classes: ['Wizard'], duration: 'Focus', range: 'Near', desc: 'Paralyze one humanoid LV 4 or less.' },
+      { name: 'Invisibility', tier: 2, classes: ['Wizard'], duration: '10 rounds', range: 'Close', desc: 'Target invisible. Ends if target attacks or casts.' },
+      { name: 'Knock', tier: 2, classes: ['Wizard'], duration: 'Instant', range: 'Near', desc: 'Door/window/gate/chest opens. Defeats mundane locks. Loud knock audible.' },
+      { name: 'Levitate', tier: 2, classes: ['Wizard'], duration: 'Focus', range: 'Self', desc: 'Float near distance vertically per round. Push objects to move horizontally.' },
+      { name: 'Mirror Image', tier: 2, classes: ['Wizard'], duration: '5 rounds', range: 'Self', desc: 'Illusory duplicates = half level (min 1). Attacks miss, destroy one duplicate.' },
+      { name: 'Misty Step', tier: 2, classes: ['Wizard'], duration: 'Instant', range: 'Self', desc: 'Teleport near distance to area you can see.' },
+      { name: 'Silence', tier: 2, classes: ['Wizard'], duration: 'Focus', range: 'Far', desc: 'Mute sound in near cube. Creatures deafened, sounds can\'t be heard.' },
+      { name: 'Web', tier: 2, classes: ['Wizard'], duration: '5 rounds', range: 'Far', desc: 'Near-sized cube of sticky web. STR check vs spellcasting to free.' },
+    ];
+
+    function initSpellAutocomplete() {
+      let activeDropdown = null;
+      let activeIdx = -1;
+      let matches = [];
+      let currentSpellItem = null;
+
+      function createDropdown() {
+        const dd = document.createElement('div');
+        dd.className = 'spell-autocomplete';
+        dd.setAttribute('role', 'listbox');
+        return dd;
+      }
+
+      function renderMatches(inputEl, dd, query) {
+        const charClass = (document.getElementById('char-class').value || '').toLowerCase().trim();
+        const isPriest = charClass === 'priest';
+        const isWizard = charClass === 'wizard';
+
+        const allMatches = SPELL_DB.filter(spell =>
+          spell.name.toLowerCase().includes(query.toLowerCase())
+        );
+
+        if (isPriest || isWizard) {
+          allMatches.sort((a, b) => {
+            const aMatch = a.classes.some(c => c.toLowerCase() === charClass);
+            const bMatch = b.classes.some(c => c.toLowerCase() === charClass);
+            if (aMatch && !bMatch) return -1;
+            if (!aMatch && bMatch) return 1;
+            return 0;
+          });
+        }
+
+        matches = allMatches.slice(0, 8);
+
+        dd.innerHTML = '';
+        activeIdx = -1;
+        if (!matches.length) {
+          dd.style.display = 'none';
+          return;
+        }
+
+        matches.forEach((spell, i) => {
+          const opt = document.createElement('div');
+          opt.className = 'spell-autocomplete-item';
+          opt.setAttribute('role', 'option');
+          opt.dataset.idx = i;
+
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'spell-ac-name';
+          nameSpan.textContent = spell.name;
+
+          const infoSpan = document.createElement('span');
+          infoSpan.className = 'spell-ac-info';
+          const classMatch = spell.classes.some(c => c.toLowerCase() === charClass);
+          if (!classMatch && (isPriest || isWizard)) {
+            opt.classList.add('spell-ac-other');
+          }
+          infoSpan.textContent = `T${spell.tier} · ${spell.classes.join('/')}`;
+
+          opt.appendChild(nameSpan);
+          opt.appendChild(infoSpan);
+
+          opt.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            selectSpell(inputEl, spell);
+          });
+          dd.appendChild(opt);
+        });
+        dd.style.display = 'block';
+      }
+
+      function selectSpell(inputEl, spell) {
+        hideDropdown();
+        inputEl.value = spell.name;
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+
+        if (currentSpellItem) {
+          const tierInp = currentSpellItem.querySelector('.sp-tier');
+          const rangeInp = currentSpellItem.querySelector('.sp-range');
+          const durInp = currentSpellItem.querySelector('.sp-dur');
+          const descTa = currentSpellItem.querySelector('.spell-desc-ta');
+          const badge = currentSpellItem.querySelector('.spell-tier-badge');
+
+          if (tierInp) {
+            tierInp.value = spell.tier;
+            tierInp.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          if (badge) badge.textContent = `T${spell.tier}`;
+          if (rangeInp) {
+            rangeInp.value = spell.range;
+            rangeInp.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          if (durInp) {
+            durInp.value = spell.duration;
+            durInp.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          if (descTa) {
+            descTa.value = spell.desc;
+            descTa.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+
+          const spellData = getCombat().spells;
+          const itemEl = currentSpellItem;
+          const idx = Array.from(document.querySelectorAll('.spell-item')).indexOf(itemEl);
+          if (idx >= 0 && spellData[idx]) {
+            spellData[idx].tier = spell.tier;
+            spellData[idx].range = spell.range;
+            spellData[idx].duration = spell.duration;
+            spellData[idx].desc = spell.desc;
+            window.SD.saveCharacter(window.SD.character);
+          }
+        }
+      }
+
+      function hideDropdown() {
+        if (activeDropdown) {
+          activeDropdown.style.display = 'none';
+          activeDropdown.remove();
+          activeDropdown = null;
+        }
+        activeIdx = -1;
+        matches = [];
+        currentSpellItem = null;
+      }
+
+      function highlightActive(dd) {
+        const items = dd.querySelectorAll('.spell-autocomplete-item');
+        items.forEach((el, i) => {
+          el.classList.toggle('active', i === activeIdx);
+        });
+      }
+
+      document.getElementById('cbt-spell-list').addEventListener('focusin', (e) => {
+        if (e.target.classList.contains('spell-name-inp')) {
+          if (activeDropdown) hideDropdown();
+          currentSpellItem = e.target.closest('.spell-item');
+          activeDropdown = createDropdown();
+          const rect = e.target.getBoundingClientRect();
+          activeDropdown.style.position = 'fixed';
+          activeDropdown.style.top = rect.bottom + 'px';
+          activeDropdown.style.left = rect.left + 'px';
+          activeDropdown.style.width = Math.max(rect.width, 200) + 'px';
+          document.body.appendChild(activeDropdown);
+        }
+      });
+
+      document.getElementById('cbt-spell-list').addEventListener('input', (e) => {
+        if (e.target.classList.contains('spell-name-inp') && activeDropdown) {
+          const rect = e.target.getBoundingClientRect();
+          activeDropdown.style.top = rect.bottom + 'px';
+          activeDropdown.style.left = rect.left + 'px';
+          activeDropdown.style.width = Math.max(rect.width, 200) + 'px';
+          const val = e.target.value.trim();
+          if (val.length > 0) {
+            renderMatches(e.target, activeDropdown, val);
+          } else {
+            hideDropdown();
+          }
+        }
+      });
+
+      document.getElementById('cbt-spell-list').addEventListener('keydown', (e) => {
+        if (!activeDropdown || activeDropdown.style.display === 'none') return;
+        if (!e.target.classList.contains('spell-name-inp')) return;
+
+        const items = activeDropdown.querySelectorAll('.spell-autocomplete-item');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          activeIdx = (activeIdx + 1) % items.length;
+          highlightActive(activeDropdown);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          activeIdx = activeIdx <= 0 ? items.length - 1 : activeIdx - 1;
+          highlightActive(activeDropdown);
+        } else if (e.key === 'Enter') {
+          if (activeIdx >= 0 && matches[activeIdx]) {
+            e.preventDefault();
+            selectSpell(e.target, matches[activeIdx]);
+          }
+        } else if (e.key === 'Escape') {
+          hideDropdown();
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (activeDropdown && !activeDropdown.contains(e.target) &&
+            !e.target.classList.contains('spell-name-inp')) {
+          hideDropdown();
+        }
+      });
+    }
+
+    initSpellAutocomplete();
+
     (function () {
       const GEAR_DEFAULTS = {
         gp: 0, sp: 0,
