@@ -1075,23 +1075,24 @@
 
       const CLASS_FEATURES = {
         fighter: [
-          { name: 'Weapon Mastery', desc: 'Choose a weapon. Gain +1 to attack and damage with that weapon. At every odd level, choose another weapon to master.' },
-          { name: 'Combat Superiority', desc: 'When you roll a natural 19–20 on an attack, you may attempt a combat maneuver (disarm, knockdown, etc.) in addition to dealing damage.' },
+          { name: 'Hauler', desc: 'Add your Constitution modifier, if positive, to your gear slots.' },
+          { name: 'Weapon Mastery', desc: 'Choose one type of weapon. You gain +1 to attack and damage with that weapon type. Add half your level to these rolls (round down).' },
+          { name: 'Grit', desc: 'Choose Strength or Dexterity. You have advantage on checks of that type to overcome an opposing force, such as kicking open a stuck door (STR) or slipping free of rusty chains (DEX).' },
         ],
         thief: [
-          { name: 'Backstab', desc: 'When you attack a creature who is unaware of you or who is flanked by an ally, deal +1d6 damage per every 3 character levels.' },
-          { name: 'Thievery', desc: 'You know how to pick locks, disarm traps, move silently, and perform other roguish skills. Roll Dex + Level for thievery checks.' },
-          { name: 'Sneak Attack', desc: 'Once per round, when you have advantage on an attack roll, you may add +1d6 damage to the hit.' },
+          { name: 'Backstab', desc: 'If you hit a creature who is unaware of your attack, you deal an extra weapon die of damage. Add additional weapon dice equal to half your level (round down).' },
+          { name: 'Thievery', desc: 'You are adept at thieving skills and have the necessary tools (no gear slots). You have advantage on checks for: climbing, sneaking and hiding, applying disguises, finding and disabling traps, and delicate tasks such as picking pockets and opening locks.' },
         ],
         wizard: [
-          { name: 'Spellcasting', desc: 'You cast arcane spells. Roll Int + Level vs. DC 12 to cast. On failure, the spell is lost but not spent.' },
-          { name: 'Learning Spells', desc: 'When you gain a level or find a scroll/spellbook, you may attempt to learn new spells (Int check, DC 12).' },
-          { name: 'Spell Loss on 1', desc: 'When you roll a natural 1 on a spellcasting check, you lose the spell and suffer 1d4 damage.' },
+          { name: 'Languages', desc: 'You know two additional common languages and two rare languages.' },
+          { name: 'Learning Spells', desc: 'You can permanently learn a wizard spell from a spell scroll by studying it for a day and succeeding on a DC 15 Intelligence check. The scroll is expended whether you succeed or fail. Spells learned this way don\'t count toward your known spells.' },
+          { name: 'Spellcasting', desc: 'You can cast wizard spells you know. You know three tier 1 spells at level 1. To cast, roll 1d20 + INT mod vs. DC 10 + spell tier. On failure, you can\'t cast that spell again until you rest. Natural 1: roll on the Wizard Mishap table.' },
         ],
         priest: [
-          { name: 'Deity', desc: "You serve a god. Your powers flow from your faith. Betraying your deity's tenets may cost you spellcasting until atonement." },
-          { name: 'Turn Undead', desc: 'Roll Cha + Level (DC 12 per HD of the undead). On success, the undead flee or are destroyed for 1 round per level.' },
-          { name: 'Spellcasting', desc: 'You cast divine spells. Roll Wis + Level vs. DC 12 to cast. On failure, the spell is not lost.' },
+          { name: 'Languages', desc: 'You know either Celestial, Diabolic, or Primordial.' },
+          { name: 'Turn Undead', desc: 'You know the turn undead spell. It doesn\'t count toward your number of known spells.' },
+          { name: 'Deity', desc: 'Choose a god to serve who matches your alignment. You have a holy symbol for your god (takes up no gear slots).' },
+          { name: 'Spellcasting', desc: 'You can cast priest spells you know. You know two tier 1 spells at level 1. To cast, roll 1d20 + WIS mod vs. DC 10 + spell tier. On failure, you can\'t cast that spell again until you rest. Natural 1: your deity revokes the spell until penance and a rest.' },
         ],
       };
 
