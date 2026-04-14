@@ -353,23 +353,33 @@
         placeholder.style.display = 'none';
       }
 
+      let filePickerOpen = false;
+
       frame.addEventListener('click', (e) => {
-        if (e.target === clearBtn) return;
+        if (e.target === clearBtn || filePickerOpen) return;
+        filePickerOpen = true;
         fileInput.click();
       });
 
       frame.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if ((e.key === 'Enter' || e.key === ' ') && !filePickerOpen) {
           e.preventDefault();
+          filePickerOpen = true;
           fileInput.click();
         }
       });
 
       fileInput.addEventListener('change', (e) => {
+        filePickerOpen = false;
         if (e.target.files && e.target.files[0]) {
           handleFile(e.target.files[0]);
         }
         fileInput.value = '';
+      });
+
+      // Reset flag if user cancels the picker (no change event fires on cancel in some browsers)
+      fileInput.addEventListener('click', () => {
+        setTimeout(() => { filePickerOpen = false; }, 60000);
       });
 
       clearBtn.addEventListener('click', (e) => {
