@@ -1233,8 +1233,16 @@
           list.appendChild(row);
         }
         
+        let shownNextLocked = false;
         TALENT_LEVELS.forEach((talentLvl, i) => {
           const earned = level >= talentLvl;
+
+          // Show earned + the first locked one only; skip the rest
+          if (!earned) {
+            if (shownNextLocked) return;
+            shownNextLocked = true;
+          }
+
           const row = document.createElement('div');
           row.className = 'talent-row';
 
