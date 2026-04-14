@@ -1638,10 +1638,9 @@
         }
 
         const d20      = Math.ceil(Math.random() * 20);
-        const bonusN   = parseInt(bonusStr) || 0;
         const total    = d20 + bonusN;
         const dmgTotal = rollDice(dmg);
-        const bonusFmt = bonusN >= 0 ? `+${bonusN}` : `${bonusN}`;
+        const bonusFmt = bonusStr;
 
         const resultEl = row.querySelector('.atk-result');
         resultEl.textContent = `${name}: hit ${total} (d20=${d20}${bonusFmt}) — dmg ${dmgTotal}`;
