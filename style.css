@@ -36,24 +36,6 @@ html, body { height: 100%; }
   --border:   #2d1015;
 }
 
-/* ── Theme variants ─────────────────────────────────── */
-[data-theme="parchment"] {
-  --bg:      #f7f2e8;
-  --text:    #44392a;
-  --accent:  #8a5025;
-  --muted:   #7d6b58;
-  --surface: #eee6d2;
-  --border:  #d5c9ad;
-}
-[data-theme="blood-moon"] {
-  --bg:      #0d0508;
-  --text:    #e8c8c0;
-  --accent:  #b83030;
-  --muted:   #6b4040;
-  --surface: #18080a;
-  --border:  #3a1010;
-}
-
 /* ── Theme selector ─────────────────────────────────── */
 #theme-btn {
   position: fixed;
@@ -278,6 +260,8 @@ body {
   min-width: 70px;
 }
 
+.portrait-info-col .field-label { min-width: auto; }
+
 /* Alignment selector */
 .alignment-selector {
   display: flex;
@@ -310,8 +294,8 @@ body {
 }
 
 .portrait-frame {
-  width: 160px;
-  height: 160px;
+  width: min(38vw, 140px);
+  aspect-ratio: 1;
   border: 2px dashed var(--border);
   border-radius: 8px;
   position: relative;
@@ -519,7 +503,7 @@ body {
 .hp-sep { color: var(--muted); font-family: var(--font-num); }
 .hp-row .field-label { min-width: auto; }
 
-/* Luck tokens row */
+
 /* ── Tab bar (bottom) ───────────────────────────────── */
 #tab-bar {
   position: fixed;
