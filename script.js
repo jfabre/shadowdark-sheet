@@ -421,8 +421,8 @@
 
       function renderMatches(inputEl, dd, query) {
         matches = INVENTORY_ITEMS.filter(item =>
-          item.toLowerCase().includes(query.toLowerCase())
-        ).slice(0, 8);
+          !query || item.toLowerCase().includes(query.toLowerCase())
+        ).slice(0, 12);
         dd.innerHTML = '';
         activeIdx = -1;
         if (!matches.length) {
@@ -488,6 +488,7 @@
           activeDropdown.style.left = rect.left + 'px';
           activeDropdown.style.width = rect.width + 'px';
           document.body.appendChild(activeDropdown);
+          renderMatches(e.target, activeDropdown, e.target.value.trim());
         }
       });
 
@@ -497,12 +498,7 @@
           activeDropdown.style.top = rect.bottom + 'px';
           activeDropdown.style.left = rect.left + 'px';
           activeDropdown.style.width = rect.width + 'px';
-          const val = e.target.value.trim();
-          if (val.length > 0) {
-            renderMatches(e.target, activeDropdown, val);
-          } else {
-            hideDropdown();
-          }
+          renderMatches(e.target, activeDropdown, e.target.value.trim());
         }
       });
 
@@ -517,18 +513,24 @@
           e.preventDefault();
           activeIdx = (activeIdx + 1) % items.length;
           highlightActive(activeDropdown);
+          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'ArrowUp') {
           e.preventDefault();
           activeIdx = activeIdx <= 0 ? items.length - 1 : activeIdx - 1;
           highlightActive(activeDropdown);
+          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'Enter') {
           if (activeIdx >= 0 && matches[activeIdx]) {
             e.preventDefault();
             selectItem(e.target, matches[activeIdx]);
           }
-        } else if (e.key === 'Escape') {
+        } else if (e.key === 'Escape' || e.key === 'Tab') {
           hideDropdown();
         }
+      });
+
+      document.getElementById('inv-list').addEventListener('focusout', (e) => {
+        setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
       });
 
       document.addEventListener('click', (e) => {
@@ -742,18 +744,24 @@
           e.preventDefault();
           activeIdx = (activeIdx + 1) % items.length;
           highlightActive(activeDropdown);
+          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'ArrowUp') {
           e.preventDefault();
           activeIdx = activeIdx <= 0 ? items.length - 1 : activeIdx - 1;
           highlightActive(activeDropdown);
+          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'Enter') {
           if (activeIdx >= 0 && matches[activeIdx]) {
             e.preventDefault();
             selectSpell(e.target, matches[activeIdx]);
           }
-        } else if (e.key === 'Escape') {
+        } else if (e.key === 'Escape' || e.key === 'Tab') {
           hideDropdown();
         }
+      });
+
+      document.getElementById('cbt-spell-list').addEventListener('focusout', (e) => {
+        setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
       });
 
       document.addEventListener('click', (e) => {
@@ -1538,18 +1546,24 @@
           e.preventDefault();
           weaponActiveIdx = (weaponActiveIdx + 1) % items.length;
           highlightWeaponActive();
+          items[weaponActiveIdx]?.scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'ArrowUp') {
           e.preventDefault();
           weaponActiveIdx = weaponActiveIdx <= 0 ? items.length - 1 : weaponActiveIdx - 1;
           highlightWeaponActive();
+          items[weaponActiveIdx]?.scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'Enter') {
           if (weaponActiveIdx >= 0 && weaponMatches[weaponActiveIdx]) {
             e.preventDefault();
             selectWeapon(e.target, weaponMatches[weaponActiveIdx]);
           }
-        } else if (e.key === 'Escape') {
+        } else if (e.key === 'Escape' || e.key === 'Tab') {
           hideWeaponDropdown();
         }
+      });
+
+      atkListEl.addEventListener('focusout', e => {
+        setTimeout(() => { if (weaponDropdown) hideWeaponDropdown(); }, 120);
       });
 
       document.addEventListener('click', e => {
