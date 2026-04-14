@@ -162,13 +162,13 @@
     const CORE_CLASS_ICONS = {
       fighter: '⚔',
       priest:  '✝',
-      thief:   '†',
+      thief:   '<svg width=".9em" height=".9em" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-.1em"><path d="M8.5 1L9.5 8 12 9 8.5 9.8 8.5 14 8 15 7.5 14 7.5 9.8 4 9 6.5 8 7.5 1Z"/></svg>',
       wizard:  '✦',
     };
 
     function updateCoreIcon(className) {
       const el = document.getElementById('core-tab-icon');
-      if (el) el.textContent = CORE_CLASS_ICONS[(className || '').toLowerCase()] || '⚔';
+      if (el) el.innerHTML = CORE_CLASS_ICONS[(className || '').toLowerCase()] || '⚔';
     }
 
     function abilityMod(score) {
