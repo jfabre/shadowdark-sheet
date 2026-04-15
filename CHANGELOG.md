@@ -3,6 +3,13 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.5.2] - 2026-04-15
+
+- feat: Tab/Shift+Tab cycles through autocomplete choices
+- style: make version label more readable
+- refactor: hardcode version in HTML instead of fetching manifest
+- feat: show app version in theme popover
+
 ## [0.5.1] - 2026-04-15
 
 - feat: add mod.io deploy script and changelog
