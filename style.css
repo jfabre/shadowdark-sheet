@@ -187,6 +187,19 @@ html, body { height: 100%; }
   transform: scale(1.03);
 }
 
+/* ── Third-Party License notice ─────────────────── */
+#tpl-notice {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: var(--muted);
+  opacity: 0.55;
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  line-height: 1.4;
+}
+
 #guide-reopen {
   position: fixed;
   top: 10px;
@@ -1831,5 +1844,3 @@ input:focus { border-color: var(--accent); }
     padding: 0;
   }
 }
-
-

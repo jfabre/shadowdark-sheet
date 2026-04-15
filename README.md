@@ -89,3 +89,7 @@ Just open `index.html` in any modern browser. No server required.
 ## Author
 
 **Jeremy Fabre**
+
+## License
+
+The Dark Spire is an independent product published under the [Shadowdark RPG Third-Party License](https://www.thearcanelibrary.com/pages/shadowdark) and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.

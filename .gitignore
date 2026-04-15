@@ -85,3 +85,7 @@ __pycache__/
 *.db
 
 /mail
+
+# Gas Town (added by gt)
+.runtime/
+CLAUDE.local.md
