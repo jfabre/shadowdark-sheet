@@ -1310,12 +1310,16 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   text-align: center;
   padding: 3px 4px;
   -moz-appearance: textfield;
-  -webkit-appearance: none;
-  appearance: none;
 }
-.enc-bonus-input::-webkit-inner-spin-button,
-.enc-bonus-input::-webkit-outer-spin-button {
+#enc-bonus {
   -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+#enc-bonus::-webkit-inner-spin-button,
+#enc-bonus::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  display: none;
   margin: 0;
 }
 
