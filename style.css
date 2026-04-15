@@ -63,6 +63,43 @@ html, body { height: 100%; }
   --border:   #251a35;
 }
 
+/* ── Shared input / select / textarea base ────────── */
+.field-group input,
+.field-group select,
+.xp-row input,
+.hp-row input,
+.enc-bonus-input,
+.armor-custom-select,
+.armor-type-select,
+.inv-row input,
+input[type="number"],
+.fld-input,
+.talent-input,
+.feature-notes-input,
+.auto-grow {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field-group input:focus,
+.field-group select:focus,
+.xp-row input:focus,
+.hp-row input:focus,
+.enc-bonus-input:focus,
+.armor-custom-select:focus,
+.armor-type-select:focus,
+.inv-row input:focus,
+input[type="number"]:focus,
+.fld-input:focus,
+.talent-input:focus,
+.feature-notes-input:focus,
+.auto-grow:focus {
+  border-color: var(--accent);
+}
+
 /* ── Character Creation Guide ──────────────────────── */
 .guide-overlay {
   position: fixed;
@@ -423,18 +460,11 @@ body {
 
 .field-group input,
 .field-group select {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
   font-family: var(--font-num);
   font-size: 0.95rem;
   padding: 6px 8px;
-  outline: none;
   width: 100%;
 }
-.field-group input:focus,
-.field-group select:focus { border-color: var(--accent); }
 .field-group select {
   appearance: none;
   cursor: pointer;
@@ -599,10 +629,6 @@ body {
   flex: 1;
 }
 .xp-row input {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
   font-family: var(--font-num);
   font-size: 0.95rem;
   padding: 12px 6px;
@@ -611,11 +637,9 @@ body {
   width: 48px;
   min-width: 0;
   flex: 1;
-  outline: none;
   text-align: center;
   -moz-appearance: textfield;
 }
-.xp-row input:focus { border-color: var(--accent); }
 .xp-row input::-webkit-inner-spin-button,
 .xp-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
 .xp-row .field-label { margin-right: 8px; min-width: auto; margin-top: 10px; }
@@ -691,10 +715,6 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   min-width: 0;
 }
 .hp-row input {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
   font-family: var(--font-num);
   font-size: 0.95rem;
   padding: 12px 6px;
@@ -704,10 +724,8 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   min-width: 0;
   flex: 1;
   text-align: center;
-  outline: none;
   -moz-appearance: textfield;
 }
-.hp-row input:focus { border-color: var(--accent); }
 .hp-row input::-webkit-inner-spin-button,
 .hp-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
 .hp-sep { color: var(--muted); font-family: var(--font-num); line-height: 1.6em; margin-top: 10px; }
@@ -909,14 +927,10 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .enc-bonus-input {
   width: 52px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
   font-family: var(--font-num);
   font-size: 0.95rem;
   text-align: center;
   padding: 4px;
-  border-radius: 4px;
 }
 
 .enc-breakdown {
@@ -935,10 +949,6 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .armor-custom-select {
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
   font-family: var(--font-hdr);
   font-size: 0.9rem;
   padding: 7px 8px;
@@ -946,12 +956,6 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   display: flex;
   align-items: baseline;
   gap: 6px;
-  transition: border-color 0.15s;
-}
-
-.armor-custom-select:focus {
-  border-color: var(--accent);
-  outline: none;
 }
 
 .armor-custom-select:hover {
@@ -1014,13 +1018,9 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .armor-type-select {
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
   font-family: var(--font-hdr);
   font-size: 0.9rem;
   padding: 7px 8px;
-  border-radius: 4px;
   cursor: pointer;
 }
 
@@ -1103,13 +1103,9 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 }
 
 .inv-row input {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
   font-family: var(--font-hdr);
   font-size: 0.85rem;
   padding: 5px 6px;
-  border-radius: 4px;
   width: 100%;
   min-width: 0;
 }
@@ -1199,10 +1195,6 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 }
 
 input[type="number"] {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
   font-family: var(--font-num);
   font-size: 0.85rem;
   padding: 4px 6px;
@@ -1210,9 +1202,6 @@ input[type="number"] {
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
-
-input { outline: none; }
-input:focus { border-color: var(--accent); }
 
 
 /* ── CLASS tab ──────────────────────────────────────── */
@@ -1236,19 +1225,11 @@ input:focus { border-color: var(--accent); }
 }
 
 .fld-input {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
   font-family: var(--font-hdr);
   font-size: 1rem;
   padding: 7px 10px;
   width: 100%;
-  outline: none;
-  transition: border-color 0.15s;
 }
-
-.fld-input:focus { border-color: var(--accent); }
 
 .cls-section { margin-bottom: 22px; }
 
@@ -1331,18 +1312,11 @@ input:focus { border-color: var(--accent); }
 
 .talent-input {
   flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
   font-family: var(--font-hdr);
   font-size: 0.9rem;
   padding: 6px 9px;
-  outline: none;
-  transition: border-color 0.15s;
 }
 
-.talent-input:focus { border-color: var(--accent); }
 .talent-input::placeholder { color: var(--muted); font-style: italic; }
 
 .talent-clear {
@@ -1397,42 +1371,28 @@ input:focus { border-color: var(--accent); }
 
 .feature-notes-input {
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
   font-family: var(--font-hdr);
   font-size: 0.9rem;
   padding: 7px 10px;
-  outline: none;
   resize: none;
   overflow: hidden;
-  transition: border-color 0.15s;
   min-height: 60px;
 }
 
-.feature-notes-input:focus { border-color: var(--accent); }
 .feature-notes-input::placeholder { color: var(--muted); font-style: italic; }
 
 /* Auto-growing textarea */
 .auto-grow {
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
   font-family: var(--font-hdr);
   font-size: 0.95rem;
   padding: 8px 10px;
-  outline: none;
   resize: none;
   overflow: hidden;
   min-height: 80px;
   line-height: 1.55;
-  transition: border-color 0.15s;
 }
 
-.auto-grow:focus { border-color: var(--accent); }
 .auto-grow::placeholder { color: var(--muted); font-style: italic; }
 
 /* Deity section dimmed when not Priest */
