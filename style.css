@@ -1152,11 +1152,9 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   margin-bottom: 14px;
 }
 
-.gear-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px;
+.gear-section + .gear-section {
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
 }
 
 .gear-subhead {
