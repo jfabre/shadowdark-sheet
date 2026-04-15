@@ -109,8 +109,11 @@ with open('manifest.json', 'w') as f:
 # ── Update hardcoded version in index.html ───────────
 perl -pi -e 's|(<span id="app-version">)v[\d.]+|${1}v'"$NEW_VERSION"'|' index.html
 
+# ── Update APP_VERSION in script.js ──────────────────
+perl -pi -e "s|(const APP_VERSION = ')[\\d.]+'|\${1}$NEW_VERSION'|" script.js
+
 # ── Commit and tag ───────────────────────────────────
-git add manifest.json index.html CHANGELOG.md
+git add manifest.json index.html script.js CHANGELOG.md
 git commit -m "release: v$NEW_VERSION"
 git tag "v$NEW_VERSION"
 
