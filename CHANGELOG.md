@@ -3,6 +3,10 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.7.1] - 2026-04-15
+
+- fix: update APP_VERSION to 0.7.0 and sync version bump in deploy script
+
 ## [0.7.0] - 2026-04-15
 
 - docs: add help modal and menu reorder implementation plan
