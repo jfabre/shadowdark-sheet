@@ -3,6 +3,12 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.5.3] - 2026-04-15
+
+- fix: portrait click not working after changing image
+- fix: non-blocking file picker + clipboard paste for portrait
+- fix: slow file picker by using extensions instead of MIME types
+
 ## [0.5.2] - 2026-04-15
 
 - feat: Tab/Shift+Tab cycles through autocomplete choices
