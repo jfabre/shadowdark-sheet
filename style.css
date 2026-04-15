@@ -225,17 +225,6 @@ input[type="number"]:focus,
 }
 
 /* ── Third-Party License notice ─────────────────── */
-#tpl-notice {
-  font-family: var(--font-body);
-  font-size: 0.65rem;
-  color: var(--muted);
-  opacity: 0.55;
-  text-align: center;
-  margin-top: 20px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  line-height: 1.4;
-}
 
 #menu-btn {
   position: fixed;
