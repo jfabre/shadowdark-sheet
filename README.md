@@ -17,24 +17,24 @@ A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/
 - **Attacks** — add weapon rows with autocomplete from the full Shadowdark weapon table (15 weapons); auto-fills damage die and stat bonus
 - **Spells** — add spell rows with autocomplete for all Tier 1–2 Priest and Wizard spells (34 spells); auto-fills tier, range, duration, and description
 
-### Gear Tab
+### Inventory Tab
 - **Encumbrance** — real-time slot tracker with progress bar; accounts for armor, coins, and inventory
 - **Armor selector** — custom dropdown for None / Leather / Chainmail / Plate with AC and slot info
 - **Mithral & Shield** — toggles that update AC and encumbrance automatically
 - **Currency** — GP and SP tracking (auto-counted toward encumbrance at 1 slot per 100 coins)
 - **Inventory** — dynamic item list with name, slots, quantity, notes, and delete; includes item autocomplete
 
-### Class Tab
+### Traits Tab
 - **Talents** — shows earned talent slots based on level (at levels 1, 3, 5, 7, 9) with class-specific autocomplete from the talent roll tables; Human ancestry gets a bonus talent at level 1
 - **Class features** — collapsible reference for each class's abilities (Hauler, Weapon Mastery, Backstab, Spellcasting, etc.)
 - **Background, Languages, Deity, Notes** — free-text fields with auto-growing textareas
 
 ### Themes
-Six color themes, switchable from the ⚜ button:
+Six color themes, switchable from the 🎨 button (top-right). **Dungeon** is the default.
 
 | Theme | Vibe |
 |-------|------|
-| **Dungeon** | Pure black, gold accents |
+| **Dungeon** *(default)* | Pure black, gold accents |
 | **Parchment** | Light, warm, old paper feel |
 | **Blood Moon** | Deep crimson, dark horror |
 | **TaleSpire** | Warm amber, matches TaleSpire UI |
@@ -52,7 +52,7 @@ Zero dependencies. Pure vanilla HTML + CSS + JS.
 
 - `index.html` — single-page layout with three tab panels
 - `style.css` — CSS custom properties for theming, responsive layout
-- `script.js` — all logic: storage adapter, ability scores, combat, gear, class features, autocomplete, themes
+- `script.js` — all logic: storage adapter, event bus, autocomplete factory, ability scores, combat, gear, class features, themes
 - `manifest.json` — TaleSpire Symbiote manifest
 
 Fonts loaded from Google Fonts:
