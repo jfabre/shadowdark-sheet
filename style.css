@@ -237,40 +237,7 @@ input[type="number"]:focus,
   line-height: 1.4;
 }
 
-#guide-reopen {
-  position: fixed;
-  top: 10px;
-  right: 50px;
-  z-index: 100;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  color: var(--muted);
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
-  transition: color 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
-}
-#guide-reopen:hover {
-  color: var(--accent);
-  border-color: var(--accent);
-  transform: scale(1.12);
-  box-shadow: 0 3px 14px rgba(0,0,0,0.5);
-}
-#guide-reopen:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-/* ── Theme selector ─────────────────────────────────── */
-#theme-btn {
+#menu-btn {
   position: fixed;
   top: 10px;
   right: 10px;
@@ -291,23 +258,83 @@ input[type="number"]:focus,
   box-shadow: 0 2px 8px rgba(0,0,0,0.35);
   transition: color 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
 }
-#theme-btn:hover {
+#menu-btn:hover {
   color: var(--accent);
   border-color: var(--accent);
   transform: scale(1.12);
   box-shadow: 0 3px 14px rgba(0,0,0,0.5);
 }
-#theme-btn[aria-expanded="true"] {
+#menu-btn[aria-expanded="true"] {
   color: var(--accent);
   border-color: var(--accent);
   transform: scale(1.06);
 }
-#theme-btn:focus-visible {
+#menu-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
-#theme-popover {
+/* ── Settings dropdown ─────────────────────────────── */
+#menu-dropdown {
+  display: none;
+  position: fixed;
+  top: 46px;
+  right: 10px;
+  z-index: 99;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.65);
+  min-width: 170px;
+}
+#menu-dropdown.open { display: block; }
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  color: var(--fg);
+  font-family: var(--font-hdr);
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, color 0.12s;
+}
+.menu-item:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--accent);
+}
+.menu-item svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.menu-item:hover svg {
+  opacity: 1;
+}
+.menu-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 4px 12px;
+}
+
+#menu-dropdown #app-version {
+  display: block;
+  font-family: var(--font-num);
+  font-size: 0.6rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  letter-spacing: 0.05em;
+}
+
+/* ── Theme popover ─────────────────────────────────── */
   display: none;
   position: fixed;
   top: 46px;
@@ -377,19 +404,150 @@ input[type="number"]:focus,
 .theme-swatch[aria-pressed="true"] .theme-swatch-label {
   color: var(--accent);
 }
-#app-version {
-  display: block;
-  font-family: var(--font-num);
-  font-size: 0.65rem;
-  color: var(--muted);
-  text-align: center;
-  margin-top: 8px;
-  letter-spacing: 0.05em;
-}
-
 /* Transient class on <html> during theme switch — enables colour transitions */
 html.theme-switching * {
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease !important;
+}
+
+/* ── Import modal ──────────────────────────────────── */
+.import-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 12px;
+}
+.import-overlay[hidden] { display: none; }
+
+.import-card {
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 420px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.65);
+}
+.import-card--narrow {
+  max-width: 320px;
+  text-align: center;
+}
+
+.import-title {
+  font-family: var(--font-hdr);
+  font-size: 1.2rem;
+  color: var(--accent);
+  margin: 0 0 16px;
+}
+
+.import-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-num);
+  font-size: 0.78rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.import-textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.import-error {
+  color: #e74c3c;
+  font-size: 0.8rem;
+  margin-top: 8px;
+}
+.import-error[hidden] { display: none; }
+
+.import-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.import-btn {
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-family: var(--font-hdr);
+  font-size: 0.82rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: background 0.15s, color 0.15s;
+}
+.import-btn--cancel {
+  background: var(--surface);
+  color: var(--muted);
+}
+.import-btn--cancel:hover {
+  color: var(--fg);
+}
+.import-btn--submit {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.import-btn--submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.import-btn--submit:not(:disabled):hover {
+  filter: brightness(1.15);
+}
+.import-btn--danger {
+  background: #c0392b;
+  color: #fff;
+  border-color: #c0392b;
+}
+.import-btn--danger:hover {
+  filter: brightness(1.15);
+}
+
+.confirm-message {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+.confirm-message strong {
+  color: var(--accent);
+}
+
+/* ── Toast ─────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: var(--font-hdr);
+  font-size: 0.82rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.toast.show {
+  opacity: 1;
+}
+.toast[hidden] { display: none; }
+.toast--error {
+  border-color: #c0392b;
+  color: #e74c3c;
 }
 
 /* ── Base ───────────────────────────────────────────── */
