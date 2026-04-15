@@ -72,13 +72,13 @@ html, body { height: 100%; }
   --border:   #1a3524;
 }
 
-[data-theme='sunfire'] {
-  --bg:       #0e0a04;
-  --text:     #f0e4c8;
-  --accent:   #d4a017;
-  --muted:    #6b5a30;
-  --surface:  #181208;
-  --border:   #302510;
+[data-theme='silverstone'] {
+  --bg:       #f0f1f4;
+  --text:     #2a2e38;
+  --accent:   #4a6fa5;
+  --muted:    #6b7080;
+  --surface:  #e4e6eb;
+  --border:   #c8cad2;
 }
 
 [data-theme='shadowfell'] {
