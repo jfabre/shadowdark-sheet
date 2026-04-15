@@ -1425,9 +1425,6 @@ input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 
 .auto-grow::placeholder { color: var(--muted); font-style: italic; }
 
-/* Deity section dimmed when not Priest */
-.deity-section { transition: opacity 0.2s; }
-.deity-section.dimmed { opacity: 0.45; }
 
 
 

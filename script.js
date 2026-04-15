@@ -1503,13 +1503,6 @@
         }
       }
 
-      // ── deity visibility ────────────────────────────────
-      function updateDeityVisibility(className) {
-        const section = document.getElementById('deity-section');
-        const isP = (className || '').toLowerCase().trim() === 'priest';
-        section.classList.toggle('dimmed', !isP);
-      }
-
       // ── initialise ─────────────────────────────────────
       function initClassTab() {
         const bgEl    = document.getElementById('cls-background');
@@ -1535,7 +1528,6 @@
         renderTalents(currentLevel);
         renderFeatures(currentClass);
         renderAncestryFeatures(currentAncestry);
-        updateDeityVisibility(currentClass);
 
         requestAnimationFrame(() => {
           autoGrow(bgEl);
@@ -1545,7 +1537,6 @@
         // Re-render when Core class/level change
         document.getElementById('char-class').addEventListener('change', (e) => {
           renderFeatures(e.target.value);
-          updateDeityVisibility(e.target.value);
           updateCoreIcon(e.target.value);
           Events.emit('class:change', e.target.value);
         });
