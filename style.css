@@ -377,6 +377,16 @@ input[type="number"]:focus,
 .theme-swatch[aria-pressed="true"] .theme-swatch-label {
   color: var(--accent);
 }
+#app-version {
+  display: block;
+  font-family: var(--font-num);
+  font-size: 0.55rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 6px;
+  opacity: 0.6;
+  letter-spacing: 0.05em;
+}
 
 /* Transient class on <html> during theme switch — enables colour transitions */
 html.theme-switching * {

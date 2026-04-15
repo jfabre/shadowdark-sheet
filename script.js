@@ -1775,6 +1775,12 @@
       applyTheme(saved);
     })();
 
+    // ── App version label ───────────────────────────────
+    fetch('manifest.json').then(r => r.json()).then(m => {
+      const el = document.getElementById('app-version');
+      if (el && m.version) el.textContent = 'v' + m.version;
+    }).catch(() => {});
+
     // ── Custom stepper buttons for AC and Luck ──────────────────────────────
     document.querySelectorAll('.cbt-stat-stepper').forEach(stepper => {
       const input = stepper.querySelector('input[type="number"]');
