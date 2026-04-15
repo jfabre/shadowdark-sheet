@@ -630,7 +630,7 @@ html.theme-switching * {
 
 /* ── Help modal ────────────────────────────────────── */
 .help-card {
-  max-width: 560px;
+  max-width: 480px;
 }
 .help-content {
   max-height: 60vh;
@@ -638,63 +638,89 @@ html.theme-switching * {
   margin-bottom: 16px;
   padding-right: 4px;
 }
-.help-section {
-  margin-bottom: 20px;
+
+.help-group {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
 }
-.help-section:last-child {
-  margin-bottom: 0;
+.help-group[open] {
+  background: var(--surface);
 }
-.help-section-title {
+.help-group-title {
   font-family: var(--font-hdr);
-  font-size: 0.95rem;
-  color: var(--accent);
-  margin: 0 0 10px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--border);
-}
-.help-list {
-  margin: 0;
-  padding: 0 0 0 18px;
-  list-style: disc;
-}
-.help-list li {
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   color: var(--text);
-  line-height: 1.55;
-  margin-bottom: 7px;
+  padding: 10px 14px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: color 0.15s;
 }
-.help-list li:last-child {
+.help-group-title::-webkit-details-marker { display: none; }
+.help-group-title::after {
+  content: '\25B8';
+  font-size: 0.7em;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+.help-group[open] > .help-group-title::after {
+  transform: rotate(90deg);
+}
+.help-group-title:hover {
+  color: var(--accent);
+}
+.help-group-body {
+  padding: 0 14px 12px;
+}
+.help-group-body p {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0 0 8px;
+}
+.help-group-body p:last-child {
   margin-bottom: 0;
 }
-.help-list kbd {
+.help-group-body strong {
+  color: var(--text);
+}
+.help-group-body kbd {
   display: inline-block;
   font-family: var(--font-num);
   font-size: 0.75em;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 3px;
-  padding: 0 4px;
+  padding: 1px 5px;
   line-height: 1.4;
+  margin-right: 2px;
 }
-.help-faq {
-  margin: 0;
+
+.help-qa {
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
 }
-.help-faq dt {
+.help-qa:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.help-q {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--text);
-  margin: 0 0 3px;
+  margin: 0 0 4px;
 }
-.help-faq dd {
+.help-a {
   font-size: 0.8rem;
   color: var(--muted);
   line-height: 1.55;
-  margin: 0 0 12px 0;
-  padding-left: 12px;
-  border-left: 2px solid var(--border);
-}
-.help-faq dd:last-child {
-  margin-bottom: 0;
+  margin: 0;
+  padding-left: 10px;
+  border-left: 2px solid var(--accent);
 }
 
 /* ── Toast ─────────────────────────────────────────── */

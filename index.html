@@ -483,43 +483,61 @@
     <div class="import-card help-card">
       <h2 class="import-title">Help</h2>
       <div class="help-content">
-        <section class="help-section">
-          <h3 class="help-section-title">Tips &amp; Shortcuts</h3>
-          <ul class="help-list">
-            <li><strong>Portrait upload:</strong> Click the portrait area to browse files, or drag and drop an image directly onto it.</li>
-            <li><strong>Autocomplete navigation:</strong> Use <kbd>↑</kbd> / <kbd>↓</kbd> arrow keys to navigate suggestions, <kbd>Enter</kbd> to select, <kbd>Esc</kbd> to dismiss.</li>
-            <li><strong>AC auto-calculation:</strong> Armor Class updates automatically when you change armor or Dexterity — no manual entry needed.</li>
-            <li><strong>Encumbrance &amp; Hauler:</strong> Gear slots are tracked automatically. The Hauler talent increases your carrying capacity by adding your Strength modifier.</li>
-            <li><strong>Auto-save:</strong> Your character is saved automatically to your browser after every change — no Save button needed.</li>
-            <li><strong>Talent slots:</strong> Talent slots unlock as you level up. Your class determines which talents are available.</li>
-            <li><strong>Themes:</strong> Open Settings → Theme to switch between visual themes. Your choice is remembered between sessions.</li>
-          </ul>
-        </section>
-        <section class="help-section">
-          <h3 class="help-section-title">FAQ</h3>
-          <dl class="help-faq">
-            <dt>My character disappeared after an update — what happened?</dt>
-            <dd>Browser updates can sometimes clear local storage. Always export a backup before updating your browser or clearing site data.</dd>
 
-            <dt>How do I back up my character?</dt>
-            <dd>Open Settings → Export Character. This copies your character data to the clipboard as JSON. Paste it somewhere safe (a text file, email, notes app).</dd>
+        <details class="help-group" open>
+          <summary class="help-group-title">Getting Started</summary>
+          <div class="help-group-body">
+            <p>Your character is <strong>saved automatically</strong> after every change — no save button needed.</p>
+            <p>Click the portrait area to upload an image, or drag and drop one directly.</p>
+            <p>Open the <strong>Settings menu</strong> (gear icon, top-right) for themes, export/import, and more.</p>
+          </div>
+        </details>
 
-            <dt>How do I restore a backup?</dt>
-            <dd>Open Settings → Import Character, paste your previously exported JSON into the text area, and click Import. You will be asked to confirm before your current character is replaced.</dd>
+        <details class="help-group">
+          <summary class="help-group-title">Combat &amp; Stats</summary>
+          <div class="help-group-body">
+            <p><strong>Armor Class</strong> updates automatically when you change armor or Dexterity. Unarmored = 10 + DEX modifier.</p>
+            <p><strong>Encumbrance</strong> is tracked automatically. The Hauler talent adds your STR modifier to carrying capacity.</p>
+            <p><strong>Talent slots</strong> unlock as you level up. Your class determines which talents are available.</p>
+          </div>
+        </details>
 
-            <dt>My Armor Class changed unexpectedly — why?</dt>
-            <dd>AC is calculated automatically from your equipped armor and Dexterity modifier. Changing either of those values will update AC. Unarmored characters use 10 + Dex modifier.</dd>
+        <details class="help-group">
+          <summary class="help-group-title">Keyboard Shortcuts</summary>
+          <div class="help-group-body">
+            <p><kbd>↑</kbd> <kbd>↓</kbd> Navigate autocomplete suggestions</p>
+            <p><kbd>Enter</kbd> Select a suggestion</p>
+            <p><kbd>Esc</kbd> Dismiss autocomplete</p>
+          </div>
+        </details>
 
-            <dt>How do talent slots work?</dt>
-            <dd>You gain talent slots at levels 2, 5, and beyond, as defined by your class. Each slot lets you choose one talent from your class talent table. Some talents can be taken more than once.</dd>
+        <details class="help-group">
+          <summary class="help-group-title">Backup &amp; Restore</summary>
+          <div class="help-group-body">
+            <p><strong>Export:</strong> Settings → Export Character. Copies your data to clipboard as JSON.</p>
+            <p><strong>Import:</strong> Settings → Import Character. Paste your backup and confirm.</p>
+            <p>Always export a backup before updating the symbiote or clearing browser data.</p>
+          </div>
+        </details>
 
-            <dt>Can I roll dice in the browser?</dt>
-            <dd>Yes — click any dice icon next to a stat or skill to roll that die. Results appear in a toast notification at the top of the screen.</dd>
+        <details class="help-group">
+          <summary class="help-group-title">Common Questions</summary>
+          <div class="help-group-body">
+            <div class="help-qa">
+              <p class="help-q">My character disappeared after an update</p>
+              <p class="help-a">Symbiote updates can clear stored data. Always keep a backup via Settings → Export Character.</p>
+            </div>
+            <div class="help-qa">
+              <p class="help-q">My Armor Class changed unexpectedly</p>
+              <p class="help-a">AC recalculates automatically from your equipped armor and DEX modifier. Check both values.</p>
+            </div>
+            <div class="help-qa">
+              <p class="help-q">How do I switch themes?</p>
+              <p class="help-a">Settings → Theme. Click any swatch to apply. Your choice is saved automatically.</p>
+            </div>
+          </div>
+        </details>
 
-            <dt>How do I switch themes?</dt>
-            <dd>Open Settings → Theme and click any swatch. The new theme is applied instantly and saved for your next visit.</dd>
-          </dl>
-        </section>
       </div>
       <div class="import-actions" style="justify-content:center">
         <button id="help-close" class="import-btn import-btn--cancel">Close</button>
