@@ -335,6 +335,7 @@ input[type="number"]:focus,
 }
 
 /* ── Theme popover ─────────────────────────────────── */
+#theme-popover {
   display: none;
   position: fixed;
   top: 46px;
