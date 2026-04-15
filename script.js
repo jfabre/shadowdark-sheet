@@ -1183,7 +1183,7 @@
         ],
         thief: [
           { name: 'Backstab', desc: 'If you hit a creature who is unaware of your attack, you deal an extra weapon die of damage. Add additional weapon dice equal to half your level (round down).' },
-          { name: 'Thievery', desc: 'You are adept at thieving skills and have the necessary tools (no gear slots). You have advantage on checks for: climbing, sneaking and hiding, applying disguises, finding and disabling traps, and delicate tasks such as picking pockets and opening locks.' },
+          { name: 'Thievery', desc: 'You carry thieving tools (no gear slots). Advantage on: Climbing · Sneaking & Hiding · Disguises · Finding & Disabling Traps · Picking Pockets & Opening Locks.' },
         ],
         wizard: [
           { name: 'Languages', desc: 'You know two additional common languages and two rare languages.' },
