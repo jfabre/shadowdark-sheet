@@ -646,7 +646,7 @@ html.theme-switching * {
   overflow: hidden;
 }
 .help-group[open] {
-  background: var(--surface);
+  background: var(--bg);
 }
 .help-group-title {
   font-family: var(--font-hdr);
@@ -722,6 +722,7 @@ html.theme-switching * {
   font-family: var(--font-hdr);
   font-size: 0.85rem;
   color: var(--text);
+  opacity: 0.7;
   line-height: 1.6;
   margin: 0;
   padding-left: 12px;
