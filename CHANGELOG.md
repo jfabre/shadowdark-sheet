@@ -3,6 +3,22 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.6.0] - 2026-04-15
+
+- ux: move Character Creation to top of menu, add 3 new themes (Emerald Grove, Sunfire, Shadowfell)
+- ux: redesign import confirmation dialog with warning icon and clearer messaging
+- ux: move toast to top-center with accent background for better visibility
+- ux: rename Guide to Character Creation and move license notice to About
+- feat: add About modal with version, author, and license info
+- fix: stop click propagation on theme menu item so popover stays open
+- fix: restore missing #theme-popover selector so popover is hidden by default
+- fix: update APP_VERSION to match v0.5.4 release
+- feat: add export/import functions and wire settings menu with all actions
+- feat: add APP_VERSION, compareSemver, and migration registry
+- feat: add CSS for settings menu, import modal, and toast
+- feat: replace top-right buttons with settings menu + add import modal markup
+- docs: add export/import feature spec and implementation plan
+
 ## [0.5.4] - 2026-04-15
 
 - ux: reorder traits tab sections and remove deity dimming feature
