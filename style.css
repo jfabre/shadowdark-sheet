@@ -593,6 +593,8 @@ body {
   font-family: var(--font-num);
   font-size: 0.95rem;
   padding: 12px 6px;
+  line-height: 1.6em;
+  margin-top: 10px;
   width: 48px;
   min-width: 0;
   flex: 1;
@@ -603,8 +605,8 @@ body {
 .xp-row input:focus { border-color: var(--accent); }
 .xp-row input::-webkit-inner-spin-button,
 .xp-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
-.xp-row .field-label { margin-right: 8px; min-width: auto; }
-.xp-sep { color: var(--muted); font-family: var(--font-num); }
+.xp-row .field-label { margin-right: 8px; min-width: auto; margin-top: 10px; }
+.xp-sep { color: var(--muted); font-family: var(--font-num); line-height: 1.6em; margin-top: 10px; }
 
 /* Section label */
 .section-label {
@@ -683,6 +685,8 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   font-family: var(--font-num);
   font-size: 0.95rem;
   padding: 12px 6px;
+  line-height: 1.6em;
+  margin-top: 10px;
   width: 48px;
   min-width: 0;
   flex: 1;
@@ -693,8 +697,8 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 .hp-row input:focus { border-color: var(--accent); }
 .hp-row input::-webkit-inner-spin-button,
 .hp-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
-.hp-sep { color: var(--muted); font-family: var(--font-num); }
-.hp-row .field-label { min-width: auto; }
+.hp-sep { color: var(--muted); font-family: var(--font-num); line-height: 1.6em; margin-top: 10px; }
+.hp-row .field-label { min-width: auto; margin-top: 10px; }
 
 
 /* ── Tab bar (bottom) ───────────────────────────────── */
