@@ -1304,7 +1304,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 }
 
 .enc-bonus-input {
-  width: 36px;
+  width: 48px;
   font-family: var(--font-num);
   font-size: 0.8rem;
   text-align: center;
