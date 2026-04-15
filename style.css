@@ -1447,34 +1447,37 @@ input:focus { border-color: var(--accent); }
 
 /* Feature items */
 .feature-item {
-  border-left: 2px solid var(--border);
-  padding: 8px 12px;
-  margin-bottom: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  margin-bottom: 10px;
 }
 
 .feature-name {
-  font-family: var(--font-num);
-  font-size: 0.75rem;
+  font-family: var(--font-hdr);
+  font-size: 0.9rem;
   color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 3px;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
 }
 
 .feature-desc {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text);
-  opacity: 0.85;
-  line-height: 1.5;
+  opacity: 0.82;
+  line-height: 1.55;
 }
 
 .feature-list {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text);
-  opacity: 0.85;
-  line-height: 1.6;
-  margin: 0.3em 0 0 1.2em;
-  padding: 0;
+  opacity: 0.82;
+  line-height: 1.7;
+  margin: 0.4em 0 0 0;
+  padding: 0 0 0 1.1em;
+  list-style: "› ";
 }
 
 .feature-notes-input {
