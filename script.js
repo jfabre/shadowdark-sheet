@@ -657,10 +657,30 @@
 
       let filePickerOpen = false;
 
-      function openFilePicker() {
+      async function openFilePicker() {
         if (filePickerOpen) return;
         filePickerOpen = true;
-        fileInput.click();
+
+        // Prefer async File System Access API (non-blocking)
+        if (window.showOpenFilePicker) {
+          try {
+            const [handle] = await window.showOpenFilePicker({
+              multiple: false,
+              types: [{ description: 'Images', accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp', '.gif'] } }]
+            });
+            const file = await handle.getFile();
+            filePickerOpen = false;
+            handleFile(file);
+            return;
+          } catch (e) {
+            filePickerOpen = false;
+            if (e.name !== 'AbortError') console.warn('File picker error:', e);
+            return;
+          }
+        }
+
+        // Fallback: defer click() off the call stack to reduce UI freeze
+        setTimeout(() => fileInput.click(), 0);
       }
 
       frame.addEventListener('click', (e) => {
@@ -704,6 +724,19 @@
         frame.classList.remove('drag-over');
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
           handleFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      // Clipboard paste support — paste an image directly onto the portrait
+      document.addEventListener('paste', (e) => {
+        const items = e.clipboardData && e.clipboardData.items;
+        if (!items) return;
+        for (const item of items) {
+          if (item.type.startsWith('image/')) {
+            e.preventDefault();
+            handleFile(item.getAsFile());
+            return;
+          }
         }
       });
 
