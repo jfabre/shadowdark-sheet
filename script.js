@@ -2178,17 +2178,23 @@
         }
       });
 
-      // Theme — open popover, close dropdown
-      document.getElementById('menu-theme').addEventListener('click', function(e) {
-        e.stopPropagation();
-        toggleMenu(false);
-        window._toggleThemePopover(true);
-      });
-
       // Guide — open guide, close dropdown
       document.getElementById('menu-guide').addEventListener('click', function() {
         toggleMenu(false);
         window._openGuide();
+      });
+
+      // Help
+      var helpModal = document.getElementById('help-modal');
+      document.getElementById('menu-help').addEventListener('click', function() {
+        toggleMenu(false);
+        helpModal.hidden = false;
+      });
+      document.getElementById('help-close').addEventListener('click', function() {
+        helpModal.hidden = true;
+      });
+      helpModal.addEventListener('click', function(e) {
+        if (e.target === helpModal) helpModal.hidden = true;
       });
 
       // Export
@@ -2201,6 +2207,13 @@
       document.getElementById('menu-import').addEventListener('click', function() {
         toggleMenu(false);
         importCharacter();
+      });
+
+      // Theme — open popover, close dropdown
+      document.getElementById('menu-theme').addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleMenu(false);
+        window._toggleThemePopover(true);
       });
 
       // About

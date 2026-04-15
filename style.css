@@ -628,6 +628,75 @@ html.theme-switching * {
   font-style: italic;
 }
 
+/* ── Help modal ────────────────────────────────────── */
+.help-card {
+  max-width: 560px;
+}
+.help-content {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  padding-right: 4px;
+}
+.help-section {
+  margin-bottom: 20px;
+}
+.help-section:last-child {
+  margin-bottom: 0;
+}
+.help-section-title {
+  font-family: var(--font-hdr);
+  font-size: 0.95rem;
+  color: var(--accent);
+  margin: 0 0 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.help-list {
+  margin: 0;
+  padding: 0 0 0 18px;
+  list-style: disc;
+}
+.help-list li {
+  font-size: 0.82rem;
+  color: var(--fg);
+  line-height: 1.55;
+  margin-bottom: 7px;
+}
+.help-list li:last-child {
+  margin-bottom: 0;
+}
+.help-list kbd {
+  display: inline-block;
+  font-family: var(--font-num);
+  font-size: 0.75em;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0 4px;
+  line-height: 1.4;
+}
+.help-faq {
+  margin: 0;
+}
+.help-faq dt {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--fg);
+  margin: 0 0 3px;
+}
+.help-faq dd {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0 0 12px 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--border);
+}
+.help-faq dd:last-child {
+  margin-bottom: 0;
+}
+
 /* ── Toast ─────────────────────────────────────────── */
 .toast {
   position: fixed;

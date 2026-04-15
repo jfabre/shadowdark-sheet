@@ -355,9 +355,9 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M476.72 51.375c-5.28 30.185-124.992 107.9-82.47 16.875c-80.216 45.38-107.557 23.42-78.53-5.656c-54.825 2.8-62.753 88.173-55.345 112.406l17.438 19.125c-2.14-31.218.404-48.445 19.5-71.47c13.764 20.614 18.495 33.702 52.062 6.97c-9.393 53.52 54.61 18.747 88.75 10.938c-15.248 14.048-35.153 32.723-38.875 55.468c-1.24 7.587 6.208 17.925 14.125 25.626c-9.443 2.236-41.474 8.91-38.563 26.22c2.912 17.31 12.14 11.885 3.5 15.28c-12.403 2.766-21.156 5.58-39.593-2.187l18.874 20.717c28.39 14.79 73.904 7.306 83.594-14.875c-14.778-1.22-27.125-4.674-33-11.53c44.022-8.34 66.764-39.243 85.78-75.032c-33.638 18.95-42.158 17.784-56 16.313c35.514-14.365 46.876-108.943 38.75-145.188zM246.874 186.063l-56.78 70.125l79.186 86.906l75.095-50l-97.5-107.03zm-62.344 90.125L21.657 467.625l21.438 23.53l205.75-144.374l-64.313-70.592z"/></svg>
       Character Creation
     </button>
-    <button class="menu-item" role="menuitem" id="menu-theme">
-      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M263.844 40.344C234.1 213.202 145.594 248.03 145.594 369.22c0 60.804 60.106 105.5 118.25 105.5c59.45 0 115.937-41.803 115.937-99.533c0-116.332-85.2-162.312-115.936-334.843zm-58.28 217.094c-27.963 75.53-5.105 154.567 54.25 179.375c15.185 6.348 31.724 7.714 47.905 6.28c-116.134 49.787-185.836-79.816-102.158-185.656z"/></svg>
-      Theme
+    <button class="menu-item" role="menuitem" id="menu-help">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41c0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+      Help
     </button>
     <hr class="menu-divider" />
     <button class="menu-item" role="menuitem" id="menu-export">
@@ -367,6 +367,11 @@
     <button class="menu-item" role="menuitem" id="menu-import">
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M5 20h14v-2H5v2zm7-2l5.5-7h-4V5h-3v6h-4l5.5 7z"/></svg>
       Import Character
+    </button>
+    <hr class="menu-divider" />
+    <button class="menu-item" role="menuitem" id="menu-theme">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M263.844 40.344C234.1 213.202 145.594 248.03 145.594 369.22c0 60.804 60.106 105.5 118.25 105.5c59.45 0 115.937-41.803 115.937-99.533c0-116.332-85.2-162.312-115.936-334.843zm-58.28 217.094c-27.963 75.53-5.105 154.567 54.25 179.375c15.185 6.348 31.724 7.714 47.905 6.28c-116.134 49.787-185.836-79.816-102.158-185.656z"/></svg>
+      Theme
     </button>
     <hr class="menu-divider" />
     <button class="menu-item" role="menuitem" id="menu-about">
@@ -467,6 +472,55 @@
       <p class="about-license">The Dark Spire is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG &copy; 2023 The Arcane Library, LLC.</p>
       <div class="import-actions" style="justify-content:center">
         <button id="about-close" class="import-btn import-btn--cancel">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Help modal ──────────────────────────────────── -->
+  <div id="help-modal" class="import-overlay" hidden>
+    <div class="import-card help-card">
+      <h2 class="import-title">Help</h2>
+      <div class="help-content">
+        <section class="help-section">
+          <h3 class="help-section-title">Tips &amp; Shortcuts</h3>
+          <ul class="help-list">
+            <li><strong>Portrait upload:</strong> Click the portrait area to browse files, or drag and drop an image directly onto it.</li>
+            <li><strong>Autocomplete navigation:</strong> Use <kbd>↑</kbd> / <kbd>↓</kbd> arrow keys to navigate suggestions, <kbd>Enter</kbd> to select, <kbd>Esc</kbd> to dismiss.</li>
+            <li><strong>AC auto-calculation:</strong> Armor Class updates automatically when you change armor or Dexterity — no manual entry needed.</li>
+            <li><strong>Encumbrance &amp; Hauler:</strong> Gear slots are tracked automatically. The Hauler talent increases your carrying capacity by adding your Strength modifier.</li>
+            <li><strong>Auto-save:</strong> Your character is saved automatically to your browser after every change — no Save button needed.</li>
+            <li><strong>Talent slots:</strong> Talent slots unlock as you level up. Your class determines which talents are available.</li>
+            <li><strong>Themes:</strong> Open Settings → Theme to switch between visual themes. Your choice is remembered between sessions.</li>
+          </ul>
+        </section>
+        <section class="help-section">
+          <h3 class="help-section-title">FAQ</h3>
+          <dl class="help-faq">
+            <dt>My character disappeared after an update — what happened?</dt>
+            <dd>Browser updates can sometimes clear local storage. Always export a backup before updating your browser or clearing site data.</dd>
+
+            <dt>How do I back up my character?</dt>
+            <dd>Open Settings → Export Character. This copies your character data to the clipboard as JSON. Paste it somewhere safe (a text file, email, notes app).</dd>
+
+            <dt>How do I restore a backup?</dt>
+            <dd>Open Settings → Import Character, paste your previously exported JSON into the text area, and click Import. You will be asked to confirm before your current character is replaced.</dd>
+
+            <dt>My Armor Class changed unexpectedly — why?</dt>
+            <dd>AC is calculated automatically from your equipped armor and Dexterity modifier. Changing either of those values will update AC. Unarmored characters use 10 + Dex modifier.</dd>
+
+            <dt>How do talent slots work?</dt>
+            <dd>You gain talent slots at levels 2, 5, and beyond, as defined by your class. Each slot lets you choose one talent from your class talent table. Some talents can be taken more than once.</dd>
+
+            <dt>Can I roll dice in the browser?</dt>
+            <dd>Yes — click any dice icon next to a stat or skill to roll that die. Results appear in a toast notification at the top of the screen.</dd>
+
+            <dt>How do I switch themes?</dt>
+            <dd>Open Settings → Theme and click any swatch. The new theme is applied instantly and saved for your next visit.</dd>
+          </dl>
+        </section>
+      </div>
+      <div class="import-actions" style="justify-content:center">
+        <button id="help-close" class="import-btn import-btn--cancel">Close</button>
       </div>
     </div>
   </div>
