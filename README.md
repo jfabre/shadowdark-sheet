@@ -86,6 +86,23 @@ Copy `index.html`, `script.js`, `style.css`, and `manifest.json` to:
 
 Just open `index.html` in any modern browser. No server required.
 
+## Releasing to mod.io
+
+Run the release script to bump the version, update the changelog, and package a zip:
+
+```bash
+./deploy-modio.sh              # auto-bump patch (0.5.0 → 0.5.1)
+./deploy-modio.sh --version 1.0.0   # explicit version
+```
+
+This will:
+1. Bump the version in `manifest.json`
+2. Generate a changelog entry from git commits since the last tag
+3. Commit and tag the release
+4. Output `dist/the-dark-spire-vX.Y.Z.zip`
+
+Then upload the zip to [mod.io](https://mod.io/g/talespire) manually.
+
 ## Author
 
 **Jeremy Fabre**
