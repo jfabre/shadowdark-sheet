@@ -2067,9 +2067,14 @@
         closeModal();
         cleanup();
         const charName = data.character.name || '';
-        confirmMsg.innerHTML = charName
-          ? 'This will replace <strong>' + charName.replace(/</g, '&lt;') + '</strong>. Continue?'
-          : 'This will replace your current character data. Continue?';
+        const currentName = (window.SD.character && window.SD.character.name) || '';
+        if (currentName && charName) {
+          confirmMsg.innerHTML = 'Your current character <strong>' + currentName.replace(/</g, '&lt;') + '</strong> will be replaced with <strong>' + charName.replace(/</g, '&lt;') + '</strong>. This cannot be undone.';
+        } else if (currentName) {
+          confirmMsg.innerHTML = 'Your current character <strong>' + currentName.replace(/</g, '&lt;') + '</strong> will be permanently replaced. This cannot be undone.';
+        } else {
+          confirmMsg.innerHTML = 'Your current character data will be permanently replaced. This cannot be undone.';
+        }
         confirmModal.hidden = false;
 
         function onConfirmReplace() {

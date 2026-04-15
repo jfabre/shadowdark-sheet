@@ -432,11 +432,15 @@
 
   <!-- ── Import confirmation ─────────────────────────── -->
   <div id="import-confirm" class="import-overlay" hidden>
-    <div class="import-card import-card--narrow">
+    <div class="confirm-card">
+      <div class="confirm-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M1 21h22L12 2L1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+      </div>
+      <h3 class="confirm-title">Replace Character?</h3>
       <p id="confirm-message" class="confirm-message"></p>
-      <div class="import-actions">
-        <button id="confirm-cancel" class="import-btn import-btn--cancel">Cancel</button>
-        <button id="confirm-replace" class="import-btn import-btn--danger">Replace</button>
+      <div class="confirm-actions">
+        <button id="confirm-cancel" class="confirm-btn confirm-btn--cancel">Keep Current</button>
+        <button id="confirm-replace" class="confirm-btn confirm-btn--danger">Replace</button>
       </div>
     </div>
   </div>
