@@ -651,7 +651,7 @@ html.theme-switching * {
 .help-group-title {
   font-family: var(--font-hdr);
   font-size: 1rem;
-  color: var(--text);
+  color: var(--accent);
   padding: 11px 14px;
   cursor: pointer;
   list-style: none;
@@ -671,7 +671,7 @@ html.theme-switching * {
   transform: rotate(90deg);
 }
 .help-group-title:hover {
-  color: var(--accent);
+  filter: brightness(1.2);
 }
 .help-group-body {
   padding: 2px 14px 14px;
@@ -687,7 +687,7 @@ html.theme-switching * {
   margin-bottom: 0;
 }
 .help-group-body strong {
-  color: var(--text);
+  color: var(--accent);
   font-weight: 600;
 }
 .help-group-body kbd {
@@ -715,7 +715,7 @@ html.theme-switching * {
   font-family: var(--font-hdr);
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--accent);
   margin: 0 0 5px;
 }
 .help-a {
