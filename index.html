@@ -141,17 +141,15 @@
     </div>
 
     <div id="panel-gear" class="tab-panel">
-      <h2>Inventory</h2>
 
       <!-- Encumbrance -->
-      <section class="gear-section">
+      <section class="gear-section gear-card">
         <div class="enc-header">
           <span class="enc-label">Encumbrance</span>
-          <span class="enc-count"><span id="enc-used">0</span> / <span id="enc-max">10</span> slots</span>
-        </div>
-        <div class="enc-bonus-row">
-          <label class="enc-bonus-label" for="enc-bonus">+ Bonus slots</label>
-          <input type="number" id="enc-bonus" min="0" class="enc-bonus-input" value="0" />
+          <span class="enc-right">
+            <label class="enc-bonus-inline" for="enc-bonus">+<input type="number" id="enc-bonus" min="0" class="enc-bonus-input" value="0" /></label>
+            <span class="enc-count"><span id="enc-used">0</span> / <span id="enc-max">10</span></span>
+          </span>
         </div>
         <div class="enc-bar-wrap">
           <div id="enc-bar" class="enc-bar"></div>
@@ -160,7 +158,7 @@
       </section>
 
       <!-- Currency -->
-      <section class="gear-section">
+      <section class="gear-section gear-card">
         <div class="currency-row">
           <div class="currency-field">
             <span class="currency-label currency-label--gp">GP</span>
@@ -186,7 +184,7 @@
       </section>
 
       <!-- Armor Worn -->
-      <section class="gear-section">
+      <section class="gear-section gear-card">
         <h3 class="gear-subhead">Armor Worn</h3>
         <div class="armor-row">
           <input type="hidden" id="gear-armor-type" value="none" />
@@ -226,9 +224,9 @@
       </section>
 
       <!-- Inventory -->
-      <section class="gear-section">
+      <section class="gear-section gear-card">
         <div class="inv-header">
-          <h3 class="gear-subhead">Inventory</h3>
+          <h3 class="gear-subhead">Items</h3>
           <button id="inv-add-btn" class="inv-add-btn" aria-label="Add item">＋</button>
         </div>
         <div class="inv-col-heads">
@@ -239,6 +237,7 @@
           <span class="inv-col-del"></span>
         </div>
         <div id="inv-list"></div>
+        <div id="inv-empty" class="inv-empty">Tap ＋ to add your first item</div>
       </section>
     </div>
 

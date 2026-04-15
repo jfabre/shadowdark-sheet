@@ -1094,6 +1094,13 @@
           bonusSlots: parseFloat(document.getElementById('enc-bonus').value) || 0,
           inventory:  collectInventory()
         });
+        updateInvEmpty();
+      }
+
+      function updateInvEmpty() {
+        const hasItems = document.querySelectorAll('#inv-list .inv-row').length > 0;
+        document.getElementById('inv-empty').hidden = hasItems;
+        document.querySelector('.inv-col-heads').style.display = hasItems ? '' : 'none';
       }
 
       // ── Render from saved data ───────────────────────
@@ -1115,6 +1122,7 @@
         });
 
         updateEncumbrance();
+        updateInvEmpty();
       }
 
       // ── Wire top-level inputs ────────────────────────
@@ -1273,6 +1281,7 @@
         list.innerHTML = '';
         gear.inventory.forEach(item => list.appendChild(createInvRow(item)));
         updateEncumbrance();
+        updateInvEmpty();
         const rows = list.querySelectorAll('.inv-row');
         if (rows.length) rows[rows.length - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       });

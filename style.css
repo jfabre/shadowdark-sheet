@@ -1149,7 +1149,14 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 /* ── Gear tab ───────────────────────────────────────── */
 .gear-section {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
+}
+
+.gear-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
 }
 
 .gear-subhead {
@@ -1277,26 +1284,28 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   background: #c0392b;
 }
 
-.enc-bonus-row {
+.enc-right {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
 }
 
-.enc-bonus-label {
-  font-family: var(--font-hdr);
+.enc-bonus-inline {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-num);
   font-size: 0.8rem;
   color: var(--muted);
-  white-space: nowrap;
+  cursor: pointer;
 }
 
 .enc-bonus-input {
-  width: 52px;
+  width: 36px;
   font-family: var(--font-num);
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   text-align: center;
-  padding: 4px;
+  padding: 2px;
 }
 
 .enc-breakdown {
@@ -1443,7 +1452,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .inv-col-heads {
   display: grid;
-  grid-template-columns: 1fr 44px 40px 1fr 28px;
+  grid-template-columns: 1fr 48px 44px 1fr 28px;
   gap: 4px;
   padding: 0 2px 4px;
 }
@@ -1462,7 +1471,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .inv-row {
   display: grid;
-  grid-template-columns: 1fr 44px 40px 1fr 28px;
+  grid-template-columns: 1fr 48px 44px 1fr 28px;
   gap: 4px;
   margin-bottom: 4px;
   align-items: center;
@@ -1498,6 +1507,15 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .inv-del-btn:hover { color: #c05050; }
 .inv-del-btn:active { color: #c0392b; }
+
+.inv-empty {
+  text-align: center;
+  font-family: var(--font-hdr);
+  font-size: 0.82rem;
+  color: var(--muted);
+  padding: 20px 0 8px;
+  font-style: italic;
+}
 
 /* ── Autocomplete (shared) ─────────────────────────── */
 .ac-dropdown {
