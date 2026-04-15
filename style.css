@@ -541,29 +541,32 @@ html.theme-switching * {
 /* ── Toast ─────────────────────────────────────────── */
 .toast {
   position: fixed;
-  bottom: 80px;
+  top: 54px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 300;
-  background: var(--surface);
-  color: var(--fg);
-  border: 1px solid var(--border);
+  background: var(--accent);
+  color: var(--bg);
+  border: 1px solid var(--accent);
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 10px 24px;
   font-family: var(--font-hdr);
-  font-size: 0.82rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  font-size: 0.85rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, transform 0.3s;
   pointer-events: none;
+  transform: translateX(-50%) translateY(-8px);
 }
 .toast.show {
   opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 .toast[hidden] { display: none; }
 .toast--error {
-  border-color: #c0392b;
-  color: #e74c3c;
+  background: #c0392b;
+  border-color: #a93226;
+  color: #fff;
 }
 
 /* ── Base ───────────────────────────────────────────── */
