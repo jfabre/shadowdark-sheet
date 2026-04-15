@@ -1137,19 +1137,20 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 .inv-del-btn:hover { color: #c05050; }
 .inv-del-btn:active { color: #c0392b; }
 
-.inv-autocomplete {
+/* ── Autocomplete (shared) ─────────────────────────── */
+.ac-dropdown {
   position: fixed;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 4px;
   margin-top: 2px;
-  max-height: 200px;
+  max-height: 240px;
   overflow-y: auto;
   z-index: 1000;
   display: none;
 }
 
-.inv-autocomplete-item {
+.ac-item {
   padding: 6px 8px;
   cursor: pointer;
   font-family: var(--font-hdr);
@@ -1157,114 +1158,44 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   color: var(--text);
 }
 
-.inv-autocomplete-item:hover,
-.inv-autocomplete-item.active {
+.ac-item:hover,
+.ac-item.active {
   background: var(--border);
   color: var(--accent);
 }
 
-.inv-autocomplete-suffix {
+.ac-item--detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ac-name { font-weight: 500; }
+
+.ac-info {
+  font-size: 0.72em;
+  color: var(--muted);
+  font-family: var(--font-num);
+  letter-spacing: 0.02em;
+}
+
+.ac-item:hover .ac-info,
+.ac-item.active .ac-info {
+  color: var(--accent);
+  opacity: 0.8;
+}
+
+.ac-suffix {
   margin-left: 6px;
   color: var(--muted);
   font-size: 0.9em;
 }
 
-/* Spell autocomplete */
-.spell-autocomplete {
-  position: fixed;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  margin-top: 2px;
-  max-height: 240px;
-  overflow-y: auto;
-  z-index: 1000;
-  display: none;
-}
-
-.spell-autocomplete-item {
-  padding: 6px 8px;
-  cursor: pointer;
-  font-family: var(--font-hdr);
-  font-size: 0.85rem;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.spell-autocomplete-item:hover,
-.spell-autocomplete-item.active {
-  background: var(--border);
-  color: var(--accent);
-}
-
-.spell-ac-name {
-  font-weight: 500;
-}
-
-.spell-ac-info {
-  font-size: 0.72em;
+.ac-roll {
+  margin-right: 6px;
   color: var(--muted);
   font-family: var(--font-num);
-  letter-spacing: 0.02em;
-}
-
-.spell-autocomplete-item:hover .spell-ac-info,
-.spell-autocomplete-item.active .spell-ac-info {
-  color: var(--accent);
-  opacity: 0.8;
-}
-
-.spell-autocomplete-item.spell-ac-other {
-  opacity: 0.6;
-}
-
-/* Weapon autocomplete */
-.weapon-autocomplete {
-  position: fixed;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  margin-top: 2px;
-  max-height: 240px;
-  overflow-y: auto;
-  z-index: 1000;
-  display: none;
-}
-
-.weapon-ac-item {
-  padding: 6px 8px;
-  cursor: pointer;
-  font-family: var(--font-hdr);
-  font-size: 0.85rem;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.weapon-ac-item:hover,
-.weapon-ac-item.active {
-  background: var(--border);
-  color: var(--accent);
-}
-
-.weapon-ac-name {
-  font-weight: 500;
-}
-
-.weapon-ac-info {
-  font-size: 0.72em;
-  color: var(--muted);
-  font-family: var(--font-num);
-  letter-spacing: 0.02em;
-}
-
-.weapon-ac-item:hover .weapon-ac-info,
-.weapon-ac-item.active .weapon-ac-info {
-  color: var(--accent);
-  opacity: 0.8;
+  font-size: 0.8em;
 }
 
 input[type="number"] {
@@ -1429,39 +1360,6 @@ input:focus { border-color: var(--accent); }
 .talent-clear:hover { color: #c05050; }
 
 /* Talent autocomplete */
-.talent-autocomplete {
-  position: fixed;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  margin-top: 2px;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1000;
-  display: none;
-}
-
-.talent-autocomplete-item {
-  padding: 6px 8px;
-  cursor: pointer;
-  font-family: var(--font-hdr);
-  font-size: 0.85rem;
-  color: var(--text);
-}
-
-.talent-autocomplete-item:hover,
-.talent-autocomplete-item.active {
-  background: var(--border);
-  color: var(--accent);
-}
-
-.talent-ac-roll {
-  margin-right: 6px;
-  color: var(--muted);
-  font-family: var(--font-num);
-  font-size: 0.8em;
-}
-
 /* Feature items */
 .feature-item {
   background: var(--surface);

@@ -106,6 +106,154 @@
       return { init, getItem, setItem, removeItem, isTaleSpire, flush };
     })();
 
+    // ── Utilities ────────────────────────────────────────
+    function esc(s) {
+      return String(s ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function fmtMod(n) { return n >= 0 ? `+${n}` : `${n}`; }
+
+    function abilityMod(score) {
+      return Math.floor((Number(score) - 10) / 2);
+    }
+
+    function uid() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
+
+    function autoGrow(el) {
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+
+    // ── Event Bus ────────────────────────────────────────
+    const Events = {
+      _h: {},
+      on(name, fn) { (this._h[name] ||= []).push(fn); },
+      emit(name, ...args) { (this._h[name] || []).forEach(fn => fn(...args)); }
+    };
+
+    // ── Autocomplete Factory ─────────────────────────────
+    // Reusable dropdown autocomplete. Each call creates an independent
+    // instance attached to `containerEl` via event delegation.
+    function createAutocomplete({ containerEl, inputSelector, getMatches, onSelect, renderItem, minWidth }) {
+      let dd = null;
+      let activeIdx = -1;
+      let matches = [];
+      let focusoutTimer = null;
+
+      function show(inputEl) {
+        hide();
+        dd = document.createElement('div');
+        dd.className = 'ac-dropdown';
+        dd.setAttribute('role', 'listbox');
+        document.body.appendChild(dd);
+        position(inputEl);
+        render(inputEl, inputEl.value.trim());
+      }
+
+      function position(inputEl) {
+        if (!dd) return;
+        const rect = inputEl.getBoundingClientRect();
+        dd.style.position = 'fixed';
+        dd.style.top = rect.bottom + 'px';
+        dd.style.left = rect.left + 'px';
+        dd.style.width = Math.max(rect.width, minWidth || 0) + 'px';
+      }
+
+      function render(inputEl, query) {
+        matches = getMatches(query);
+        dd.innerHTML = '';
+        activeIdx = -1;
+        if (!matches.length) { dd.style.display = 'none'; return; }
+        matches.forEach((item, i) => {
+          const opt = renderItem(item, i);
+          opt.classList.add('ac-item');
+          opt.setAttribute('role', 'option');
+          opt.dataset.idx = i;
+          opt.addEventListener('pointerdown', e => {
+            e.preventDefault();
+            doSelect(inputEl, item);
+          });
+          dd.appendChild(opt);
+        });
+        dd.style.display = 'block';
+      }
+
+      function doSelect(inputEl, item) {
+        hide();
+        onSelect(inputEl, item);
+      }
+
+      function hide() {
+        if (dd) { dd.remove(); dd = null; }
+        activeIdx = -1;
+        matches = [];
+      }
+
+      function highlight() {
+        if (!dd) return;
+        dd.querySelectorAll('.ac-item').forEach((el, i) => {
+          el.classList.toggle('active', i === activeIdx);
+        });
+      }
+
+      containerEl.addEventListener('focusin', e => {
+        if (e.target.matches(inputSelector)) {
+          clearTimeout(focusoutTimer);
+          show(e.target);
+        }
+      });
+
+      containerEl.addEventListener('input', e => {
+        if (e.target.matches(inputSelector) && dd) {
+          position(e.target);
+          render(e.target, e.target.value.trim());
+        }
+      });
+
+      containerEl.addEventListener('keydown', e => {
+        if (!dd || dd.style.display === 'none') return;
+        if (!e.target.matches(inputSelector)) return;
+        const items = dd.querySelectorAll('.ac-item');
+        if (!items.length) return;
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          activeIdx = (activeIdx + 1) % items.length;
+          highlight();
+          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          activeIdx = activeIdx <= 0 ? items.length - 1 : activeIdx - 1;
+          highlight();
+          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+          if (activeIdx >= 0 && matches[activeIdx]) {
+            e.preventDefault();
+            doSelect(e.target, matches[activeIdx]);
+          }
+        } else if (e.key === 'Escape' || e.key === 'Tab') {
+          hide();
+        }
+      });
+
+      containerEl.addEventListener('focusout', () => {
+        focusoutTimer = setTimeout(() => { if (dd) hide(); }, 120);
+      });
+
+      document.addEventListener('click', e => {
+        if (dd && !dd.contains(e.target) && !e.target.matches(inputSelector)) {
+          hide();
+        }
+      });
+
+      return { hide };
+    }
+
     // ── Boot ───────────────────────────────────────────
     // Wrapped in async IIFE so TaleSpire's async getBlob() resolves
     // before any UI reads from storage. Browser mode resolves instantly.
@@ -171,14 +319,6 @@
       if (el) el.innerHTML = CORE_CLASS_ICONS[(className || '').toLowerCase()] || CORE_CLASS_ICONS.fighter;
     }
 
-    function abilityMod(score) {
-      return Math.floor((Number(score) - 10) / 2);
-    }
-
-    function fmtMod(mod) {
-      return mod >= 0 ? `+${mod}` : `${mod}`;
-    }
-
     // Build ability grid cells
     const abilityGrid = document.getElementById('ability-grid');
     ABILITY_STATS.forEach(stat => {
@@ -198,17 +338,11 @@
 
       let _abilitySaveTimer = null;
       input.addEventListener('input', () => {
-        // Visual updates — synchronous for instant feedback
         const mod = abilityMod(input.value);
         modEl.textContent = fmtMod(mod);
-        // Update in-memory model immediately (cheap)
         if (!window.SD.character.abilities) window.SD.character.abilities = {};
         window.SD.character.abilities[stat] = Number(input.value) || 10;
-        if (stat === 'DEX' && window.SD.refreshInit) window.SD.refreshInit();
-        if (stat === 'DEX' && window.SD.refreshAC) window.SD.refreshAC(true);
-        if ((stat === 'STR' || stat === 'DEX') && window.SD.refreshAttackBonuses) window.SD.refreshAttackBonuses();
-        if ((stat === 'STR' || stat === 'CON') && window.SD.updateEncumbrance) window.SD.updateEncumbrance();
-        // Debounced save — avoids expensive JSON.stringify on every keystroke
+        Events.emit('ability:change', stat);
         clearTimeout(_abilitySaveTimer);
         _abilitySaveTimer = setTimeout(coreAutoSave, 300);
       });
@@ -439,143 +573,36 @@
       'Spear', 'Staff', 'Warhammer'
     ];
 
-    function initInventoryAutocomplete() {
-      let activeDropdown = null;
-      let activeIdx = -1;
-      let matches = [];
-      let focusoutTimer = null;
-
-      function createDropdown() {
-        const dd = document.createElement('div');
-        dd.className = 'inv-autocomplete';
-        dd.setAttribute('role', 'listbox');
-        return dd;
-      }
-
-      function renderMatches(inputEl, dd, query) {
-        matches = INVENTORY_ITEMS.filter(item =>
-          !query || item.toLowerCase().includes(query.toLowerCase())
-        ).slice(0, 12);
-        dd.innerHTML = '';
-        activeIdx = -1;
-        if (!matches.length) {
-          dd.style.display = 'none';
-          return;
-        }
-        matches.forEach((item, i) => {
-          const opt = document.createElement('div');
-          opt.className = 'inv-autocomplete-item';
-          opt.setAttribute('role', 'option');
-          opt.dataset.idx = i;
-          const match = item.match(/^(.*?)(\s*\([^)]*\))?$/);
-          if (match && match[2]) {
-            const mainSpan = document.createElement('span');
-            mainSpan.textContent = match[1];
-            const suffixSpan = document.createElement('span');
-            suffixSpan.className = 'inv-autocomplete-suffix';
-            suffixSpan.textContent = match[2];
-            opt.appendChild(mainSpan);
-            opt.appendChild(suffixSpan);
-          } else {
-            opt.textContent = item;
-          }
-          opt.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            selectItem(inputEl, item);
-          });
-          dd.appendChild(opt);
-        });
-        dd.style.display = 'block';
-      }
-
-      function selectItem(inputEl, item) {
-        hideDropdown();
-        inputEl.value = item;
+    createAutocomplete({
+      containerEl: document.getElementById('inv-list'),
+      inputSelector: '.inv-item-name',
+      getMatches(query) {
+        return INVENTORY_ITEMS
+          .filter(item => !query || item.toLowerCase().includes(query.toLowerCase()))
+          .slice(0, 12)
+          .map(name => ({ label: name }));
+      },
+      onSelect(inputEl, item) {
+        inputEl.value = item.label;
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+      },
+      renderItem(item) {
+        const opt = document.createElement('div');
+        const match = item.label.match(/^(.*?)(\s*\([^)]*\))?$/);
+        if (match && match[2]) {
+          const main = document.createElement('span');
+          main.textContent = match[1];
+          const suffix = document.createElement('span');
+          suffix.className = 'ac-suffix';
+          suffix.textContent = match[2];
+          opt.appendChild(main);
+          opt.appendChild(suffix);
+        } else {
+          opt.textContent = item.label;
+        }
+        return opt;
       }
-
-      function hideDropdown() {
-        if (activeDropdown) {
-          activeDropdown.style.display = 'none';
-          activeDropdown.remove();
-          activeDropdown = null;
-        }
-        activeIdx = -1;
-        matches = [];
-      }
-
-      function highlightActive(dd) {
-        const items = dd.querySelectorAll('.inv-autocomplete-item');
-        items.forEach((el, i) => {
-          el.classList.toggle('active', i === activeIdx);
-        });
-      }
-
-      document.getElementById('inv-list').addEventListener('focusin', (e) => {
-        if (e.target.classList.contains('inv-item-name')) {
-          clearTimeout(focusoutTimer);
-          if (activeDropdown) hideDropdown();
-          activeDropdown = createDropdown();
-          const rect = e.target.getBoundingClientRect();
-          activeDropdown.style.position = 'fixed';
-          activeDropdown.style.top = rect.bottom + 'px';
-          activeDropdown.style.left = rect.left + 'px';
-          activeDropdown.style.width = rect.width + 'px';
-          document.body.appendChild(activeDropdown);
-          renderMatches(e.target, activeDropdown, e.target.value.trim());
-        }
-      });
-
-      document.getElementById('inv-list').addEventListener('input', (e) => {
-        if (e.target.classList.contains('inv-item-name') && activeDropdown) {
-          const rect = e.target.getBoundingClientRect();
-          activeDropdown.style.top = rect.bottom + 'px';
-          activeDropdown.style.left = rect.left + 'px';
-          activeDropdown.style.width = rect.width + 'px';
-          renderMatches(e.target, activeDropdown, e.target.value.trim());
-        }
-      });
-
-      document.getElementById('inv-list').addEventListener('keydown', (e) => {
-        if (!activeDropdown || activeDropdown.style.display === 'none') return;
-        if (!e.target.classList.contains('inv-item-name')) return;
-
-        const items = activeDropdown.querySelectorAll('.inv-autocomplete-item');
-        if (!items.length) return;
-
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          activeIdx = (activeIdx + 1) % items.length;
-          highlightActive(activeDropdown);
-          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          activeIdx = activeIdx <= 0 ? items.length - 1 : activeIdx - 1;
-          highlightActive(activeDropdown);
-          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'Enter') {
-          if (activeIdx >= 0 && matches[activeIdx]) {
-            e.preventDefault();
-            selectItem(e.target, matches[activeIdx]);
-          }
-        } else if (e.key === 'Escape' || e.key === 'Tab') {
-          hideDropdown();
-        }
-      });
-
-      document.getElementById('inv-list').addEventListener('focusout', (e) => {
-        focusoutTimer = setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
-      });
-
-      document.addEventListener('click', (e) => {
-        if (activeDropdown && !activeDropdown.contains(e.target) &&
-            !e.target.classList.contains('inv-item-name')) {
-          hideDropdown();
-        }
-      });
-    }
-
-    initInventoryAutocomplete();
+    });
 
     const SPELL_DB = [
       { name: 'Cure Wounds', tier: 1, classes: ['Priest'], duration: 'Instant', range: 'Close', desc: 'Touch restores ebbing life. Roll d6s equal to 1 + half level (rounded down). Target regains that many HP.' },
@@ -614,201 +641,51 @@
       { name: 'Web', tier: 2, classes: ['Wizard'], duration: '5 rounds', range: 'Far', desc: 'Near-sized cube of sticky web. STR check vs spellcasting to free.' },
     ];
 
-    function initSpellAutocomplete() {
-      let activeDropdown = null;
-      let activeIdx = -1;
-      let matches = [];
-      let currentSpellItem = null;
-      let focusoutTimer = null;
-
-      function createDropdown() {
-        const dd = document.createElement('div');
-        dd.className = 'spell-autocomplete';
-        dd.setAttribute('role', 'listbox');
-        return dd;
-      }
-
-      function renderMatches(inputEl, dd, query) {
+    createAutocomplete({
+      containerEl: document.getElementById('cbt-spell-list'),
+      inputSelector: '.spell-name-inp',
+      minWidth: 200,
+      getMatches(query) {
         const charClass = (document.getElementById('char-class').value || '').toLowerCase().trim();
         const isPriest = charClass === 'priest';
         const isWizard = charClass === 'wizard';
-        const isCaster = isPriest || isWizard;
-
-        let allMatches = SPELL_DB.filter(spell =>
-          !query || spell.name.toLowerCase().includes(query.toLowerCase())
-        );
-
-        // Filter to class spells when a caster class is selected
-        if (isCaster) {
-          allMatches = allMatches.filter(spell =>
-            spell.classes.some(c => c.toLowerCase() === charClass)
-          );
+        let pool = SPELL_DB.filter(s => !query || s.name.toLowerCase().includes(query.toLowerCase()));
+        if (isPriest || isWizard) {
+          pool = pool.filter(s => s.classes.some(c => c.toLowerCase() === charClass));
         }
-
-        allMatches.sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
-        matches = allMatches.slice(0, 20);
-
-        dd.innerHTML = '';
-        activeIdx = -1;
-        if (!matches.length) {
-          dd.style.display = 'none';
-          return;
-        }
-
-        matches.forEach((spell, i) => {
-          const opt = document.createElement('div');
-          opt.className = 'spell-autocomplete-item';
-          opt.setAttribute('role', 'option');
-          opt.dataset.idx = i;
-
-          const nameSpan = document.createElement('span');
-          nameSpan.className = 'spell-ac-name';
-          nameSpan.textContent = spell.name;
-
-          const infoSpan = document.createElement('span');
-          infoSpan.className = 'spell-ac-info';
-          infoSpan.textContent = `T${spell.tier} · ${spell.classes.join('/')}`;
-
-          opt.appendChild(nameSpan);
-          opt.appendChild(infoSpan);
-
-          opt.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            selectSpell(inputEl, spell);
-          });
-          dd.appendChild(opt);
-        });
-        dd.style.display = 'block';
-      }
-
-      function selectSpell(inputEl, spell) {
-        const spellItem = currentSpellItem;
-        hideDropdown();
+        pool.sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
+        return pool.slice(0, 20);
+      },
+      onSelect(inputEl, spell) {
         inputEl.value = spell.name;
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
-
-        if (spellItem) {
-          const tierInp = spellItem.querySelector('.sp-tier');
-          const rangeInp = spellItem.querySelector('.sp-range');
-          const durInp = spellItem.querySelector('.sp-dur');
-          const descTa = spellItem.querySelector('.spell-desc-ta');
-          const badge = spellItem.querySelector('.spell-tier-badge');
-
-          if (tierInp) {
-            tierInp.value = spell.tier;
-            tierInp.dispatchEvent(new Event('input', { bubbles: true }));
-          }
-          if (badge) badge.textContent = `T${spell.tier}`;
-          if (rangeInp) {
-            rangeInp.value = spell.range;
-            rangeInp.dispatchEvent(new Event('input', { bubbles: true }));
-          }
-          if (durInp) {
-            durInp.value = spell.duration;
-            durInp.dispatchEvent(new Event('input', { bubbles: true }));
-          }
-          if (descTa) {
-            descTa.value = spell.desc;
-            descTa.dispatchEvent(new Event('input', { bubbles: true }));
-          }
-
-          const spellData = getCombat().spells;
-          const idx = Array.from(document.querySelectorAll('.spell-item')).indexOf(spellItem);
-          if (idx >= 0 && spellData[idx]) {
-            spellData[idx].tier = spell.tier;
-            spellData[idx].range = spell.range;
-            spellData[idx].duration = spell.duration;
-            spellData[idx].desc = spell.desc;
-            window.SD.saveCharacter(window.SD.character);
-          }
-        }
+        const spellItem = inputEl.closest('.spell-item');
+        if (!spellItem) return;
+        const tierInp = spellItem.querySelector('.sp-tier');
+        const rangeInp = spellItem.querySelector('.sp-range');
+        const durInp = spellItem.querySelector('.sp-dur');
+        const descTa = spellItem.querySelector('.spell-desc-ta');
+        const badge = spellItem.querySelector('.spell-tier-badge');
+        if (tierInp) { tierInp.value = spell.tier; tierInp.dispatchEvent(new Event('input', { bubbles: true })); }
+        if (badge) badge.textContent = `T${spell.tier}`;
+        if (rangeInp) { rangeInp.value = spell.range; rangeInp.dispatchEvent(new Event('input', { bubbles: true })); }
+        if (durInp) { durInp.value = spell.duration; durInp.dispatchEvent(new Event('input', { bubbles: true })); }
+        if (descTa) { descTa.value = spell.desc; descTa.dispatchEvent(new Event('input', { bubbles: true })); }
+      },
+      renderItem(spell) {
+        const opt = document.createElement('div');
+        opt.classList.add('ac-item--detail');
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'ac-name';
+        nameSpan.textContent = spell.name;
+        const infoSpan = document.createElement('span');
+        infoSpan.className = 'ac-info';
+        infoSpan.textContent = `T${spell.tier} · ${spell.classes.join('/')}`;
+        opt.appendChild(nameSpan);
+        opt.appendChild(infoSpan);
+        return opt;
       }
-
-      function hideDropdown() {
-        if (activeDropdown) {
-          activeDropdown.style.display = 'none';
-          activeDropdown.remove();
-          activeDropdown = null;
-        }
-        activeIdx = -1;
-        matches = [];
-        currentSpellItem = null;
-      }
-
-      function highlightActive(dd) {
-        const items = dd.querySelectorAll('.spell-autocomplete-item');
-        items.forEach((el, i) => {
-          el.classList.toggle('active', i === activeIdx);
-        });
-      }
-
-      document.getElementById('cbt-spell-list').addEventListener('focusin', (e) => {
-        if (e.target.classList.contains('spell-name-inp')) {
-          clearTimeout(focusoutTimer);
-          if (activeDropdown) hideDropdown();
-          currentSpellItem = e.target.closest('.spell-item');
-          activeDropdown = createDropdown();
-          const rect = e.target.getBoundingClientRect();
-          activeDropdown.style.position = 'fixed';
-          activeDropdown.style.top = rect.bottom + 'px';
-          activeDropdown.style.left = rect.left + 'px';
-          activeDropdown.style.width = Math.max(rect.width, 200) + 'px';
-          document.body.appendChild(activeDropdown);
-          // Show class-filtered spells immediately on focus
-          renderMatches(e.target, activeDropdown, e.target.value.trim());
-        }
-      });
-
-      document.getElementById('cbt-spell-list').addEventListener('input', (e) => {
-        if (e.target.classList.contains('spell-name-inp') && activeDropdown) {
-          const rect = e.target.getBoundingClientRect();
-          activeDropdown.style.top = rect.bottom + 'px';
-          activeDropdown.style.left = rect.left + 'px';
-          activeDropdown.style.width = Math.max(rect.width, 200) + 'px';
-          renderMatches(e.target, activeDropdown, e.target.value.trim());
-        }
-      });
-
-      document.getElementById('cbt-spell-list').addEventListener('keydown', (e) => {
-        if (!activeDropdown || activeDropdown.style.display === 'none') return;
-        if (!e.target.classList.contains('spell-name-inp')) return;
-
-        const items = activeDropdown.querySelectorAll('.spell-autocomplete-item');
-        if (!items.length) return;
-
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          activeIdx = (activeIdx + 1) % items.length;
-          highlightActive(activeDropdown);
-          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          activeIdx = activeIdx <= 0 ? items.length - 1 : activeIdx - 1;
-          highlightActive(activeDropdown);
-          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'Enter') {
-          if (activeIdx >= 0 && matches[activeIdx]) {
-            e.preventDefault();
-            selectSpell(e.target, matches[activeIdx]);
-          }
-        } else if (e.key === 'Escape' || e.key === 'Tab') {
-          hideDropdown();
-        }
-      });
-
-      document.getElementById('cbt-spell-list').addEventListener('focusout', (e) => {
-        focusoutTimer = setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
-      });
-
-      document.addEventListener('click', (e) => {
-        if (activeDropdown && !activeDropdown.contains(e.target) &&
-            !e.target.classList.contains('spell-name-inp')) {
-          hideDropdown();
-        }
-      });
-    }
-
-    initSpellAutocomplete();
+    });
 
     (function () {
       const GEAR_DEFAULTS = {
@@ -882,7 +759,10 @@
         bar.style.width = pct + '%';
         bar.classList.toggle('over-limit', used > max);
       }
-      window.SD.updateEncumbrance = updateEncumbrance;
+      Events.on('ability:change', stat => {
+        if (stat === 'STR' || stat === 'CON') updateEncumbrance();
+      });
+      Events.on('class:change', () => updateEncumbrance());
 
       // ── Inventory rows ───────────────────────────────
       let rowIdCounter = 0;
@@ -894,10 +774,10 @@
         row.className = 'inv-row';
         row.dataset.rowId = id;
         row.innerHTML = `
-          <input type="text"   class="inv-item-name"  placeholder="Item"  value="${escHtml(data.name)}" />
+          <input type="text"   class="inv-item-name"  placeholder="Item"  value="${esc(data.name)}" />
           <input type="number" class="inv-item-slots"  min="0" step="1" value="${data.slots}" />
           <input type="number" class="inv-item-qty"    min="1"            value="${data.qty}" />
-          <input type="text"   class="inv-item-notes" placeholder="Notes" value="${escHtml(data.notes)}" />
+          <input type="text"   class="inv-item-notes" placeholder="Notes" value="${esc(data.notes)}" />
           <button class="inv-del-btn" aria-label="Remove item">✕</button>
         `;
 
@@ -915,14 +795,6 @@
         });
 
         return row;
-      }
-
-      function escHtml(str) {
-        return String(str)
-          .replace(/&/g, '&amp;')
-          .replace(/"/g, '&quot;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
       }
 
       function collectInventory() {
@@ -952,11 +824,8 @@
 
         document.getElementById('gear-gp').value          = gear.gp;
         document.getElementById('gear-sp').value          = gear.sp;
-        if (window.SD.setArmorType) {
-          window.SD.setArmorType(gear.armorType || 'none');
-        } else {
-          document.getElementById('gear-armor-type').value  = gear.armorType || 'none';
-        }
+        document.getElementById('gear-armor-type').value  = gear.armorType || 'none';
+        Events.emit('armor:change');
         document.getElementById('gear-mithral').checked   = !!gear.mithral;
         document.getElementById('gear-shield').checked    = !!gear.shield;
         document.getElementById('enc-bonus').value        = gear.bonusSlots || 0;
@@ -990,14 +859,14 @@
         document.getElementById(id).addEventListener('change', () => {
           collectAndSave();
           updateEncumbrance();
-          if (window.SD.refreshAC) window.SD.refreshAC();
+          Events.emit('armor:change');
         });
       });
       ['gear-mithral', 'gear-shield'].forEach(id => {
         document.getElementById(id).addEventListener('change', () => {
           collectAndSave();
           updateEncumbrance();
-          if (id === 'gear-shield' && window.SD.refreshAC) window.SD.refreshAC();
+          if (id === 'gear-shield') Events.emit('armor:change');
         });
       });
 
@@ -1113,10 +982,9 @@
           if (isOpen) positionPanel();
         });
 
-        window.SD.setArmorType = function(value) {
-          hiddenInput.value = value;
-          updateTrigger(value);
-        };
+        Events.on('armor:change', () => {
+          updateTrigger(hiddenInput.value);
+        });
       })();
 
       document.getElementById('inv-add-btn').addEventListener('click', () => {
@@ -1206,21 +1074,13 @@
       function clsKey(k) { return 'cls_' + k; }
 
       function load(key, fallback) {
-        const char = window.SD.loadCharacter();
-        const v = char[clsKey(key)];
+        const v = window.SD.character[clsKey(key)];
         return v !== undefined ? v : fallback;
       }
 
       function save(key, value) {
-        const char = window.SD.loadCharacter();
-        char[clsKey(key)] = value;
-        window.SD.saveCharacter(char);
-        window.SD.character = char;
-      }
-
-      function autoGrow(el) {
-        el.style.height = 'auto';
-        el.style.height = el.scrollHeight + 'px';
+        window.SD.character[clsKey(key)] = value;
+        window.SD.saveCharacter(window.SD.character);
       }
 
       // ── talents ────────────────────────────────────────
@@ -1314,149 +1174,32 @@
           list.appendChild(row);
         });
       }
-      window.SD.renderTalents = renderTalents;
 
       // ── talent autocomplete ─────────────────────────────
-      function initTalentAutocomplete() {
-        let activeDropdown = null;
-        let activeIdx = -1;
-        let matches = [];
-        let focusoutTimer = null;
-
-        function createDropdown() {
-          const dd = document.createElement('div');
-          dd.className = 'talent-autocomplete';
-          dd.setAttribute('role', 'listbox');
-          return dd;
-        }
-
-        function getTalents() {
+      createAutocomplete({
+        containerEl: document.getElementById('talents-list'),
+        inputSelector: '.talent-input',
+        getMatches(query) {
           const cls = (document.getElementById('char-class').value || '').toLowerCase();
-          return CLASS_TALENTS[cls] || [];
-        }
-
-        function renderMatches(inputEl, dd, query) {
-          const talents = getTalents();
-          matches = talents.filter(t =>
-            !query || t.text.toLowerCase().includes(query.toLowerCase())
-          );
-          dd.innerHTML = '';
-          activeIdx = -1;
-          if (!matches.length) {
-            dd.style.display = 'none';
-            return;
-          }
-          matches.forEach((t, i) => {
-            const opt = document.createElement('div');
-            opt.className = 'talent-autocomplete-item';
-            opt.setAttribute('role', 'option');
-            opt.dataset.idx = i;
-            const rollSpan = document.createElement('span');
-            rollSpan.className = 'talent-ac-roll';
-            rollSpan.textContent = t.roll;
-            const textSpan = document.createElement('span');
-            textSpan.textContent = t.text;
-            opt.appendChild(rollSpan);
-            opt.appendChild(textSpan);
-            opt.addEventListener('pointerdown', (e) => {
-              e.preventDefault();
-              selectItem(inputEl, t.text);
-            });
-            dd.appendChild(opt);
-          });
-          dd.style.display = 'block';
-        }
-
-        function selectItem(inputEl, text) {
-          hideDropdown();
-          inputEl.value = text;
+          const talents = CLASS_TALENTS[cls] || [];
+          return talents.filter(t => !query || t.text.toLowerCase().includes(query.toLowerCase()));
+        },
+        onSelect(inputEl, item) {
+          inputEl.value = item.text;
           inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        },
+        renderItem(item) {
+          const opt = document.createElement('div');
+          const rollSpan = document.createElement('span');
+          rollSpan.className = 'ac-roll';
+          rollSpan.textContent = item.roll;
+          const textSpan = document.createElement('span');
+          textSpan.textContent = item.text;
+          opt.appendChild(rollSpan);
+          opt.appendChild(textSpan);
+          return opt;
         }
-
-        function hideDropdown() {
-          if (activeDropdown) {
-            activeDropdown.style.display = 'none';
-            activeDropdown.remove();
-            activeDropdown = null;
-          }
-          activeIdx = -1;
-          matches = [];
-        }
-
-        function highlightActive(dd) {
-          const items = dd.querySelectorAll('.talent-autocomplete-item');
-          items.forEach((el, i) => {
-            el.classList.toggle('active', i === activeIdx);
-          });
-        }
-
-        const talentsList = document.getElementById('talents-list');
-
-        talentsList.addEventListener('focusin', (e) => {
-          if (e.target.classList.contains('talent-input')) {
-            clearTimeout(focusoutTimer);
-            if (activeDropdown) hideDropdown();
-            activeDropdown = createDropdown();
-            const rect = e.target.getBoundingClientRect();
-            activeDropdown.style.position = 'fixed';
-            activeDropdown.style.top = rect.bottom + 'px';
-            activeDropdown.style.left = rect.left + 'px';
-            activeDropdown.style.width = rect.width + 'px';
-            document.body.appendChild(activeDropdown);
-            renderMatches(e.target, activeDropdown, e.target.value.trim());
-          }
-        });
-
-        talentsList.addEventListener('input', (e) => {
-          if (e.target.classList.contains('talent-input') && activeDropdown) {
-            const rect = e.target.getBoundingClientRect();
-            activeDropdown.style.top = rect.bottom + 'px';
-            activeDropdown.style.left = rect.left + 'px';
-            activeDropdown.style.width = rect.width + 'px';
-            renderMatches(e.target, activeDropdown, e.target.value.trim());
-          }
-        });
-
-        talentsList.addEventListener('keydown', (e) => {
-          if (!activeDropdown || activeDropdown.style.display === 'none') return;
-          if (!e.target.classList.contains('talent-input')) return;
-
-          const items = activeDropdown.querySelectorAll('.talent-autocomplete-item');
-          if (!items.length) return;
-
-          if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            activeIdx = (activeIdx + 1) % items.length;
-            highlightActive(activeDropdown);
-            items[activeIdx]?.scrollIntoView({ block: 'nearest' });
-          } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            activeIdx = activeIdx <= 0 ? items.length - 1 : activeIdx - 1;
-            highlightActive(activeDropdown);
-            items[activeIdx]?.scrollIntoView({ block: 'nearest' });
-          } else if (e.key === 'Enter') {
-            if (activeIdx >= 0 && matches[activeIdx]) {
-              e.preventDefault();
-              selectItem(e.target, matches[activeIdx].text);
-            }
-          } else if (e.key === 'Escape' || e.key === 'Tab') {
-            hideDropdown();
-          }
-        });
-
-        talentsList.addEventListener('focusout', () => {
-          focusoutTimer = setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
-        });
-
-        document.addEventListener('click', (e) => {
-          if (activeDropdown && !activeDropdown.contains(e.target) &&
-              !e.target.classList.contains('talent-input')) {
-            hideDropdown();
-          }
-        });
-      }
-
-      initTalentAutocomplete();
+      });
 
       // ── class features ─────────────────────────────────
       function renderFeatures(className) {
@@ -1622,7 +1365,7 @@
           renderFeatures(e.target.value);
           updateDeityVisibility(e.target.value);
           updateCoreIcon(e.target.value);
-          if (window.SD.updateEncumbrance) window.SD.updateEncumbrance();
+          Events.emit('class:change', e.target.value);
         });
         document.getElementById('char-level').addEventListener('input', (e) => {
           renderTalents(parseInt(e.target.value, 10) || 1);
@@ -1637,10 +1380,8 @@
 
         // Events
         langEl.addEventListener('input', () => {
-          const char = window.SD.loadCharacter();
-          char.languages = langEl.value;
-          window.SD.saveCharacter(char);
-          window.SD.character = char;
+          window.SD.character.languages = langEl.value;
+          window.SD.saveCharacter(window.SD.character);
         });
 
         bgEl.addEventListener('input', () => {
@@ -1695,21 +1436,7 @@
 
       function getStatMod(stat) {
         const val = (window.SD.character.abilities || {})[stat.toUpperCase()] ?? 10;
-        return Math.floor((val - 10) / 2);
-      }
-
-      function fmt(n) { return n >= 0 ? `+${n}` : `${n}`; }
-
-      function uid() {
-        return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-      }
-
-      function esc(s) {
-        return String(s ?? '')
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;');
+        return abilityMod(val);
       }
 
       // ── AC / Initiative ──────────────────────────────────
@@ -1725,9 +1452,8 @@
       }
 
       function refreshInit() {
-        document.getElementById('cbt-init').textContent = fmt(getStatMod('DEX'));
+        document.getElementById('cbt-init').textContent = fmtMod(getStatMod('DEX'));
       }
-      window.SD.refreshInit = refreshInit;
 
       function refreshAC(skipPersist) {
         const armorType = document.getElementById('gear-armor-type').value;
@@ -1740,16 +1466,20 @@
         getCombat().ac = ac;
         if (!skipPersist) persist();
       }
-      window.SD.refreshAC = refreshAC;
 
       function refreshAttackBonuses() {
         document.querySelectorAll('.atk-row').forEach(row => {
           const statSel = row.querySelector('.atk-stat');
           const bonusSpn = row.querySelector('.atk-bonus');
-          if (statSel && bonusSpn) bonusSpn.textContent = fmt(getStatMod(statSel.value));
+          if (statSel && bonusSpn) bonusSpn.textContent = fmtMod(getStatMod(statSel.value));
         });
       }
-      window.SD.refreshAttackBonuses = refreshAttackBonuses;
+
+      Events.on('ability:change', stat => {
+        if (stat === 'DEX') { refreshInit(); refreshAC(true); }
+        if (stat === 'STR' || stat === 'DEX') refreshAttackBonuses();
+      });
+      Events.on('armor:change', () => refreshAC());
 
       // ── Weapon Data (Shadowdark Player Quickstart p.35) ─
       const WEAPONS = [
@@ -1771,146 +1501,42 @@
       ];
 
       // ── Weapon Autocomplete ───────────────────────────────
-      let weaponDropdown = null;
-      let weaponMatches = [];
-      let weaponActiveIdx = -1;
-      let weaponCurrentRow = null;
-      let weaponFocusoutTimer = null;
-
-      function showWeaponDropdown(inputEl) {
-        hideWeaponDropdown();
-        const dd = document.createElement('div');
-        dd.className = 'weapon-autocomplete';
-        dd.setAttribute('role', 'listbox');
-        weaponDropdown = dd;
-        document.body.appendChild(dd);
-        positionWeaponDropdown(inputEl);
-        filterWeapons(inputEl, inputEl.value.trim());
-      }
-
-      function positionWeaponDropdown(inputEl) {
-        if (!weaponDropdown) return;
-        const rect = inputEl.getBoundingClientRect();
-        weaponDropdown.style.position = 'fixed';
-        weaponDropdown.style.top = rect.bottom + 'px';
-        weaponDropdown.style.left = rect.left + 'px';
-        weaponDropdown.style.width = Math.max(rect.width, 220) + 'px';
-      }
-
-      function filterWeapons(inputEl, query) {
-        if (!weaponDropdown) return;
-        weaponMatches = WEAPONS.filter(w =>
-          !query || w.name.toLowerCase().includes(query.toLowerCase())
-        );
-        weaponDropdown.innerHTML = '';
-        weaponActiveIdx = -1;
-        if (!weaponMatches.length) { weaponDropdown.style.display = 'none'; return; }
-        weaponMatches.forEach((w, i) => {
+      createAutocomplete({
+        containerEl: document.getElementById('cbt-attack-list'),
+        inputSelector: '.atk-f[data-f="name"]',
+        minWidth: 220,
+        getMatches(query) {
+          return WEAPONS.filter(w => !query || w.name.toLowerCase().includes(query.toLowerCase()));
+        },
+        onSelect(inputEl, weapon) {
+          const row = inputEl.closest('.atk-row');
+          if (!row) return;
+          const idx = row._atkIdx;
+          const attacks = getCombat().attacks;
+          const atk = attacks[idx];
+          if (!atk) return;
+          atk.name = weapon.name;
+          atk.stat = weapon.stat;
+          atk.damage = weapon.damage;
+          row.querySelector('[data-f="name"]').value = weapon.name;
+          row.querySelector('.atk-stat').value = weapon.stat;
+          row.querySelector('.atk-bonus').textContent = fmtMod(getStatMod(weapon.stat));
+          row.querySelector('[data-f="damage"]').value = weapon.damage;
+          persist();
+        },
+        renderItem(w) {
           const opt = document.createElement('div');
-          opt.className = 'weapon-ac-item';
-          opt.setAttribute('role', 'option');
-          opt.dataset.idx = i;
+          opt.classList.add('ac-item--detail');
           opt.innerHTML =
-            `<span class="weapon-ac-name">${esc(w.name)}</span>` +
-            `<span class="weapon-ac-info">${esc(w.damage)} · ${esc(w.info)}</span>`;
-          opt.addEventListener('pointerdown', e => { e.preventDefault(); selectWeapon(inputEl, w); });
-          weaponDropdown.appendChild(opt);
-        });
-        weaponDropdown.style.display = 'block';
-      }
-
-      function selectWeapon(inputEl, weapon) {
-        const row = weaponCurrentRow;
-        hideWeaponDropdown();
-        if (!row) return;
-        const idx = row._atkIdx;
-        const attacks = getCombat().attacks;
-        const atk = attacks[idx];
-        if (!atk) return;
-
-        atk.name = weapon.name;
-        atk.stat = weapon.stat;
-        atk.damage = weapon.damage;
-
-        row.querySelector('[data-f="name"]').value = weapon.name;
-        row.querySelector('.atk-stat').value = weapon.stat;
-        row.querySelector('.atk-bonus').textContent = fmt(getStatMod(weapon.stat));
-        row.querySelector('[data-f="damage"]').value = weapon.damage;
-        persist();
-      }
-
-      function hideWeaponDropdown() {
-        if (weaponDropdown) { weaponDropdown.remove(); weaponDropdown = null; }
-        weaponMatches = [];
-        weaponActiveIdx = -1;
-        weaponCurrentRow = null;
-      }
-
-      function highlightWeaponActive() {
-        if (!weaponDropdown) return;
-        weaponDropdown.querySelectorAll('.weapon-ac-item').forEach((el, i) => {
-          el.classList.toggle('active', i === weaponActiveIdx);
-        });
-      }
-
-      // Delegated listeners on attack list
-      const atkListEl = document.getElementById('cbt-attack-list');
-
-      atkListEl.addEventListener('focusin', e => {
-        if (e.target.matches('.atk-f[data-f="name"]')) {
-          clearTimeout(weaponFocusoutTimer);
-          showWeaponDropdown(e.target);
-          weaponCurrentRow = e.target.closest('.atk-row');
-        }
-      });
-
-      atkListEl.addEventListener('input', e => {
-        if (e.target.matches('.atk-f[data-f="name"]') && weaponDropdown) {
-          positionWeaponDropdown(e.target);
-          filterWeapons(e.target, e.target.value.trim());
-        }
-      });
-
-      atkListEl.addEventListener('keydown', e => {
-        if (!weaponDropdown || weaponDropdown.style.display === 'none') return;
-        if (!e.target.matches('.atk-f[data-f="name"]')) return;
-        const items = weaponDropdown.querySelectorAll('.weapon-ac-item');
-        if (!items.length) return;
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          weaponActiveIdx = (weaponActiveIdx + 1) % items.length;
-          highlightWeaponActive();
-          items[weaponActiveIdx]?.scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          weaponActiveIdx = weaponActiveIdx <= 0 ? items.length - 1 : weaponActiveIdx - 1;
-          highlightWeaponActive();
-          items[weaponActiveIdx]?.scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'Enter') {
-          if (weaponActiveIdx >= 0 && weaponMatches[weaponActiveIdx]) {
-            e.preventDefault();
-            selectWeapon(e.target, weaponMatches[weaponActiveIdx]);
-          }
-        } else if (e.key === 'Escape' || e.key === 'Tab') {
-          hideWeaponDropdown();
-        }
-      });
-
-      atkListEl.addEventListener('focusout', e => {
-        weaponFocusoutTimer = setTimeout(() => { if (weaponDropdown) hideWeaponDropdown(); }, 120);
-      });
-
-      document.addEventListener('click', e => {
-        if (weaponDropdown && !weaponDropdown.contains(e.target) &&
-            !e.target.matches('.atk-f[data-f="name"]')) {
-          hideWeaponDropdown();
+            `<span class="ac-name">${esc(w.name)}</span>` +
+            `<span class="ac-info">${esc(w.damage)} · ${esc(w.info)}</span>`;
+          return opt;
         }
       });
 
       // Dismiss all autocomplete dropdowns on scroll
       document.getElementById('content').addEventListener('scroll', () => {
-        document.querySelectorAll('.inv-autocomplete, .spell-autocomplete, .talent-autocomplete, .weapon-autocomplete')
-          .forEach(dd => dd.remove());
+        document.querySelectorAll('.ac-dropdown').forEach(dd => dd.remove());
       }, { passive: true });
 
       // ── Attacks ──────────────────────────────────────────
@@ -1929,7 +1555,7 @@
           row.className = 'atk-row';
           row._atkIdx = idx;
           const stat = atk.stat || 'STR';
-          const bonusVal = fmt(getStatMod(stat));
+          const bonusVal = fmtMod(getStatMod(stat));
           row.innerHTML =
             `<input class="atk-f" placeholder="Weapon"  value="${esc(atk.name)}"   data-f="name"   />` +
             `<select class="atk-stat" title="Attack stat">` +
@@ -1952,7 +1578,7 @@
           const bonusSpn = row.querySelector('.atk-bonus');
           statSel.addEventListener('change', () => {
             atk.stat = statSel.value;
-            bonusSpn.textContent = fmt(getStatMod(statSel.value));
+            bonusSpn.textContent = fmtMod(getStatMod(statSel.value));
             persist();
           });
 
