@@ -1906,7 +1906,6 @@
     // ── Theme selector ─────────────────────────────────
     (function() {
       const THEME_KEY = 'sd_theme';
-      const btn      = document.getElementById('theme-btn');
       const popover  = document.getElementById('theme-popover');
       const swatches = document.querySelectorAll('.theme-swatch');
 
@@ -1921,35 +1920,201 @@
         setTimeout(() => root.classList.remove('theme-switching'), 300);
       }
 
-      function togglePopover(open) {
+      window._toggleThemePopover = function(open) {
         popover.classList.toggle('open', open);
-        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      }
-
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const isOpen = popover.classList.contains('open');
-        togglePopover(!isOpen);
-      });
-
-      document.addEventListener('click', function(e) {
-        if (!popover.contains(e.target) && e.target !== btn) {
-          togglePopover(false);
-        }
-      });
+      };
 
       swatches.forEach(swatch => {
         swatch.addEventListener('click', function() {
           applyTheme(this.dataset.theme);
-          togglePopover(false);
+          window._toggleThemePopover(false);
         });
       });
 
-      // Restore saved theme — already inside async boot(), storage is ready
+      // Close theme popover on outside click
+      document.addEventListener('click', function(e) {
+        if (!popover.contains(e.target) && popover.classList.contains('open')) {
+          window._toggleThemePopover(false);
+        }
+      });
+
+      // Restore saved theme
       const saved = StorageAdapter.getItem(THEME_KEY) || 'dungeon';
       applyTheme(saved);
     })();
 
+    // ── Toast notification ─────────────────────────────
+    function showToast(message, isError) {
+      const el = document.getElementById('toast');
+      el.textContent = message;
+      el.classList.toggle('toast--error', !!isError);
+      el.hidden = false;
+      // Force reflow so transition triggers
+      void el.offsetWidth;
+      el.classList.add('show');
+      setTimeout(() => {
+        el.classList.remove('show');
+        setTimeout(() => { el.hidden = true; }, 300);
+      }, 2000);
+    }
+
+    // ── Clipboard helper ──────────────────────────────
+    async function copyToClipboard(text) {
+      if (window.TS && TS.system && TS.system.clipboard && TS.system.clipboard.setText) {
+        return TS.system.clipboard.setText(text);
+      }
+      return navigator.clipboard.writeText(text);
+    }
+
+    // ── Export character ───────────────────────────────
+    async function exportCharacter() {
+      try {
+        const charRaw = StorageAdapter.getItem('sd_char');
+        const character = charRaw ? JSON.parse(charRaw) : {};
+        const portrait = PortraitStore.get();
+        const theme = StorageAdapter.getItem('sd_theme') || null;
+
+        const payload = {
+          _version: APP_VERSION,
+          _exportedAt: new Date().toISOString(),
+          character: character,
+          portrait: portrait,
+          theme: theme
+        };
+
+        await copyToClipboard(JSON.stringify(payload, null, 2));
+        showToast('Character copied to clipboard');
+      } catch (e) {
+        console.error('[Export] failed:', e);
+        showToast('Failed to copy \u2014 please try again', true);
+      }
+    }
+
+    // ── Import character ──────────────────────────────
+    function importCharacter() {
+      const modal     = document.getElementById('import-modal');
+      const textarea  = document.getElementById('import-textarea');
+      const errorEl   = document.getElementById('import-error');
+      const submitBtn = document.getElementById('import-submit');
+      const cancelBtn = document.getElementById('import-cancel');
+      const confirmModal  = document.getElementById('import-confirm');
+      const confirmMsg    = document.getElementById('confirm-message');
+      const confirmCancel = document.getElementById('confirm-cancel');
+      const confirmReplace = document.getElementById('confirm-replace');
+
+      // Reset state
+      textarea.value = '';
+      errorEl.hidden = true;
+      errorEl.textContent = '';
+      submitBtn.disabled = true;
+
+      // Show modal
+      modal.hidden = false;
+      textarea.focus();
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+      }
+
+      function closeModal() {
+        modal.hidden = true;
+        textarea.value = '';
+        errorEl.hidden = true;
+      }
+
+      function closeConfirm() {
+        confirmModal.hidden = true;
+      }
+
+      // Enable submit when textarea is non-empty
+      function onInput() {
+        submitBtn.disabled = !textarea.value.trim();
+        errorEl.hidden = true;
+      }
+
+      function onCancel() { closeModal(); cleanup(); }
+
+      function onSubmit() {
+        const raw = textarea.value.trim();
+
+        // 1. JSON parse
+        let data;
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          showError('Invalid backup data \u2014 make sure you pasted the complete export.');
+          return;
+        }
+
+        // 2. Structure check
+        if (!data || typeof data.character !== 'object' || data.character === null) {
+          showError("This doesn't look like a Dark Spire backup.");
+          return;
+        }
+
+        // 3. Version check
+        const exportVersion = data._version || '0.5.3';
+        if (compareSemver(exportVersion, APP_VERSION) > 0) {
+          showError('This backup was made with a newer version (v' + exportVersion + '). Please update The Dark Spire first.');
+          return;
+        }
+
+        // 4. Run migrations
+        data = runMigrations(data);
+
+        // 5. Confirmation
+        closeModal();
+        cleanup();
+        const charName = data.character.name || '';
+        confirmMsg.innerHTML = charName
+          ? 'This will replace <strong>' + charName.replace(/</g, '&lt;') + '</strong>. Continue?'
+          : 'This will replace your current character data. Continue?';
+        confirmModal.hidden = false;
+
+        function onConfirmReplace() {
+          // Write data
+          window.SD.saveCharacter(data.character);
+          if (data.portrait) {
+            PortraitStore.set(data.portrait);
+          } else {
+            PortraitStore.remove();
+          }
+          if (data.theme) {
+            StorageAdapter.setItem('sd_theme', data.theme);
+          }
+          StorageAdapter.flush();
+
+          closeConfirm();
+          cleanupConfirm();
+          showToast('Character imported successfully');
+          setTimeout(() => location.reload(), 500);
+        }
+
+        function onConfirmCancel() {
+          closeConfirm();
+          cleanupConfirm();
+        }
+
+        function cleanupConfirm() {
+          confirmReplace.removeEventListener('click', onConfirmReplace);
+          confirmCancel.removeEventListener('click', onConfirmCancel);
+        }
+
+        confirmReplace.addEventListener('click', onConfirmReplace);
+        confirmCancel.addEventListener('click', onConfirmCancel);
+      }
+
+      function cleanup() {
+        textarea.removeEventListener('input', onInput);
+        cancelBtn.removeEventListener('click', onCancel);
+        submitBtn.removeEventListener('click', onSubmit);
+      }
+
+      textarea.addEventListener('input', onInput);
+      cancelBtn.addEventListener('click', onCancel);
+      submitBtn.addEventListener('click', onSubmit);
+    }
 
 
     // ── Custom stepper buttons for AC and Luck ──────────────────────────────
@@ -1971,9 +2136,8 @@
     (function() {
       const overlay = document.getElementById('creation-guide');
       const closeBtn = document.getElementById('guide-close');
-      const reopenBtn = document.getElementById('guide-reopen');
 
-      function openGuide() { overlay.hidden = false; }
+      window._openGuide = function() { overlay.hidden = false; };
       function closeGuide() { overlay.hidden = true; }
 
       closeBtn.addEventListener('click', closeGuide);
@@ -1981,11 +2145,57 @@
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) closeGuide();
       });
-      reopenBtn.addEventListener('click', openGuide);
 
       // Auto-show when sheet is empty (no name and no class)
       const c = window.SD.character;
-      if (!c.name && !c.class) openGuide();
+      if (!c.name && !c.class) window._openGuide();
+    })();
+
+    // ── Settings menu ─────────────────────────────────
+    (function() {
+      const btn      = document.getElementById('menu-btn');
+      const dropdown = document.getElementById('menu-dropdown');
+
+      function toggleMenu(open) {
+        dropdown.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isOpen = dropdown.classList.contains('open');
+        toggleMenu(!isOpen);
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target) && e.target !== btn) {
+          toggleMenu(false);
+        }
+      });
+
+      // Theme — open popover, close dropdown
+      document.getElementById('menu-theme').addEventListener('click', function() {
+        toggleMenu(false);
+        window._toggleThemePopover(true);
+      });
+
+      // Guide — open guide, close dropdown
+      document.getElementById('menu-guide').addEventListener('click', function() {
+        toggleMenu(false);
+        window._openGuide();
+      });
+
+      // Export
+      document.getElementById('menu-export').addEventListener('click', function() {
+        toggleMenu(false);
+        exportCharacter();
+      });
+
+      // Import
+      document.getElementById('menu-import').addEventListener('click', function() {
+        toggleMenu(false);
+        importCharacter();
+      });
     })();
 
     })(); // end boot()
