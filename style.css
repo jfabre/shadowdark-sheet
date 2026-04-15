@@ -586,6 +586,7 @@ body {
   height: 100%;
   object-fit: cover;
   display: none;
+  pointer-events: none;
 }
 
 .portrait-placeholder {
@@ -595,6 +596,7 @@ body {
   justify-content: center;
   gap: 4px;
   color: var(--muted);
+  pointer-events: none;
 }
 
 .portrait-plus {

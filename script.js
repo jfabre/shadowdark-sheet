@@ -681,10 +681,18 @@
 
         // Fallback: defer click() off the call stack to reduce UI freeze
         setTimeout(() => fileInput.click(), 0);
+
+        // Reset guard when window regains focus (covers browsers where
+        // the input 'cancel' event doesn't fire, e.g. older Chromium)
+        const onFocus = () => {
+          window.removeEventListener('focus', onFocus);
+          setTimeout(() => { filePickerOpen = false; }, 300);
+        };
+        window.addEventListener('focus', onFocus);
       }
 
       frame.addEventListener('click', (e) => {
-        if (e.target === clearBtn) return;
+        if (e.target.closest('.portrait-clear')) return;
         openFilePicker();
       });
 
