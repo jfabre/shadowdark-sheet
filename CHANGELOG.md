@@ -3,6 +3,11 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.5.4] - 2026-04-15
+
+- ux: reorder traits tab sections and remove deity dimming feature
+- fix: separate portrait from campaign blob to prevent UI freezing
+
 ## [0.5.3] - 2026-04-15
 
 - fix: portrait click not working after changing image
