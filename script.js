@@ -27,7 +27,7 @@
       let _isTaleSpire = false;
       let _dirty = false;
       let _debounceTimer = null;
-      const DEBOUNCE_MS = 500;
+      const DEBOUNCE_MS = 1500;
 
       async function _flushToTaleSpire() {
         if (!_isTaleSpire || !_dirty) return;
@@ -41,10 +41,14 @@
         }
       }
 
+      const _scheduleIdle = window.requestIdleCallback
+        ? (fn) => requestIdleCallback(fn, { timeout: 2000 })
+        : (fn) => setTimeout(fn, 0);
+
       function _scheduleFlush() {
         if (!_isTaleSpire) return;
         clearTimeout(_debounceTimer);
-        _debounceTimer = setTimeout(_flushToTaleSpire, DEBOUNCE_MS);
+        _debounceTimer = setTimeout(() => _scheduleIdle(_flushToTaleSpire), DEBOUNCE_MS);
       }
 
       // Immediate flush — cancels any pending debounce. Called on shutdown.
@@ -104,6 +108,89 @@
       function isTaleSpire() { return _isTaleSpire; }
 
       return { init, getItem, setItem, removeItem, isTaleSpire, flush };
+    })();
+
+    // ── Portrait Store ───────────────────────────────────
+    // Stores portrait data separately from the main StorageAdapter to
+    // keep the campaign blob small and fast to serialize/flush.
+    // In TaleSpire: uses global.setBlob with a campaign-keyed JSON map.
+    // In browser: uses localStorage directly.
+    const PortraitStore = (function() {
+      const PORTRAIT_KEY = 'sd_char_portrait';
+      let _isTaleSpire = false;
+      let _campaignId = null;
+      let _map = {}; // { campaignId: dataUrl }
+
+      async function init() {
+        _isTaleSpire = !!(window.TS &&
+                          window.TS.localStorage &&
+                          window.TS.localStorage.global);
+
+        if (_isTaleSpire) {
+          try {
+            const info = await TS.campaigns.whereAmI();
+            _campaignId = info && info.id ? info.id : '_default';
+          } catch (e) {
+            _campaignId = '_default';
+            console.warn('[PortraitStore] could not get campaign ID:', e);
+          }
+
+          try {
+            const raw = await TS.localStorage.global.getBlob();
+            if (raw) _map = JSON.parse(raw);
+          } catch (e) {
+            console.warn('[PortraitStore] global read failed:', e);
+          }
+          if (TS.debug) TS.debug.log('[PortraitStore] loaded for campaign ' + _campaignId);
+        }
+      }
+
+      function get() {
+        if (_isTaleSpire) {
+          return _map[_campaignId] || null;
+        }
+        return localStorage.getItem(PORTRAIT_KEY);
+      }
+
+      async function set(dataUrl) {
+        if (_isTaleSpire) {
+          _map[_campaignId] = dataUrl;
+          try {
+            await TS.localStorage.global.setBlob(JSON.stringify(_map));
+          } catch (e) {
+            console.warn('[PortraitStore] global write failed:', e);
+          }
+        } else {
+          localStorage.setItem(PORTRAIT_KEY, dataUrl);
+        }
+      }
+
+      async function remove() {
+        if (_isTaleSpire) {
+          delete _map[_campaignId];
+          try {
+            await TS.localStorage.global.setBlob(JSON.stringify(_map));
+          } catch (e) {
+            console.warn('[PortraitStore] global write failed:', e);
+          }
+        } else {
+          localStorage.removeItem(PORTRAIT_KEY);
+        }
+      }
+
+      // Migrate portrait from campaign blob (StorageAdapter) → global blob.
+      // Called once during init to handle existing users.
+      async function migrateFromCampaignBlob() {
+        if (!_isTaleSpire) return;
+        const existing = StorageAdapter.getItem(PORTRAIT_KEY);
+        if (existing) {
+          await set(existing);
+          StorageAdapter.removeItem(PORTRAIT_KEY);
+          if (TS.debug) TS.debug.log('[PortraitStore] migrated portrait from campaign blob');
+        }
+      }
+
+      return { init, get, set, remove, migrateFromCampaignBlob };
     })();
 
     // ── Utilities ────────────────────────────────────────
@@ -270,6 +357,8 @@
     // Wait for TaleSpire API to initialize (instant in browser mode)
     await _tsReadyPromise;
     await StorageAdapter.init();
+    await PortraitStore.init();
+    await PortraitStore.migrateFromCampaignBlob();
 
     // ══════════════════════════════════════════════════════
     //  GAME DATA — Shadowdark RPG reference tables
@@ -585,7 +674,8 @@
 
     // ── Portrait ─────────────────────────────────────────
     (function () {
-      const PORTRAIT_KEY = 'sd_char_portrait';
+      const MAX_INPUT_SIZE = 10 * 1024 * 1024; // 10MB
+      const MAX_OUTPUT_SIZE = 200 * 1024; // 200KB
       const frame = document.getElementById('portrait-frame');
       const img = document.getElementById('portrait-img');
       const placeholder = document.getElementById('portrait-placeholder');
@@ -593,7 +683,7 @@
       const fileInput = document.getElementById('portrait-file');
 
       function loadPortrait() {
-        const data = StorageAdapter.getItem(PORTRAIT_KEY);
+        const data = PortraitStore.get();
         if (data) {
           img.src = data;
           img.style.display = 'block';
@@ -606,26 +696,30 @@
 
       function savePortrait(dataUrl) {
         try {
-          StorageAdapter.setItem(PORTRAIT_KEY, dataUrl);
+          PortraitStore.set(dataUrl);
         } catch (e) {
           console.warn('Could not save portrait:', e);
         }
       }
 
       function clearPortrait() {
-        StorageAdapter.removeItem(PORTRAIT_KEY);
+        PortraitStore.remove();
         img.src = '';
         img.style.display = 'none';
         placeholder.style.display = 'flex';
       }
 
       function resizeImage(file) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
+          if (file.size > MAX_INPUT_SIZE) {
+            reject(new Error('Image too large (max 10MB)'));
+            return;
+          }
           const reader = new FileReader();
           reader.onload = (e) => {
             const imgEl = new Image();
             imgEl.onload = () => {
-              const maxDim = 400;
+              const maxDim = 256;
               let w = imgEl.width;
               let h = imgEl.height;
               if (w > maxDim || h > maxDim) {
@@ -638,7 +732,12 @@
               canvas.height = h;
               const ctx = canvas.getContext('2d');
               ctx.drawImage(imgEl, 0, 0, w, h);
-              resolve(canvas.toDataURL('image/jpeg', 0.85));
+              const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+              if (dataUrl.length > MAX_OUTPUT_SIZE) {
+                reject(new Error('Compressed portrait too large'));
+                return;
+              }
+              resolve(dataUrl);
             };
             imgEl.src = e.target.result;
           };
@@ -648,11 +747,15 @@
 
       async function handleFile(file) {
         if (!file || !file.type.startsWith('image/')) return;
-        const dataUrl = await resizeImage(file);
-        savePortrait(dataUrl);
-        img.src = dataUrl;
-        img.style.display = 'block';
-        placeholder.style.display = 'none';
+        try {
+          const dataUrl = await resizeImage(file);
+          savePortrait(dataUrl);
+          img.src = dataUrl;
+          img.style.display = 'block';
+          placeholder.style.display = 'none';
+        } catch (e) {
+          console.warn('Portrait processing failed:', e.message);
+        }
       }
 
       let filePickerOpen = false;
