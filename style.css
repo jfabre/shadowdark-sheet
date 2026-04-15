@@ -63,6 +63,33 @@ html, body { height: 100%; }
   --border:   #251a35;
 }
 
+[data-theme='emerald-grove'] {
+  --bg:       #060e08;
+  --text:     #d0e8d8;
+  --accent:   #2ecc71;
+  --muted:    #3d6b4a;
+  --surface:  #0c1810;
+  --border:   #1a3524;
+}
+
+[data-theme='sunfire'] {
+  --bg:       #0e0a04;
+  --text:     #f0e4c8;
+  --accent:   #d4a017;
+  --muted:    #6b5a30;
+  --surface:  #181208;
+  --border:   #302510;
+}
+
+[data-theme='shadowfell'] {
+  --bg:       #09090b;
+  --text:     #b8bac4;
+  --accent:   #7a7e8e;
+  --muted:    #44464f;
+  --surface:  #111114;
+  --border:   #1e1f24;
+}
+
 /* ── Shared input / select / textarea base ────────── */
 .field-group input,
 .field-group select,
