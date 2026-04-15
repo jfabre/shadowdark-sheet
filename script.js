@@ -443,11 +443,13 @@
       let activeDropdown = null;
       let activeIdx = -1;
       let matches = [];
+      let focusoutTimer = null;
 
       function createDropdown() {
         const dd = document.createElement('div');
         dd.className = 'inv-autocomplete';
         dd.setAttribute('role', 'listbox');
+        dd.addEventListener('pointerdown', e => e.preventDefault());
         return dd;
       }
 
@@ -512,6 +514,7 @@
 
       document.getElementById('inv-list').addEventListener('focusin', (e) => {
         if (e.target.classList.contains('inv-item-name')) {
+          clearTimeout(focusoutTimer);
           if (activeDropdown) hideDropdown();
           activeDropdown = createDropdown();
           const rect = e.target.getBoundingClientRect();
@@ -562,7 +565,7 @@
       });
 
       document.getElementById('inv-list').addEventListener('focusout', (e) => {
-        setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
+        focusoutTimer = setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
       });
 
       document.addEventListener('click', (e) => {
@@ -617,11 +620,13 @@
       let activeIdx = -1;
       let matches = [];
       let currentSpellItem = null;
+      let focusoutTimer = null;
 
       function createDropdown() {
         const dd = document.createElement('div');
         dd.className = 'spell-autocomplete';
         dd.setAttribute('role', 'listbox');
+        dd.addEventListener('pointerdown', e => e.preventDefault());
         return dd;
       }
 
@@ -741,6 +746,7 @@
 
       document.getElementById('cbt-spell-list').addEventListener('focusin', (e) => {
         if (e.target.classList.contains('spell-name-inp')) {
+          clearTimeout(focusoutTimer);
           if (activeDropdown) hideDropdown();
           currentSpellItem = e.target.closest('.spell-item');
           activeDropdown = createDropdown();
@@ -793,7 +799,7 @@
       });
 
       document.getElementById('cbt-spell-list').addEventListener('focusout', (e) => {
-        setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
+        focusoutTimer = setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
       });
 
       document.addEventListener('click', (e) => {
@@ -1317,11 +1323,13 @@
         let activeDropdown = null;
         let activeIdx = -1;
         let matches = [];
+        let focusoutTimer = null;
 
         function createDropdown() {
           const dd = document.createElement('div');
           dd.className = 'talent-autocomplete';
           dd.setAttribute('role', 'listbox');
+          dd.addEventListener('pointerdown', e => e.preventDefault());
           return dd;
         }
 
@@ -1389,6 +1397,7 @@
 
         talentsList.addEventListener('focusin', (e) => {
           if (e.target.classList.contains('talent-input')) {
+            clearTimeout(focusoutTimer);
             if (activeDropdown) hideDropdown();
             activeDropdown = createDropdown();
             const rect = e.target.getBoundingClientRect();
@@ -1439,7 +1448,7 @@
         });
 
         talentsList.addEventListener('focusout', () => {
-          setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
+          focusoutTimer = setTimeout(() => { if (activeDropdown) hideDropdown(); }, 120);
         });
 
         document.addEventListener('click', (e) => {
@@ -1769,12 +1778,14 @@
       let weaponMatches = [];
       let weaponActiveIdx = -1;
       let weaponCurrentRow = null;
+      let weaponFocusoutTimer = null;
 
       function showWeaponDropdown(inputEl) {
         hideWeaponDropdown();
         const dd = document.createElement('div');
         dd.className = 'weapon-autocomplete';
         dd.setAttribute('role', 'listbox');
+        dd.addEventListener('pointerdown', e => e.preventDefault());
         weaponDropdown = dd;
         document.body.appendChild(dd);
         positionWeaponDropdown(inputEl);
@@ -1851,6 +1862,7 @@
 
       atkListEl.addEventListener('focusin', e => {
         if (e.target.matches('.atk-f[data-f="name"]')) {
+          clearTimeout(weaponFocusoutTimer);
           showWeaponDropdown(e.target);
           weaponCurrentRow = e.target.closest('.atk-row');
         }
@@ -1889,7 +1901,7 @@
       });
 
       atkListEl.addEventListener('focusout', e => {
-        setTimeout(() => { if (weaponDropdown) hideWeaponDropdown(); }, 120);
+        weaponFocusoutTimer = setTimeout(() => { if (weaponDropdown) hideWeaponDropdown(); }, 120);
       });
 
       document.addEventListener('click', e => {
@@ -1898,6 +1910,12 @@
           hideWeaponDropdown();
         }
       });
+
+      // Dismiss all autocomplete dropdowns on scroll
+      document.getElementById('content').addEventListener('scroll', () => {
+        document.querySelectorAll('.inv-autocomplete, .spell-autocomplete, .talent-autocomplete, .weapon-autocomplete')
+          .forEach(dd => dd.remove());
+      }, { passive: true });
 
       // ── Attacks ──────────────────────────────────────────
       function renderAttacks() {
