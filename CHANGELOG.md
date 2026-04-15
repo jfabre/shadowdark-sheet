@@ -3,6 +3,17 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.5.1] - 2026-04-15
+
+- feat: add mod.io deploy script and changelog
+- docs: fix incorrect claim about shared storage in README
+- docs: update README to match current UI and architecture
+- feat: change default theme to dungeon and clean up theme popover
+- fix: restore missing containerEl for inventory autocomplete
+- refactor: consolidate game data, section separators, and shared CSS input base
+- refactor: consolidate autocomplete, utilities, event bus, and CSS
+- Add Shadowdark TPL attribution notice and clean up modal icons
+
 ## [0.5.0] - 2026-04-14
 
 Initial tracked release.

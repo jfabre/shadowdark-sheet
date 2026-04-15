@@ -3,8 +3,8 @@
   "name": "The Dark Spire - Character Sheet",
   "description": "The best Shadowdark RPG character sheet for TaleSpire",
   "entryPoint": "/index.html",
-  "version": "0.5.0",
-  "environment": { 
+  "version": "0.5.1",
+  "environment": {
     "loadTargetBehavior": "popup"
   },
   "about": {
