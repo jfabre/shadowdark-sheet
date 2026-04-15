@@ -3,6 +3,24 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.7.0] - 2026-04-15
+
+- docs: add help modal and menu reorder implementation plan
+- fix: help modal hierarchy - titles, strong, and questions use --accent for visual distinction
+- fix: help modal contrast - open groups use --bg, answers use opacity for readable hierarchy
+- fix: improve help modal text contrast - use --text instead of --muted for body copy
+- typeset: fix help modal typography - consistent font-hdr, stronger hierarchy, larger body text
+- ux: redesign help modal with collapsible sections for better readability
+- fix: use id selector to force-hide spin buttons on bonus slots input
+- ux: hide spin buttons on bonus slots input for cleaner look
+- ux: widen bonus slots input from 36px to 48px
+- ux: move bonus slots below encumbrance bar in a footer row with breakdown
+- ux: replace card boxes with subtle divider lines between gear sections
+- ux: rework inventory page - card sections, inline encumbrance, Items subhead, empty state
+- fix: replace all var(--fg) with var(--text) to match actual theme variable names
+- ux: replace Sunfire theme with Silverstone (cool light grey, slate blue accent)
+- feat: add Help modal and reorder Settings menu (sd-e3n)
+
 ## [0.6.0] - 2026-04-15
 
 - ux: move Character Creation to top of menu, add 3 new themes (Emerald Grove, Sunfire, Shadowfell)
