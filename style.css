@@ -1304,11 +1304,19 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 }
 
 .enc-bonus-input {
-  width: 48px;
+  width: 44px;
   font-family: var(--font-num);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   text-align: center;
-  padding: 2px;
+  padding: 3px 4px;
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.enc-bonus-input::-webkit-inner-spin-button,
+.enc-bonus-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .enc-breakdown {
