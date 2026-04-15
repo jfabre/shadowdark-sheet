@@ -194,7 +194,7 @@
     })();
 
     // ── Version utilities ───────────────────────────────
-    const APP_VERSION = '0.5.3';
+    const APP_VERSION = '0.5.4';
 
     function compareSemver(a, b) {
       const pa = a.split('.').map(Number);
