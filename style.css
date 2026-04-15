@@ -592,7 +592,7 @@ body {
   color: var(--text);
   font-family: var(--font-num);
   font-size: 0.95rem;
-  padding: 8px 6px;
+  padding: 12px 6px;
   width: 48px;
   min-width: 0;
   flex: 1;
@@ -682,7 +682,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   color: var(--text);
   font-family: var(--font-num);
   font-size: 0.95rem;
-  padding: 8px 6px;
+  padding: 12px 6px;
   width: 48px;
   min-width: 0;
   flex: 1;
