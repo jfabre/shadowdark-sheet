@@ -523,6 +523,32 @@ html.theme-switching * {
   color: var(--accent);
 }
 
+/* ── About modal ───────────────────────────────────── */
+.about-version {
+  font-family: var(--font-num);
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin: 0 0 12px;
+  letter-spacing: 0.05em;
+}
+.about-text {
+  font-size: 0.85rem;
+  color: var(--fg);
+  margin: 0 0 6px;
+}
+.about-author {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+.about-license {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 12px;
+  font-style: italic;
+}
+
 /* ── Toast ─────────────────────────────────────────── */
 .toast {
   position: fixed;

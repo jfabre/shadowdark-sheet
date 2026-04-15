@@ -2197,6 +2197,19 @@
         toggleMenu(false);
         importCharacter();
       });
+
+      // About
+      var aboutModal = document.getElementById('about-modal');
+      document.getElementById('menu-about').addEventListener('click', function() {
+        toggleMenu(false);
+        aboutModal.hidden = false;
+      });
+      document.getElementById('about-close').addEventListener('click', function() {
+        aboutModal.hidden = true;
+      });
+      aboutModal.addEventListener('click', function(e) {
+        if (e.target === aboutModal) aboutModal.hidden = true;
+      });
     })();
 
     })(); // end boot()
