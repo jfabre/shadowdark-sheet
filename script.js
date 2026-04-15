@@ -703,6 +703,7 @@
 
     // ── Inventory autocomplete ──────────────────────────
     createAutocomplete({
+      containerEl: document.getElementById('inv-list'),
       inputSelector: '.inv-item-name',
       getMatches(query) {
         return INVENTORY_ITEMS
