@@ -449,7 +449,6 @@
         const dd = document.createElement('div');
         dd.className = 'inv-autocomplete';
         dd.setAttribute('role', 'listbox');
-        dd.addEventListener('pointerdown', e => e.preventDefault());
         return dd;
       }
 
@@ -480,7 +479,7 @@
           } else {
             opt.textContent = item;
           }
-          opt.addEventListener('mousedown', (e) => {
+          opt.addEventListener('pointerdown', (e) => {
             e.preventDefault();
             selectItem(inputEl, item);
           });
@@ -626,7 +625,6 @@
         const dd = document.createElement('div');
         dd.className = 'spell-autocomplete';
         dd.setAttribute('role', 'listbox');
-        dd.addEventListener('pointerdown', e => e.preventDefault());
         return dd;
       }
 
@@ -674,7 +672,7 @@
           opt.appendChild(nameSpan);
           opt.appendChild(infoSpan);
 
-          opt.addEventListener('mousedown', (e) => {
+          opt.addEventListener('pointerdown', (e) => {
             e.preventDefault();
             selectSpell(inputEl, spell);
           });
@@ -1329,7 +1327,6 @@
           const dd = document.createElement('div');
           dd.className = 'talent-autocomplete';
           dd.setAttribute('role', 'listbox');
-          dd.addEventListener('pointerdown', e => e.preventDefault());
           return dd;
         }
 
@@ -1361,7 +1358,7 @@
             textSpan.textContent = t.text;
             opt.appendChild(rollSpan);
             opt.appendChild(textSpan);
-            opt.addEventListener('mousedown', (e) => {
+            opt.addEventListener('pointerdown', (e) => {
               e.preventDefault();
               selectItem(inputEl, t.text);
             });
@@ -1785,7 +1782,6 @@
         const dd = document.createElement('div');
         dd.className = 'weapon-autocomplete';
         dd.setAttribute('role', 'listbox');
-        dd.addEventListener('pointerdown', e => e.preventDefault());
         weaponDropdown = dd;
         document.body.appendChild(dd);
         positionWeaponDropdown(inputEl);
@@ -1817,7 +1813,7 @@
           opt.innerHTML =
             `<span class="weapon-ac-name">${esc(w.name)}</span>` +
             `<span class="weapon-ac-info">${esc(w.damage)} · ${esc(w.info)}</span>`;
-          opt.addEventListener('mousedown', e => { e.preventDefault(); selectWeapon(inputEl, w); });
+          opt.addEventListener('pointerdown', e => { e.preventDefault(); selectWeapon(inputEl, w); });
           weaponDropdown.appendChild(opt);
         });
         weaponDropdown.style.display = 'block';
