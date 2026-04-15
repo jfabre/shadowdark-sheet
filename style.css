@@ -1282,20 +1282,25 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   background: #c0392b;
 }
 
-.enc-right {
+.enc-footer {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  margin-top: 5px;
 }
 
-.enc-bonus-inline {
+.enc-bonus-row {
   display: flex;
   align-items: center;
-  gap: 2px;
-  font-family: var(--font-num);
-  font-size: 0.8rem;
-  color: var(--muted);
+  gap: 5px;
   cursor: pointer;
+}
+
+.enc-bonus-label {
+  font-family: var(--font-num);
+  font-size: 0.7rem;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .enc-bonus-input {
@@ -1310,7 +1315,6 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   font-family: var(--font-num);
   font-size: 0.75rem;
   color: var(--muted);
-  margin-top: 5px;
   letter-spacing: 0.02em;
 }
 

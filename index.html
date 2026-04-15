@@ -146,15 +146,18 @@
       <section class="gear-section">
         <div class="enc-header">
           <span class="enc-label">Encumbrance</span>
-          <span class="enc-right">
-            <label class="enc-bonus-inline" for="enc-bonus">+<input type="number" id="enc-bonus" min="0" class="enc-bonus-input" value="0" /></label>
-            <span class="enc-count"><span id="enc-used">0</span> / <span id="enc-max">10</span></span>
-          </span>
+          <span class="enc-count"><span id="enc-used">0</span> / <span id="enc-max">10</span> slots</span>
         </div>
         <div class="enc-bar-wrap">
           <div id="enc-bar" class="enc-bar"></div>
         </div>
-        <div id="enc-breakdown" class="enc-breakdown">armor 0 · coins 0 · items 0</div>
+        <div class="enc-footer">
+          <div id="enc-breakdown" class="enc-breakdown">armor 0 · coins 0 · items 0</div>
+          <label class="enc-bonus-row" for="enc-bonus">
+            <span class="enc-bonus-label">Bonus slots</span>
+            <input type="number" id="enc-bonus" min="0" class="enc-bonus-input" value="0" />
+          </label>
+        </div>
       </section>
 
       <!-- Currency -->
