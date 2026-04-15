@@ -236,8 +236,17 @@
             e.preventDefault();
             doSelect(e.target, matches[activeIdx]);
           }
-        } else if (e.key === 'Escape' || e.key === 'Tab') {
+        } else if (e.key === 'Escape') {
           hide();
+        } else if (e.key === 'Tab') {
+          e.preventDefault();
+          if (e.shiftKey) {
+            activeIdx = activeIdx <= 0 ? items.length - 1 : activeIdx - 1;
+          } else {
+            activeIdx = (activeIdx + 1) % items.length;
+          }
+          highlight();
+          items[activeIdx]?.scrollIntoView({ block: 'nearest' });
         }
       });
 
