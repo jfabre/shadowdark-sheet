@@ -42,7 +42,7 @@ Six color themes, switchable from the 🎨 button (top-right). **Dungeon** is th
 | **Arcane** | Deep purple, mystical |
 
 ### Storage
-- **TaleSpire** — saves to campaign blob storage via the Symbiote API; data is shared across all players viewing the same symbiote
+- **TaleSpire** — saves to local campaign storage via the Symbiote API (`TS.localStorage.campaign`); each player's data is stored separately on their own machine, scoped by campaign
 - **Browser** — falls back to `localStorage` for standalone use
 - Debounced writes prevent data loss on rapid input
 
