@@ -2174,7 +2174,8 @@
       });
 
       // Theme — open popover, close dropdown
-      document.getElementById('menu-theme').addEventListener('click', function() {
+      document.getElementById('menu-theme').addEventListener('click', function(e) {
+        e.stopPropagation();
         toggleMenu(false);
         window._toggleThemePopover(true);
       });
