@@ -143,7 +143,7 @@ input[type="number"]:focus,
 .guide-card {
   position: relative;
   background: var(--surface);
-  color: var(--fg);
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: 12px;
   max-width: 420px;
@@ -314,7 +314,7 @@ input[type="number"]:focus,
   padding: 8px 16px;
   background: none;
   border: none;
-  color: var(--fg);
+  color: var(--text);
   font-family: var(--font-hdr);
   font-size: 0.82rem;
   cursor: pointer;
@@ -441,7 +441,7 @@ html.theme-switching * {
 
 .import-card {
   background: var(--surface);
-  color: var(--fg);
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: 12px;
   max-width: 420px;
@@ -466,7 +466,7 @@ html.theme-switching * {
   min-height: 120px;
   padding: 10px;
   background: var(--bg);
-  color: var(--fg);
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: 6px;
   font-family: var(--font-num);
@@ -507,7 +507,7 @@ html.theme-switching * {
   color: var(--muted);
 }
 .import-btn--cancel:hover {
-  color: var(--fg);
+  color: var(--text);
 }
 .import-btn--submit {
   background: var(--accent);
@@ -533,7 +533,7 @@ html.theme-switching * {
 /* ── Confirm dialog ─────────────────────────────────── */
 .confirm-card {
   background: var(--surface);
-  color: var(--fg);
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: 12px;
   max-width: 340px;
@@ -554,7 +554,7 @@ html.theme-switching * {
 .confirm-title {
   font-family: var(--font-hdr);
   font-size: 1.1rem;
-  color: var(--fg);
+  color: var(--text);
   margin: 0 0 8px;
 }
 .confirm-message {
@@ -588,7 +588,7 @@ html.theme-switching * {
   color: var(--muted);
 }
 .confirm-btn--cancel:hover {
-  color: var(--fg);
+  color: var(--text);
   background: rgba(255,255,255,0.04);
 }
 .confirm-btn--danger {
@@ -612,7 +612,7 @@ html.theme-switching * {
 }
 .about-text {
   font-size: 0.85rem;
-  color: var(--fg);
+  color: var(--text);
   margin: 0 0 6px;
 }
 .about-author {
@@ -659,7 +659,7 @@ html.theme-switching * {
 }
 .help-list li {
   font-size: 0.82rem;
-  color: var(--fg);
+  color: var(--text);
   line-height: 1.55;
   margin-bottom: 7px;
 }
@@ -682,7 +682,7 @@ html.theme-switching * {
 .help-faq dt {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--fg);
+  color: var(--text);
   margin: 0 0 3px;
 }
 .help-faq dd {
