@@ -779,6 +779,24 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 16px 14px calc(var(--tab-h) + 8px);
+  /* Standard scrollbar: Firefox and Chrome 121+ */
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+/* Webkit scrollbar: TaleSpire Chromium 111 and Safari */
+#content::-webkit-scrollbar {
+  width: 4px;
+}
+#content::-webkit-scrollbar-track {
+  background: transparent;
+}
+#content::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 2px;
+}
+#content::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.15);
 }
 
 /* ── Tab panels ─────────────────────────────────────── */
