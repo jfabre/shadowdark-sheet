@@ -505,7 +505,11 @@
         btn.setAttribute('aria-selected', active);
       });
       tabPanels.forEach(panel => {
-        panel.classList.toggle('active', panel.id === `panel-${panelName}`);
+        const active = panel.id === `panel-${panelName}`;
+        panel.classList.toggle('active', active);
+        if (active) {
+          panel.querySelectorAll('.auto-grow').forEach(function(el) { autoGrow(el); });
+        }
       });
     }
 
