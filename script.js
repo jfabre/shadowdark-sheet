@@ -71,7 +71,7 @@
       } else if (pending.type === 'spell') {
         var outcome = total >= pending.spellDC ? 'success' : 'fail';
         msg = '\u2728 ' + pending.name + ' [' + modeLabel + ']'
-            + '  ' + kept + bonus + ' = ' + total + ' vs DC ' + pending.spellDC + ' \u2014 ' + outcome;
+            + '  ' + kept + bonus + ' = ' + total + ' \u2014 ' + outcome;
       } else {
         // attack
         var dmgTotal = 0;
