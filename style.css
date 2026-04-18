@@ -788,12 +788,14 @@ html.theme-switching * {
   text-overflow: ellipsis;
 }
 .toast-detail {
-  font-size: 0.82rem;
+  font-family: var(--font-num);
+  font-size: 0.88rem;
   color: var(--text);
-  opacity: 0.85;
+  opacity: 0.9;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: 0.01em;
 }
 .toast-bar {
   position: absolute;
