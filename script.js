@@ -63,18 +63,15 @@
       var total = kept + pending.bonusN;
       var bonus = pending.bonusN >= 0 ? '+' + pending.bonusN : '' + pending.bonusN;
       var modeLabel = pending.mode === 'advantage' ? 'ADV' : 'DIS';
-       var rollDetail = kept + bonus;
-      var msg;
+       var msg;
 
       if (pending.type === 'check') {
         msg = pending.name + ' [' + modeLabel + ']'
-            + '  \u2192 ' + total
-            + '  (' + rollDetail + ')';
+            + '  ' + kept + bonus + ' = ' + total;
       } else if (pending.type === 'spell') {
         var outcome = total >= pending.spellDC ? 'success' : 'fail';
         msg = '\u2728 ' + pending.name + ' [' + modeLabel + ']'
-            + '  \u2192 ' + total + ' vs DC ' + pending.spellDC + ' \u2014 ' + outcome
-            + '  (' + rollDetail + ')';
+            + '  ' + kept + bonus + ' = ' + total + ' vs DC ' + pending.spellDC + ' \u2014 ' + outcome;
       } else {
         // attack
         var dmgTotal = 0;
@@ -83,8 +80,7 @@
           if (!tmp.length) dmgTotal += _sumNode(g.result);
         });
         msg = '\u2694 ' + pending.name + ' [' + modeLabel + ']'
-            + '  Hit: ' + total
-            + '  (' + rollDetail + ')'
+            + '  ' + kept + bonus + ' = ' + total
             + '  |  Dmg: ' + dmgTotal;
       }
 
