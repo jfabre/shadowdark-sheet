@@ -1,0 +1,28 @@
+{
+  "name": "gandalf",
+  "version": "1.0.0",
+  "description": "A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/pages/shadowdark), built as a [TaleSpire Symbiote](https://symbiote-docs.talespire.com/). Works standalone in any browser too.",
+  "main": "data.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "npx playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfabre/shadowdark-sheet.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jfabre/shadowdark-sheet/issues"
+  },
+  "homepage": "https://github.com/jfabre/shadowdark-sheet#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "serve": "^14.2.6"
+  }
+}

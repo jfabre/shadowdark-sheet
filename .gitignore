@@ -90,3 +90,8 @@ __pycache__/
 .runtime/
 CLAUDE.local.md
 .superpowers/
+
+# Node / Playwright
+node_modules/
+test-results/
+playwright-report/
