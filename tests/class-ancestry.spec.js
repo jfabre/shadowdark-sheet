@@ -1,6 +1,6 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
-const { loadApp, switchTab } = require('./helpers/test-utils');
+const { loadApp, switchTab, selectCustomOption } = require('./helpers/test-utils');
 
 test.describe('Class & Ancestry Selection', () => {
   test.beforeEach(async ({ page }) => {
@@ -9,7 +9,7 @@ test.describe('Class & Ancestry Selection', () => {
   });
 
   test('selecting Fighter shows fighter features', async ({ page }) => {
-    await page.locator('#char-class').selectOption('Fighter');
+    await selectCustomOption(page, 'class-select-trigger', 'Fighter');
     await switchTab(page, 'class');
 
     const featuresBody = page.locator('#features-body');
@@ -23,7 +23,7 @@ test.describe('Class & Ancestry Selection', () => {
   });
 
   test('selecting Wizard shows wizard features', async ({ page }) => {
-    await page.locator('#char-class').selectOption('Wizard');
+    await selectCustomOption(page, 'class-select-trigger', 'Wizard');
     await switchTab(page, 'class');
 
     const featuresBody = page.locator('#features-body');
@@ -36,7 +36,7 @@ test.describe('Class & Ancestry Selection', () => {
   });
 
   test('selecting Thief shows thief features', async ({ page }) => {
-    await page.locator('#char-class').selectOption('Thief');
+    await selectCustomOption(page, 'class-select-trigger', 'Thief');
     await switchTab(page, 'class');
 
     const featuresBody = page.locator('#features-body');
@@ -49,7 +49,7 @@ test.describe('Class & Ancestry Selection', () => {
   });
 
   test('selecting Priest shows priest features', async ({ page }) => {
-    await page.locator('#char-class').selectOption('Priest');
+    await selectCustomOption(page, 'class-select-trigger', 'Priest');
     await switchTab(page, 'class');
 
     const featuresBody = page.locator('#features-body');
@@ -62,7 +62,7 @@ test.describe('Class & Ancestry Selection', () => {
   });
 
   test('selecting Human ancestry shows human trait', async ({ page }) => {
-    await page.locator('#char-ancestry').selectOption('Human');
+    await selectCustomOption(page, 'ancestry-select-trigger', 'Human');
     await switchTab(page, 'class');
 
     const racialBody = page.locator('#racial-features-body');
@@ -75,7 +75,7 @@ test.describe('Class & Ancestry Selection', () => {
   });
 
   test('selecting Elf ancestry shows elf traits', async ({ page }) => {
-    await page.locator('#char-ancestry').selectOption('Elf');
+    await selectCustomOption(page, 'ancestry-select-trigger', 'Elf');
     await switchTab(page, 'class');
 
     const racialBody = page.locator('#racial-features-body');
@@ -88,7 +88,7 @@ test.describe('Class & Ancestry Selection', () => {
   });
 
   test('selecting Dwarf ancestry shows dwarf traits', async ({ page }) => {
-    await page.locator('#char-ancestry').selectOption('Dwarf');
+    await selectCustomOption(page, 'ancestry-select-trigger', 'Dwarf');
     await switchTab(page, 'class');
 
     const racialBody = page.locator('#racial-features-body');
@@ -101,7 +101,7 @@ test.describe('Class & Ancestry Selection', () => {
   });
 
   test('changing class updates features', async ({ page }) => {
-    await page.locator('#char-class').selectOption('Fighter');
+    await selectCustomOption(page, 'class-select-trigger', 'Fighter');
     await switchTab(page, 'class');
 
     const featuresBody = page.locator('#features-body');
@@ -114,7 +114,7 @@ test.describe('Class & Ancestry Selection', () => {
 
     // Switch back to core to change class
     await switchTab(page, 'core');
-    await page.locator('#char-class').selectOption('Wizard');
+    await selectCustomOption(page, 'class-select-trigger', 'Wizard');
     await switchTab(page, 'class');
 
     text = await featuresBody.textContent();

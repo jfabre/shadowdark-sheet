@@ -86,6 +86,17 @@ function expectedMod(score) {
   return m >= 0 ? '+' + m : String(m);
 }
 
+/**
+ * Select a value from a custom dropdown (class or ancestry).
+ * @param {import('@playwright/test').Page} page
+ * @param {string} triggerId - e.g. 'class-select-trigger'
+ * @param {string} value - the data-value of the option to select
+ */
+async function selectCustomOption(page, triggerId, value) {
+  await page.locator('#' + triggerId).click();
+  await page.locator('.custom-select-option[data-value="' + value + '"]').click();
+}
+
 module.exports = {
   loadApp,
   setAbility,
@@ -97,4 +108,5 @@ module.exports = {
   clearStorage,
   openMenu,
   expectedMod,
+  selectCustomOption,
 };
