@@ -2,7 +2,7 @@
 
 A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/pages/shadowdark), built as a [TaleSpire Symbiote](https://symbiote-docs.talespire.com/). Works standalone in any browser too.
 
-![Version](https://img.shields.io/badge/version-0.7.1-orange)
+![Version](https://img.shields.io/badge/.8.0-orange)
 ![Platform](https://img.shields.io/badge/platform-TaleSpire%20%7C%20Browser-blue)
 ![License](https://img.shields.io/badge/license-personal%20use-lightgrey)
 
