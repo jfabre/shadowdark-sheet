@@ -2119,7 +2119,7 @@ input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 /* Attack list */
 .atk-cols-head, .atk-row {
   display: grid;
-  grid-template-columns: 2fr 3.5rem 1fr 1fr auto;
+  grid-template-columns: 2fr 3.5rem 1fr 1fr 96px;
   gap: 4px;
   align-items: center;
 }
@@ -2159,7 +2159,7 @@ input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 
 .atk-stat { cursor: pointer; }
 
-.atk-row-btns { display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin-right: 8px; }
+.atk-row-btns { display: flex; gap: 8px; align-items: center; justify-content: flex-end; }
 
 .btn-roll, .btn-trash {
   background: none;
