@@ -1860,7 +1860,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .inv-col-heads {
   display: grid;
-  grid-template-columns: 1fr auto auto 1fr 28px;
+  grid-template-columns: 1fr 50px 82px 1fr 28px;
   gap: 4px;
   padding: 0 2px 4px;
 }
@@ -1879,7 +1879,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .inv-row {
   display: grid;
-  grid-template-columns: 1fr auto auto 1fr 28px;
+  grid-template-columns: 1fr 50px 82px 1fr 28px;
   gap: 4px;
   margin-bottom: 4px;
   align-items: center;
@@ -1900,7 +1900,9 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   border: 1px solid var(--accent);
   color: var(--accent);
   border-radius: 4px;
-  padding: 4px 7px;
+  padding: 4px 0;
+  width: 50px;
+  text-align: center;
   cursor: pointer;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
@@ -1919,6 +1921,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
+  width: 82px;
 }
 
 .qty-btn {
