@@ -1099,8 +1099,8 @@
         row.className = 'inv-row';
         row.dataset.rowId = id;
 
-        const slotCycles = [1, 2, 3, 4];
-        const initSlots = Math.max(1, Math.round(parseFloat(data.slots) || 1));
+        const slotCycles = [0, 1, 2, 3, 4];
+        const initSlots = Math.round(parseFloat(data.slots)) || 0;
         const initQty   = parseInt(data.qty, 10) || 1;
         const slotLabel = s => `▣ ${s}`;
 
@@ -1120,8 +1120,8 @@
         const qtyVal = row.querySelector('.qty-val');
 
         badge.addEventListener('click', () => {
-          const cur  = parseFloat(badge.dataset.slots) || 1;
-          const idx  = slotCycles.indexOf(cur);
+          const cur  = parseFloat(badge.dataset.slots);
+          const idx  = slotCycles.indexOf(isNaN(cur) ? 0 : cur);
           const next = slotCycles[idx === -1 ? 1 : (idx + 1) % slotCycles.length];
           badge.dataset.slots = next;
           badge.textContent   = slotLabel(next);
@@ -1158,7 +1158,7 @@
       function collectInventory() {
         return Array.from(document.querySelectorAll('#inv-list .inv-row')).map(row => ({
           name:  row.querySelector('.inv-item-name').value,
-          slots: parseFloat(row.querySelector('.slot-badge').dataset.slots) || 1,
+          slots: parseFloat(row.querySelector('.slot-badge').dataset.slots) || 0,
           qty:   parseInt(row.querySelector('.qty-val').dataset.qty, 10) || 1,
           notes: row.querySelector('.inv-item-notes').value
         }));
