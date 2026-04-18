@@ -748,6 +748,26 @@
     updateXpBar();
     updateCoreIcon(document.getElementById('char-class').value);
 
+    // ── XP level-up particles ────────────────────────────────────────────────
+    (function() {
+      var cont = document.querySelector('.xp-levelup-particles');
+      if (!cont) return;
+      var slots = [
+        { x: 15, tx: -4 }, { x: 35, tx: 2  }, { x: 55, tx: -2 },
+        { x: 72, tx: 3  }, { x: 88, tx: -3 }
+      ];
+      slots.forEach(function(s) {
+        var el = document.createElement('span');
+        el.style.left  = s.x + '%';
+        el.style.top   = '75%';
+        el.style.setProperty('--tx',    s.tx + 'px');
+        el.style.setProperty('--ty',    (-12 - Math.floor(Math.random() * 10)) + 'px');
+        el.style.setProperty('--dur',   (1.6 + Math.random() * 0.8).toFixed(2) + 's');
+        el.style.setProperty('--delay', (Math.random() * 1.4).toFixed(2) + 's');
+        cont.appendChild(el);
+      });
+    })();
+
     // ── Portrait ─────────────────────────────────────────
     (function () {
       const MAX_INPUT_SIZE = 10 * 1024 * 1024; // 10MB
@@ -2417,10 +2437,16 @@
 
     function updateXpBar() {
       var bar     = document.getElementById('xp-bar');
+      var card    = document.getElementById('xp-card');
       var current = parseInt(document.getElementById('char-xp').value,      10) || 0;
       var max     = parseInt(document.getElementById('char-xp-next').value,  10) || 0;
       var pct     = max > 0 ? Math.min(1, Math.max(0, current / max)) : 0;
       bar.style.width = (pct * 100) + '%';
+      if (max > 0 && current >= max) {
+        card.classList.add('xp-levelup');
+      } else {
+        card.classList.remove('xp-levelup');
+      }
     }
 
     // ── Stat card stepper buttons (HP + XP) ─────────────────────────────────
