@@ -597,9 +597,13 @@
       cell.className = 'ability-cell';
       cell.innerHTML = `
         <span class="ability-stat-name">${stat}</span>
-        <input class="ability-score" id="ability-${stat.toLowerCase()}"
-               type="number" min="1" max="20" value="10"
-               inputmode="numeric" />
+        <div class="ability-stepper">
+          <button class="cbt-step-btn ability-step-down" aria-label="Decrease ${stat}">−</button>
+          <input class="ability-score" id="ability-${stat.toLowerCase()}"
+                 type="number" min="1" max="20" value="10"
+                 inputmode="numeric" />
+          <button class="cbt-step-btn ability-step-up" aria-label="Increase ${stat}">＋</button>
+        </div>
         <div class="btn-roll-cluster ability-roll-cluster">
           <button class="btn-adv"    title="Roll ${stat} check with advantage">▲</button>
           <span class="ability-mod" id="mod-${stat.toLowerCase()}"><span class="mod-inner">+0</span></span>
@@ -608,9 +612,10 @@
       `;
       abilityGrid.appendChild(cell);
 
-      const input  = cell.querySelector('.ability-score');
-      const modEl  = cell.querySelector('.ability-mod');
+      const input   = cell.querySelector('.ability-score');
+      const modEl   = cell.querySelector('.ability-mod');
       const cluster = cell.querySelector('.ability-roll-cluster');
+      const stepper = cell.querySelector('.ability-stepper');
 
       let _abilitySaveTimer = null;
       input.addEventListener('input', () => {
@@ -622,9 +627,18 @@
         clearTimeout(_abilitySaveTimer);
         _abilitySaveTimer = setTimeout(coreAutoSave, 300);
       });
-      // Tap cell to focus score input (but not when interacting with the roll cluster)
+
+      function stepAbility(delta) {
+        const next = Math.min(20, Math.max(1, (parseInt(input.value, 10) || 10) + delta));
+        input.value = next;
+        input.dispatchEvent(new Event('input'));
+      }
+      stepper.querySelector('.ability-step-down').addEventListener('click', () => stepAbility(-1));
+      stepper.querySelector('.ability-step-up').addEventListener('click',   () => stepAbility(+1));
+
+      // Tap cell to focus score input (but not when interacting with roll cluster or steppers)
       cell.addEventListener('click', e => {
-        if (e.target !== input && !cluster.contains(e.target)) input.focus();
+        if (e.target !== input && !cluster.contains(e.target) && !stepper.contains(e.target)) input.focus();
       });
       // Mod badge rolls a normal stat check
       modEl.setAttribute('role', 'button');
