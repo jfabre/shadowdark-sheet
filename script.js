@@ -547,6 +547,7 @@
             window.TS.dice.putDiceInTray([{ name: label, roll: `1d20${bonusStr}` }], false);
           } else {
             const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
+            if (window.TS && TS.debug) TS.debug.log('[rollCheck] calling putDiceInTray mode=' + mode);
             const rollId = await window.TS.dice.putDiceInTray(
               [{ name: `${label} (${modeLabel})`, roll: '2d20' }], false
             );
@@ -1976,6 +1977,7 @@
               ], false);
             } else {
               const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
+              if (window.TS && TS.debug) TS.debug.log('[rollAttack] calling putDiceInTray mode=' + mode);
               const rollId = await window.TS.dice.putDiceInTray([
                 { name: `${name} — hit (${modeLabel})`, roll: '2d20' },
                 { name: `${name} — dmg`, roll: dmg }
