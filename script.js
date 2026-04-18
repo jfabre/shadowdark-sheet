@@ -43,10 +43,11 @@
       return 0;
     }
 
-    function onRollResults(event) {
-      if (!event.resultsGroups) { pendingAdvRolls.delete(event.rollId); return; }
-      var pending = pendingAdvRolls.get(event.rollId);
-      if (!pending) return;
+     function onRollResults(event) {
+       if (window.TS && TS.debug) TS.debug.log('[onRollResults] fired rollId=' + event.rollId + ' pendingSize=' + pendingAdvRolls.size + ' keys=' + JSON.stringify([...pendingAdvRolls.keys()]));
+       if (!event.resultsGroups) { pendingAdvRolls.delete(event.rollId); return; }
+       var pending = pendingAdvRolls.get(event.rollId);
+       if (!pending) { if (window.TS && TS.debug) TS.debug.log('[onRollResults] no pending entry for rollId=' + event.rollId); return; }
       pendingAdvRolls.delete(event.rollId);
 
       var d20s = [];
@@ -549,6 +550,7 @@
             const rollId = await window.TS.dice.putDiceInTray(
               [{ name: `${label} (${modeLabel})`, roll: '2d20' }], false
             );
+            if (window.TS && TS.debug) TS.debug.log('[rollCheck] putDiceInTray returned rollId=' + JSON.stringify(rollId));
             if (rollId) {
               pendingAdvRolls.set(rollId, { name: label, mode, bonusN, type, spellDC: opts.spellDC });
             }
@@ -1978,6 +1980,7 @@
                 { name: `${name} — hit (${modeLabel})`, roll: '2d20' },
                 { name: `${name} — dmg`, roll: dmg }
               ], false);
+              if (window.TS && TS.debug) TS.debug.log('[rollAttack] putDiceInTray returned rollId=' + JSON.stringify(rollId));
               if (rollId) {
                 pendingAdvRolls.set(rollId, { name, mode, bonusN, dmgExpr: dmg });
               }
