@@ -67,21 +67,44 @@
             </div>
           </div>
 
-          <!-- HP and XP on same line -->
+          <!-- HP and XP cards -->
           <div class="hp-xp-row">
-            <div class="hp-row">
-              <span class="field-label">HP</span>
-              <input type="number" id="hp-current" min="0" value="0" />
-              <span class="hp-sep">/</span>
-              <input type="number" id="hp-max" min="0" value="0" />
-            </div>
-            <div class="xp-row">
-              <span class="field-label">XP</span>
-              <input type="number" id="char-xp" min="0" value="0" />
-              <span class="xp-sep">/</span>
-              <input type="number" id="char-xp-next" min="0" value="10" />
 
+            <!-- HP card -->
+            <div class="stat-card hp-card hp-ok" id="hp-card">
+              <div class="stat-card-label">HP</div>
+              <div class="stat-card-controls">
+                <button class="stat-step-btn stat-step-down" data-target="hp-current" data-max="hp-max" aria-label="Take damage">−</button>
+                <div class="stat-values">
+                  <input type="number" id="hp-current" class="stat-current" min="0" value="0" inputmode="numeric" />
+                  <span class="stat-sep">/</span>
+                  <input type="number" id="hp-max" class="stat-max" min="0" value="0" inputmode="numeric" />
+                </div>
+                <button class="stat-step-btn stat-step-up" data-target="hp-current" data-max="hp-max" aria-label="Heal">＋</button>
+              </div>
+              <div class="stat-bar-track">
+                <div class="stat-bar-fill" id="hp-bar"></div>
+              </div>
+              <div class="hp-dying-label">⚰ Dying</div>
             </div>
+
+            <!-- XP card -->
+            <div class="stat-card" id="xp-card">
+              <div class="stat-card-label">XP</div>
+              <div class="stat-card-controls">
+                <button class="stat-step-btn stat-step-down" data-target="char-xp" data-max="char-xp-next" aria-label="Decrease XP">−</button>
+                <div class="stat-values">
+                  <input type="number" id="char-xp" class="stat-current" min="0" value="0" inputmode="numeric" />
+                  <span class="stat-sep">/</span>
+                  <input type="number" id="char-xp-next" class="stat-max" min="0" value="10" inputmode="numeric" />
+                </div>
+                <button class="stat-step-btn stat-step-up" data-target="char-xp" data-max="char-xp-next" aria-label="Increase XP">＋</button>
+              </div>
+              <div class="stat-bar-track">
+                <div class="stat-bar-fill" id="xp-bar"></div>
+              </div>
+            </div>
+
           </div>
 
         </div>

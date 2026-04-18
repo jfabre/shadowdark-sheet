@@ -693,8 +693,15 @@
 
     // Wire up auto-save for plain inputs
     ['char-name','char-level','char-xp','char-xp-next',
-     'hp-current','hp-max','luck-tokens'].forEach(id => {
+     'hp-current','hp-max','luck-tokens'].forEach(function(id) {
       document.getElementById(id).addEventListener('input', coreAutoSave);
+    });
+    // HP + XP inputs also update the bars on every keystroke
+    ['hp-current','hp-max'].forEach(function(id) {
+      document.getElementById(id).addEventListener('input', updateHpBar);
+    });
+    ['char-xp','char-xp-next'].forEach(function(id) {
+      document.getElementById(id).addEventListener('input', updateXpBar);
     });
     // char-class is a <select>, fires 'change'
     document.getElementById('char-class').addEventListener('change', () => {
@@ -737,6 +744,8 @@
     }
 
     coreLoad();
+    updateHpBar();
+    updateXpBar();
     updateCoreIcon(document.getElementById('char-class').value);
 
     // ── Portrait ─────────────────────────────────────────
@@ -2391,7 +2400,44 @@
       });
     });
 
-    // ── Character Creation Guide ──────────────────────────────────────────
+    // ── HP + XP bar update functions ────────────────────────────────────────
+    function updateHpBar() {
+      var card    = document.getElementById('hp-card');
+      var bar     = document.getElementById('hp-bar');
+      var current = parseInt(document.getElementById('hp-current').value, 10) || 0;
+      var max     = parseInt(document.getElementById('hp-max').value,     10) || 0;
+      var pct     = max > 0 ? Math.min(1, Math.max(0, current / max)) : 0;
+      bar.style.width = (pct * 100) + '%';
+      card.classList.remove('hp-ok', 'hp-hurt', 'hp-crit', 'hp-dying');
+      if (current <= 0)      card.classList.add('hp-dying');
+      else if (pct <= 0.25)  card.classList.add('hp-crit');
+      else if (pct <= 0.50)  card.classList.add('hp-hurt');
+      else                   card.classList.add('hp-ok');
+    }
+
+    function updateXpBar() {
+      var bar     = document.getElementById('xp-bar');
+      var current = parseInt(document.getElementById('char-xp').value,      10) || 0;
+      var max     = parseInt(document.getElementById('char-xp-next').value,  10) || 0;
+      var pct     = max > 0 ? Math.min(1, Math.max(0, current / max)) : 0;
+      bar.style.width = (pct * 100) + '%';
+    }
+
+    // ── Stat card stepper buttons (HP + XP) ─────────────────────────────────
+    document.querySelectorAll('.stat-step-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var currentId = btn.getAttribute('data-target');
+        var maxId     = btn.getAttribute('data-max');
+        var inp       = document.getElementById(currentId);
+        var maxVal    = parseInt(document.getElementById(maxId).value, 10) || 0;
+        var step      = btn.classList.contains('stat-step-up') ? 1 : -1;
+        var next      = Math.min(maxVal, Math.max(0, (parseInt(inp.value, 10) || 0) + step));
+        inp.value = next;
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+
+
     (function() {
       const guide = Modal('creation-guide', 'guide-close');
       document.getElementById('guide-x').addEventListener('click', function() { guide.close(); });
