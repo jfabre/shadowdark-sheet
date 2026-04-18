@@ -1865,8 +1865,7 @@
                 `<button class="btn-disadv" title="Roll with disadvantage">▼</button>` +
               `</div>` +
               `<button class="btn-trash" title="Remove attack">✕</button>` +
-            `</div>` +
-            `<div class="atk-result"></div>`;
+            `</div>`;
 
           row.querySelectorAll('input[data-f]').forEach(inp => {
             inp.addEventListener('input', () => { atk[inp.dataset.f] = inp.value; persist(); });
@@ -1963,13 +1962,11 @@
         }
 
         // Browser fallback
-        const resultEl = row.querySelector('.atk-result');
-
         if (mode === 'normal') {
           const d20      = Math.ceil(Math.random() * 20);
           const total    = d20 + bonusN;
           const dmgTotal = rollDice(dmg);
-          resultEl.textContent = `${name}: hit ${total} (d20=${d20}${bonusStr}) — dmg ${dmgTotal}`;
+          showToast(`${name}: hit ${total} (d20=${d20}${bonusStr}) · dmg ${dmgTotal}`);
         } else {
           const r1 = Math.ceil(Math.random() * 20);
           const r2 = Math.ceil(Math.random() * 20);
@@ -1977,15 +1974,8 @@
           const total = kept + bonusN;
           const dmgTotal = rollDice(dmg);
           const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
-          resultEl.textContent = `${modeLabel} ${r1}&${r2}\u2192${kept}${bonusStr} \u2014 dmg ${dmgTotal}`;
+          showToast(`${name} (${modeLabel}): hit ${total} (${r1}&${r2}→${kept}${bonusStr}) · dmg ${dmgTotal}`);
         }
-
-        resultEl.classList.add('visible');
-        clearTimeout(resultEl._timer);
-        resultEl._timer = setTimeout(() => {
-          resultEl.classList.remove('visible');
-          resultEl.textContent = '';
-        }, 8000);
       }
 
       // ── Spells ───────────────────────────────────────────

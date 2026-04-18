@@ -2099,16 +2099,6 @@ input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 .btn-roll:active, .btn-trash:active { opacity: 1; }
 .btn-trash:hover { color: #c05050; opacity: 1; }
 
-.atk-result {
-  grid-column: 1 / -1;
-  font-family: var(--font-num);
-  font-size: 0.72rem;
-  color: var(--accent);
-  padding: 2px 0 4px;
-  display: none;
-}
-.atk-result.visible { display: block; }
-
 .btn-roll-cluster { display: flex; align-items: center; gap: 2px; }
 .btn-adv, .btn-disadv {
   background: none; border: none; cursor: pointer;
