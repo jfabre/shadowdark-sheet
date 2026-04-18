@@ -17,6 +17,9 @@
     "subscriptions": {
       "symbiote": {
         "onStateChangeEvent": "onTaleSpireStateChange"
+      },
+      "dice": {
+        "onRollResults": "onRollResults"
       }
     }
   }

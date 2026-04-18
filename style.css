@@ -2032,6 +2032,22 @@ input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 }
 .atk-result.visible { display: block; }
 
+.btn-roll-cluster { display: flex; align-items: center; gap: 2px; }
+.btn-adv, .btn-disadv {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.65rem; padding: 3px 4px; line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0; pointer-events: none; transition: opacity 0.12s ease;
+}
+.btn-adv { color: #6dca8a; }
+.btn-disadv { color: #c07070; }
+.btn-roll-cluster:hover .btn-adv,
+.btn-roll-cluster:hover .btn-disadv,
+.btn-roll-cluster.expanded .btn-adv,
+.btn-roll-cluster.expanded .btn-disadv {
+  opacity: 1; pointer-events: auto;
+}
+
 .cbt-empty {
   color: var(--muted);
   font-style: italic;

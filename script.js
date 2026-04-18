@@ -18,6 +18,58 @@
     if (window.TS) setTimeout(function() { _tsReadyResolve(); }, 3000);
     else requestAnimationFrame(function() { _tsReadyResolve(); });
 
+    // ── Advantage/Disadvantage roll state ──────────────
+    var pendingAdvRolls = new Map(); // rollId -> {name, mode, bonusN, dmgExpr}
+
+    function _collectDice(node, kind, acc) {
+      if (!node) return;
+      if (node.kind === kind) { node.results.forEach(function(r) { acc.push(r); }); return; }
+      if (node.operands) node.operands.forEach(function(op) { _collectDice(op, kind, acc); });
+    }
+
+    function _sumNode(node) {
+      if (!node) return 0;
+      if (typeof node.value === 'number') return node.value;
+      if (node.results) return node.results.reduce(function(a, b) { return a + b; }, 0);
+      if (node.operands) {
+        var vals = node.operands.map(_sumNode);
+        if (node.operator === '+') return vals.reduce(function(a, b) { return a + b; }, 0);
+        if (node.operator === '-') return vals[0] - vals.slice(1).reduce(function(a, b) { return a + b; }, 0);
+      }
+      return 0;
+    }
+
+    function onRollResults(event) {
+      if (!event.resultsGroups) { pendingAdvRolls.delete(event.rollId); return; }
+      var pending = pendingAdvRolls.get(event.rollId);
+      if (!pending) return;
+      pendingAdvRolls.delete(event.rollId);
+
+      var d20s = [];
+      event.resultsGroups.forEach(function(g) { _collectDice(g.result, 'd20', d20s); });
+      if (!d20s.length) return;
+
+      var kept  = pending.mode === 'advantage' ? Math.max.apply(null, d20s) : Math.min.apply(null, d20s);
+      var total = kept + pending.bonusN;
+      var bonus = pending.bonusN >= 0 ? '+' + pending.bonusN : '' + pending.bonusN;
+
+      var dmgTotal = 0;
+      event.resultsGroups.forEach(function(g) {
+        var tmp = []; _collectDice(g.result, 'd20', tmp);
+        if (!tmp.length) dmgTotal += _sumNode(g.result);
+      });
+
+      var modeLabel = pending.mode === 'advantage' ? 'ADV' : 'DISADV';
+      var msg = '\u2694 ' + pending.name + ' [' + modeLabel + ']'
+              + '  Hit: ' + total
+              + '  (' + d20s.join(' & ') + ' \u2192 kept ' + kept + ', ' + bonus + ')'
+              + '  |  Dmg: ' + dmgTotal;
+
+      if (window.TS && TS.chat && typeof TS.chat.send === 'function') {
+        TS.chat.send(msg, 'board');
+      }
+    }
+
     // ── Storage Adapter ────────────────────────────────
     // Abstracts browser localStorage vs TaleSpire campaign storage.
     // In TaleSpire, all keys are packed into a single JSON blob
@@ -1759,7 +1811,11 @@
             `<span class="atk-bonus">${bonusVal}</span>` +
             `<input class="atk-f" placeholder="1d6" value="${esc(atk.damage)}" data-f="damage" />` +
             `<div class="atk-row-btns">` +
-              `<button class="btn-roll"  title="Roll attack &amp; damage"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M248 20.3L72.33 132.6L248 128.8zm16 0v108.5l175.7 3.8zm51.4 58.9c6.1 3.5 8.2 7.2 15.1 4.2c10.7.8 22.3 5.8 27.6 15.7c4.7 4.5 1.5 12.6-5.2 12.6c-9.7.1-19.7-6.1-14.6-8.3c4.7-2 14.7.9 10-5.5c-3.6-4.5-11-7.8-16.3-5.9c-1.6 6.8-9.4 4-12-.7c-2.3-5.8-9.1-8.2-15-7.9c-6.1 2.7 1.6 8.8 5.3 9.9c7.9 2.2.2 7.5-4.1 5.1c-4.2-2.4-15-9.6-13.5-18.3c5.8-7.39 15.8-4.62 22.7-.9m-108.5-3.5c5.5.5 12.3 3 10.2 9.9c-4.3 7-9.8 13.1-18.1 14.8c-6.5 3.4-14.9 4.4-21.6 1.9c-3.7-2.3-13.5-9.3-14.9-3.4c-2.1 14.8.7 13.1-11.1 17.8V92.3c9.9-3.9 21.1-4.5 30.3 1.3c8 4.2 19.4 1.5 24.2-5.7c1.4-6.5-8.1-4.6-12.2-3.4c-2.7-8.2 7.9-7.5 13.2-8.8m35 69.2L55.39 149l71.21 192.9zm28.2 0l115.3 197L456.6 149zm-14.1 7.5L138.9 352.6h234.2zm133.3 21.1c13.9 8.3 21.5 26.2 22.1 43c-1.3 13.6-.7 19.8-15.2 21.4s-23.9-19.2-29.7-32.6c-3.4-9.9-5.8-24 1.7-31.3c6.1-4.8 15-4.1 21.1-.5m-223.7 16.1c2.1 4-.5 11.4-4.8 12.1c-4.9.7-3.8-9.3-9.4-11.6c-6.9-2.3-13.6 5.6-15 11.6c10.4-4 20.3 7.1 20.3 17c-.4 11.7-7.9 24.8-19.7 28.1h-5.6c-12.7-.7-18.3-15.8-14.2-26.6c4.4-15.8 10.8-33.9 27.2-40.6c8.5-3.9 19 3.2 21.2 10m213.9-8.4c-7.1-.1-4.4 10-3.3 14.5c3.5 11.5 7.3 26.6 18.9 30c6.8-1.2 4.4-12.8 3.7-16.5c-4.7-10.9-7.1-23.3-19.3-28M52 186v173.2l61.9-5.7zm408 0l-61.9 167.5l61.9 5.7zm-117.9.7l28.5 63.5l-10 4.4l-20-43.3c-6.1 3-13 8.9-14.6-1.4c-1.3-3.9 8.5-5.1 8.1-11.9c-.3-6.9 2.2-12.2 8-11.3m-212 27.4c-2.4 5.1-4.1 10.3-2.7 15.9c1.7 8.8 13.5 6.4 15.6-.8c2.7-5 3.9-11.7-.5-15.7c-4.1-3.4-8.9-2.8-12.4.6m328.4 41.6c-.1 18.6 1.1 39.2-9.7 55.3c-.9 1.2-2.2 1.9-3.7 2.5c-5.8-4.1-3-11.3 1.2-15.5c1 7.3 5.5-2.9 6.6-5.6c1.3-3.2 3.6-17.7-1-10.2c.7 4-6.8 13.1-9.3 8.1c-5-14.4 0-30.5 7-43.5c5.7-6.2 9.9 4.4 8.9 8.9M434 266.8V328l-4.4 6.7v-42.3c-4.6 7.5-9.1 9.1-6.1-.9c6.1-7.1 4.8-17.4 10.5-24.7M83.85 279c.8 3.6 5.12 17.8 2.04 14.8c-1.97-1.3-3.62-4.9-3.41-6.1c-1.55-3-2.96-6.1-4.21-9.2c-2.95 4-3.96 8.3-3.14 13.4c.2-1.6 1.18-2.3 3.39-.7c7.84 12.6 12.17 29.1 7.29 43.5l-2.22 1.1c-10.36-5.8-11.4-19.4-13.43-30c-1.55-12.3-.79-24.7 2.3-36.7c5.2-3.8 9.16 5.4 11.39 9.9m-7.05 20.2c-4.06 4.7-2.26 12.8-.38 18.4c1.11 5.5 6.92 10.2 6.06 1.6c.69-11.1-2.33-12.7-5.68-20m66.4 69.4L256 491.7l112.8-123.1zm-21.4.3l-53.84 4.9l64.24 41.1c-2.6-2.7-4.9-5.7-7.1-8.8c-5.2-6.9-10.5-13.6-18.9-16.6c-8.75-6.5-4.2-5.3 2.9-2.6c-1-1.8-.7-2.6.1-2.6c2.2-.2 8.4 4.2 9.8 6.3l24.7 31.6l65.1 41.7zm268.4 0l-42.4 46.3c6.4-3.1 11.3-8.5 17-12.4c2.4-1.4 3.7-1.9 4.3-1.9c2.1 0-5.4 7.1-7.7 10.3c-9.4 9.8-16 23-28.6 29.1l18.9-24.5c-2.3 1.3-6 3.2-8.2 4.1l-40.3 44l74.5-47.6c5.4-6.7 1.9-5.6-5.7-.9l-11.4 6c11.4-13.7 30.8-28.3 40-35.6s15.9-9.8 8.2-1.5l-12.6 16c10-7.6.9 3.9-4.5 5.5c-.7 1-1.4 2-2.2 2.9l54.5-34.9zM236 385.8v43.4h-13.4v-30c-5-1.4-10.4 1.7-15.3-.3c-3.8-2.9 1-6.8 4.5-5.9c3.3-.1 7.6.2 9.3-3.2c4.4-4.5 9.6-4.4 14.9-4m29 .5c12.1 1.2 24.2.6 36.6.6c1.5 3 .8 7.8-3.3 7.9c-7.7.3-21-1.6-25.9.6c-8.2 10.5 5.7 3.8 11.4 5.2c7 1.1 15 2.9 19.1 9.2c2.1 3.1 2.7 7.3.7 10.7c-5.8 6.8-17 11.5-25.3 10.9c-7.3-.6-15.6-1.1-20.6-7.1c-6.4-10.6 10.5-6.7 12.2-3.2c6 5.3 20.3 1.9 20.7-4.7c.6-4.2-2.1-6.3-6.9-7.8s-12.6 1-17.3 1.8s-9.6.5-9-4.4c.8-4.2 2.7-8.1 2.7-12.5c.1-3 1.7-7 4.9-7.2m133.5 5c-.2-.2-7 5.8-9.9 8.1l-15.8 13.1c10.6-6.5 19.3-12 25.7-21.2m-247 14.2c2.4 0 7.5 4.6 9.4 7l26.1 31.1c-7.7-2.1-13.3-7.1-17.6-13.7c-6.5-7.3-11.3-16.6-21.2-19.6c-9-5-5.2-6.4 2.1-2.2c-.3-1.9.2-2.6 1.2-2.6"/></svg></button>` +
+              `<div class="btn-roll-cluster">` +
+                `<button class="btn-adv" title="Roll with advantage">▲</button>` +
+                `<button class="btn-roll" title="Roll attack &amp; damage"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M248 20.3L72.33 132.6L248 128.8zm16 0v108.5l175.7 3.8zm51.4 58.9c6.1 3.5 8.2 7.2 15.1 4.2c10.7.8 22.3 5.8 27.6 15.7c4.7 4.5 1.5 12.6-5.2 12.6c-9.7.1-19.7-6.1-14.6-8.3c4.7-2 14.7.9 10-5.5c-3.6-4.5-11-7.8-16.3-5.9c-1.6 6.8-9.4 4-12-.7c-2.3-5.8-9.1-8.2-15-7.9c-6.1 2.7 1.6 8.8 5.3 9.9c7.9 2.2.2 7.5-4.1 5.1c-4.2-2.4-15-9.6-13.5-18.3c5.8-7.39 15.8-4.62 22.7-.9m-108.5-3.5c5.5.5 12.3 3 10.2 9.9c-4.3 7-9.8 13.1-18.1 14.8c-6.5 3.4-14.9 4.4-21.6 1.9c-3.7-2.3-13.5-9.3-14.9-3.4c-2.1 14.8.7 13.1-11.1 17.8V92.3c9.9-3.9 21.1-4.5 30.3 1.3c8 4.2 19.4 1.5 24.2-5.7c1.4-6.5-8.1-4.6-12.2-3.4c-2.7-8.2 7.9-7.5 13.2-8.8m35 69.2L55.39 149l71.21 192.9zm28.2 0l115.3 197L456.6 149zm-14.1 7.5L138.9 352.6h234.2zm133.3 21.1c13.9 8.3 21.5 26.2 22.1 43c-1.3 13.6-.7 19.8-15.2 21.4s-23.9-19.2-29.7-32.6c-3.4-9.9-5.8-24 1.7-31.3c6.1-4.8 15-4.1 21.1-.5m-223.7 16.1c2.1 4-.5 11.4-4.8 12.1c-4.9.7-3.8-9.3-9.4-11.6c-6.9-2.3-13.6 5.6-15 11.6c10.4-4 20.3 7.1 20.3 17c-.4 11.7-7.9 24.8-19.7 28.1h-5.6c-12.7-.7-18.3-15.8-14.2-26.6c4.4-15.8 10.8-33.9 27.2-40.6c8.5-3.9 19 3.2 21.2 10m213.9-8.4c-7.1-.1-4.4 10-3.3 14.5c3.5 11.5 7.3 26.6 18.9 30c6.8-1.2 4.4-12.8 3.7-16.5c-4.7-10.9-7.1-23.3-19.3-28M52 186v173.2l61.9-5.7zm408 0l-61.9 167.5l61.9 5.7zm-117.9.7l28.5 63.5l-10 4.4l-20-43.3c-6.1 3-13 8.9-14.6-1.4c-1.3-3.9 8.5-5.1 8.1-11.9c-.3-6.9 2.2-12.2 8-11.3m-212 27.4c-2.4 5.1-4.1 10.3-2.7 15.9c1.7 8.8 13.5 6.4 15.6-.8c2.7-5 3.9-11.7-.5-15.7c-4.1-3.4-8.9-2.8-12.4.6m328.4 41.6c-.1 18.6 1.1 39.2-9.7 55.3c-.9 1.2-2.2 1.9-3.7 2.5c-5.8-4.1-3-11.3 1.2-15.5c1 7.3 5.5-2.9 6.6-5.6c1.3-3.2 3.6-17.7-1-10.2c.7 4-6.8 13.1-9.3 8.1c-5-14.4 0-30.5 7-43.5c5.7-6.2 9.9 4.4 8.9 8.9M434 266.8V328l-4.4 6.7v-42.3c-4.6 7.5-9.1 9.1-6.1-.9c6.1-7.1 4.8-17.4 10.5-24.7M83.85 279c.8 3.6 5.12 17.8 2.04 14.8c-1.97-1.3-3.62-4.9-3.41-6.1c-1.55-3-2.96-6.1-4.21-9.2c-2.95 4-3.96 8.3-3.14 13.4c.2-1.6 1.18-2.3 3.39-.7c7.84 12.6 12.17 29.1 7.29 43.5l-2.22 1.1c-10.36-5.8-11.4-19.4-13.43-30c-1.55-12.3-.79-24.7 2.3-36.7c5.2-3.8 9.16 5.4 11.39 9.9m-7.05 20.2c-4.06 4.7-2.26 12.8-.38 18.4c1.11 5.5 6.92 10.2 6.06 1.6c.69-11.1-2.33-12.7-5.68-20m66.4 69.4L256 491.7l112.8-123.1zm-21.4.3l-53.84 4.9l64.24 41.1c-2.6-2.7-4.9-5.7-7.1-8.8c-5.2-6.9-10.5-13.6-18.9-16.6c-8.75-6.5-4.2-5.3 2.9-2.6c-1-1.8-.7-2.6.1-2.6c2.2-.2 8.4 4.2 9.8 6.3l24.7 31.6l65.1 41.7zm268.4 0l-42.4 46.3c6.4-3.1 11.3-8.5 17-12.4c2.4-1.4 3.7-1.9 4.3-1.9c2.1 0-5.4 7.1-7.7 10.3c-9.4 9.8-16 23-28.6 29.1l18.9-24.5c-2.3 1.3-6 3.2-8.2 4.1l-40.3 44l74.5-47.6c5.4-6.7 1.9-5.6-5.7-.9l-11.4 6c11.4-13.7 30.8-28.3 40-35.6s15.9-9.8 8.2-1.5l-12.6 16c10-7.6.9 3.9-4.5 5.5c-.7 1-1.4 2-2.2 2.9l54.5-34.9zM236 385.8v43.4h-13.4v-30c-5-1.4-10.4 1.7-15.3-.3c-3.8-2.9 1-6.8 4.5-5.9c3.3-.1 7.6.2 9.3-3.2c4.4-4.5 9.6-4.4 14.9-4m29 .5c12.1 1.2 24.2.6 36.6.6c1.5 3 .8 7.8-3.3 7.9c-7.7.3-21-1.6-25.9.6c-8.2 10.5 5.7 3.8 11.4 5.2c7 1.1 15 2.9 19.1 9.2c2.1 3.1 2.7 7.3.7 10.7c-5.8 6.8-17 11.5-25.3 10.9c-7.3-.6-15.6-1.1-20.6-7.1c-6.4-10.6 10.5-6.7 12.2-3.2c6 5.3 20.3 1.9 20.7-4.7c.6-4.2-2.1-6.3-6.9-7.8s-12.6 1-17.3 1.8s-9.6.5-9-4.4c.8-4.2 2.7-8.1 2.7-12.5c.1-3 1.7-7 4.9-7.2m133.5 5c-.2-.2-7 5.8-9.9 8.1l-15.8 13.1c10.6-6.5 19.3-12 25.7-21.2m-247 14.2c2.4 0 7.5 4.6 9.4 7l26.1 31.1c-7.7-2.1-13.3-7.1-17.6-13.7c-6.5-7.3-11.3-16.6-21.2-19.6c-9-5-5.2-6.4 2.1-2.2c-.3-1.9.2-2.6 1.2-2.6"/></svg></button>` +
+                `<button class="btn-disadv" title="Roll with disadvantage">▼</button>` +
+              `</div>` +
               `<button class="btn-trash" title="Remove attack">✕</button>` +
             `</div>` +
             `<div class="atk-result"></div>`;
@@ -1776,7 +1832,35 @@
             persist();
           });
 
-          row.querySelector('.btn-roll').addEventListener('click', () => rollAttack(atk, row));
+          const cluster = row.querySelector('.btn-roll-cluster');
+
+          function collapseCluster() { cluster.classList.remove('expanded'); }
+
+          cluster.querySelector('.btn-roll').addEventListener('click', () => {
+            rollAttack(atk, row, 'normal');
+            collapseCluster();
+          });
+          cluster.querySelector('.btn-adv').addEventListener('click', () => {
+            rollAttack(atk, row, 'advantage');
+            collapseCluster();
+          });
+          cluster.querySelector('.btn-disadv').addEventListener('click', () => {
+            rollAttack(atk, row, 'disadvantage');
+            collapseCluster();
+          });
+
+          // Touch: tap cluster to expand; tap outside to collapse
+          cluster.addEventListener('pointerdown', function(e) {
+            if (e.pointerType === 'touch' && !cluster.classList.contains('expanded')) {
+              cluster.classList.add('expanded');
+              e.preventDefault();
+            }
+          });
+          document.addEventListener('pointerdown', function onDocPD(e) {
+            if (!cluster.isConnected) { document.removeEventListener('pointerdown', onDocPD); return; }
+            if (!cluster.contains(e.target)) collapseCluster();
+          });
+
           row.querySelector('.btn-trash').addEventListener('click', () => {
             getCombat().attacks.splice(idx, 1);
             persist();
@@ -1798,7 +1882,8 @@
         return String(total);
       }
 
-      function rollAttack(atk, row) {
+      async function rollAttack(atk, row, mode) {
+        if (mode === undefined) mode = 'normal';
         const bonusN = getStatMod(atk.stat || 'STR');
         const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
         const dmg  = atk.damage || '1d4';
@@ -1807,10 +1892,21 @@
         // TaleSpire path — put dice in the 3D tray
         if (window.TS && window.TS.dice && typeof window.TS.dice.putDiceInTray === 'function') {
           try {
-            window.TS.dice.putDiceInTray([
-              { name: `${name} — hit`, roll: `1d20${bonusStr}` },
-              { name: `${name} — dmg`, roll: dmg }
-            ], false);
+            if (mode === 'normal') {
+              window.TS.dice.putDiceInTray([
+                { name: `${name} — hit`, roll: `1d20${bonusStr}` },
+                { name: `${name} — dmg`, roll: dmg }
+              ], false);
+            } else {
+              const modeLabel = mode === 'advantage' ? 'ADV' : 'DISADV';
+              const result = await window.TS.dice.putDiceInTray([
+                { name: `${name} — hit (${modeLabel})`, roll: '2d20' },
+                { name: `${name} — dmg`, roll: dmg }
+              ], false);
+              if (result && result.rollId) {
+                pendingAdvRolls.set(result.rollId, { name, mode, bonusN, dmgExpr: dmg });
+              }
+            }
             return;
           } catch (e) {
             // Fall through to browser roller (e.g. notInBoard)
@@ -1819,12 +1915,23 @@
         }
 
         // Browser fallback
-        const d20      = Math.ceil(Math.random() * 20);
-        const total    = d20 + bonusN;
-        const dmgTotal = rollDice(dmg);
-
         const resultEl = row.querySelector('.atk-result');
-        resultEl.textContent = `${name}: hit ${total} (d20=${d20}${bonusStr}) — dmg ${dmgTotal}`;
+
+        if (mode === 'normal') {
+          const d20      = Math.ceil(Math.random() * 20);
+          const total    = d20 + bonusN;
+          const dmgTotal = rollDice(dmg);
+          resultEl.textContent = `${name}: hit ${total} (d20=${d20}${bonusStr}) — dmg ${dmgTotal}`;
+        } else {
+          const r1 = Math.ceil(Math.random() * 20);
+          const r2 = Math.ceil(Math.random() * 20);
+          const kept = mode === 'advantage' ? Math.max(r1, r2) : Math.min(r1, r2);
+          const total = kept + bonusN;
+          const dmgTotal = rollDice(dmg);
+          const modeLabel = mode === 'advantage' ? 'ADV' : 'DISADV';
+          resultEl.textContent = `${modeLabel} ${r1}&${r2}\u2192${kept}${bonusStr} \u2014 dmg ${dmgTotal}`;
+        }
+
         resultEl.classList.add('visible');
         clearTimeout(resultEl._timer);
         resultEl._timer = setTimeout(() => {
