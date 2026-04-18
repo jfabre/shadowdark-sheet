@@ -122,6 +122,16 @@ perl -pi -e "s|(const APP_VERSION = ')[\\d.]+'|\${1}$NEW_VERSION'|" script.js
 # ── Update version badge in README.md ────────────────
 perl -pi -e 's|(version-)[\d.]+(-orange)|\1'"$NEW_VERSION"'\2|' README.md
 
+# ── Remind to review README feature content ──────────
+echo ""
+echo "─────────────────────────────────────────────────"
+echo "  README.md version badge updated to v$NEW_VERSION."
+echo "  Please verify the Features section is up to date"
+echo "  before continuing. Press Enter to commit, or"
+echo "  Ctrl-C to abort and update README.md first."
+echo "─────────────────────────────────────────────────"
+read -r _
+
 # ── Commit and tag ───────────────────────────────────
 git add manifest.json index.html script.js README.md CHANGELOG.md
 git commit -m "release: v$NEW_VERSION"
