@@ -169,24 +169,6 @@
 
       <h2>Inventory</h2>
 
-      <!-- Encumbrance -->
-      <section class="gear-section">
-        <div class="enc-header">
-          <span class="enc-label">Encumbrance</span>
-          <span class="enc-count"><span id="enc-used">0</span> / <span id="enc-max">10</span> slots</span>
-        </div>
-        <div class="enc-bar-wrap">
-          <div id="enc-bar" class="enc-bar"></div>
-        </div>
-        <div class="enc-footer">
-          <div id="enc-breakdown" class="enc-breakdown">armor 0 · coins 0 · items 0</div>
-          <label class="enc-bonus-row" for="enc-bonus">
-            <span class="enc-bonus-label">Bonus slots</span>
-            <input type="number" id="enc-bonus" min="0" class="enc-bonus-input" value="0" />
-          </label>
-        </div>
-      </section>
-
       <!-- Currency -->
       <section class="gear-section">
         <div class="currency-row">
@@ -268,6 +250,24 @@
         </div>
         <div id="inv-list"></div>
         <div id="inv-empty" class="inv-empty">Tap ＋ to add your first item</div>
+      </section>
+
+      <!-- Encumbrance -->
+      <section class="gear-section">
+        <div class="enc-header">
+          <span class="enc-label">Encumbrance</span>
+          <span class="enc-count"><span id="enc-used">0</span> / <span id="enc-max">10</span> slots</span>
+        </div>
+        <div class="enc-bar-wrap">
+          <div id="enc-bar" class="enc-bar"></div>
+        </div>
+        <div class="enc-footer">
+          <div id="enc-breakdown" class="enc-breakdown">armor 0 · coins 0 · items 0</div>
+          <label class="enc-bonus-row" for="enc-bonus">
+            <span class="enc-bonus-label">Bonus slots</span>
+            <input type="number" id="enc-bonus" min="0" class="enc-bonus-input" value="0" />
+          </label>
+        </div>
       </section>
     </div>
 
