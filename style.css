@@ -1187,20 +1187,17 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  border: 1.5px solid var(--accent);
-  border-radius: 3px;
-  transform: rotate(45deg);
+  font-family: var(--font-num);
+  font-size: 1.1rem;
+  color: var(--accent);
+  padding: 2px 5px;
+  border-radius: 4px;
   transition: background 0.12s;
   flex-shrink: 0;
 }
 .ability-mod[role="button"] .mod-inner {
-  display: inline-block;
-  transform: rotate(-45deg);
   font-family: var(--font-num);
-  font-size: 0.58rem;
-  white-space: nowrap;
+  font-size: inherit;
   line-height: 1;
 }
 .ability-mod[role="button"]:hover { background: color-mix(in srgb, var(--accent) 20%, transparent); }
