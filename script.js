@@ -2160,27 +2160,49 @@
       const THEME_KEY = 'sd_theme';
       const popover  = document.getElementById('theme-popover');
       const swatches = document.querySelectorAll('.theme-swatch');
+      const applyBtn = document.getElementById('theme-apply');
 
-      function applyTheme(theme) {
-        const root = document.documentElement;
-        root.classList.add('theme-switching');
-        root.setAttribute('data-theme', theme);
+      let _savedTheme   = 'dungeon';
+      let _pendingTheme = 'dungeon';
+
+      function updateSwatchUI(theme) {
         swatches.forEach(s => {
           s.setAttribute('aria-pressed', s.dataset.theme === theme ? 'true' : 'false');
         });
-        StorageAdapter.setItem(THEME_KEY, theme);
+      }
+
+      function previewTheme(theme) {
+        const root = document.documentElement;
+        root.classList.add('theme-switching');
+        root.setAttribute('data-theme', theme);
+        updateSwatchUI(theme);
+        _pendingTheme = theme;
         setTimeout(() => root.classList.remove('theme-switching'), 300);
       }
 
+      function commitTheme(theme) {
+        previewTheme(theme);
+        StorageAdapter.setItem(THEME_KEY, theme);
+        _savedTheme = theme;
+      }
+
       window._toggleThemePopover = function(open) {
+        if (!open && popover.classList.contains('open') && _pendingTheme !== _savedTheme) {
+          // Revert preview if closed without applying
+          previewTheme(_savedTheme);
+        }
         popover.classList.toggle('open', open);
       };
 
       swatches.forEach(swatch => {
         swatch.addEventListener('click', function() {
-          applyTheme(this.dataset.theme);
-          window._toggleThemePopover(false);
+          previewTheme(this.dataset.theme);
         });
+      });
+
+      applyBtn.addEventListener('click', function() {
+        commitTheme(_pendingTheme);
+        window._toggleThemePopover(false);
       });
 
       // Close theme popover on outside click
@@ -2192,7 +2214,7 @@
 
       // Restore saved theme
       const saved = StorageAdapter.getItem(THEME_KEY) || 'dungeon';
-      applyTheme(saved);
+      commitTheme(saved);
     })();
 
     // ── Toast notification ─────────────────────────────

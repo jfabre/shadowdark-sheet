@@ -421,6 +421,24 @@ input[type="number"]:focus,
 html.theme-switching * {
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease !important;
 }
+#theme-apply {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 5px 0;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  font-family: var(--font-hdr);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+#theme-apply:hover { opacity: 0.85; }
 
 /* ── Import modal ──────────────────────────────────── */
 .import-overlay {
@@ -1004,7 +1022,7 @@ body {
 }
 
 .portrait-frame {
-  width: min(32vw, 120px);
+  width: min(32vw, 140px);
   aspect-ratio: 1;
   border: 2px dashed var(--border);
   border-radius: 8px;
