@@ -1192,7 +1192,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 .ability-mod[role="button"]:active { background: color-mix(in srgb, var(--accent) 35%, transparent); }
 .ability-roll-cluster { justify-content: center; gap: 0; }
 .ability-roll-cluster .btn-adv,
-.ability-roll-cluster .btn-disadv { font-size: 0.55rem; padding: 2px 3px; }
+.ability-roll-cluster .btn-disadv { font-size: 0.85rem; padding: 5px 7px; }
 
 /* HP row */
 .hp-row {
