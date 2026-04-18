@@ -3,6 +3,26 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.8.1] - 2026-04-18
+
+### Themes & UX
+- feat: theme popover has an Apply button — click swatches to preview live, Apply to commit; close without applying reverts to the saved theme
+- ux: portrait frame enlarged to 140px
+
+### Dice Rolls (TaleSpire)
+- fix: unwrap `event.payload` in onRollResults — TaleSpire wraps dice events as `{kind, payload}`
+- fix: match advantage/disadvantage pending roll by FIFO (TaleSpire sends `event.rollId=undefined`)
+- fix: adv/dis roll messages use TaleSpire arithmetic format (e.g. 12 + 3 = 15)
+- fix: remove redundant "vs DC" from spell adv/dis chat message
+
+### Inventory & Encumbrance
+- ux: encumbrance section moved to bottom of inventory page
+- ux: 0-slot option added to inventory item slot badge cycle
+
+### Scrollbar
+- fix: scrollbar hidden with `width:0` for Chromium 111 compatibility
+- ux: scrollbar auto-hides after 1.5s of scroll inactivity
+
 ## [0.8.0] - 2026-04-18
 
 ### Dice Integration
