@@ -1082,7 +1082,7 @@
         const rows = document.querySelectorAll('#inv-list .inv-row');
         let itemSlots = 0;
         rows.forEach(row => {
-          itemSlots += parseFloat(row.querySelector('.inv-item-slots').value) || 0;
+          itemSlots += parseFloat(row.querySelector('.slot-badge').dataset.slots) || 0;
         });
 
         // Armor slots
@@ -1131,13 +1131,50 @@
         const row = document.createElement('div');
         row.className = 'inv-row';
         row.dataset.rowId = id;
+
+        const slotCycles = [0.5, 1, 2, 3, 4];
+        const initSlots = parseFloat(data.slots) || 1;
+        const initQty   = parseInt(data.qty, 10) || 1;
+        const slotLabel = s => s === 0.5 ? '▣ ½' : `▣ ${s}`;
+
         row.innerHTML = `
-          <input type="text"   class="inv-item-name"  placeholder="Item"  value="${esc(data.name)}" />
-          <input type="number" class="inv-item-slots"  min="0" step="1" value="${data.slots}" />
-          <input type="number" class="inv-item-qty"    min="1"            value="${data.qty}" />
-          <input type="text"   class="inv-item-notes" placeholder="Notes" value="${esc(data.notes)}" />
+          <input type="text" class="inv-item-name"  placeholder="Item"  value="${esc(data.name)}" />
+          <button class="slot-badge" data-slots="${initSlots}" title="Gear slots — click to change">${slotLabel(initSlots)}</button>
+          <div class="qty-stepper">
+            <button class="qty-btn qty-down" aria-label="Decrease quantity">−</button>
+            <span class="qty-val" data-qty="${initQty}">${initQty}</span>
+            <button class="qty-btn qty-up" aria-label="Increase quantity">+</button>
+          </div>
+          <input type="text" class="inv-item-notes" placeholder="Notes" value="${esc(data.notes)}" />
           <button class="inv-del-btn" aria-label="Remove item">✕</button>
         `;
+
+        const badge  = row.querySelector('.slot-badge');
+        const qtyVal = row.querySelector('.qty-val');
+
+        badge.addEventListener('click', () => {
+          const cur  = parseFloat(badge.dataset.slots) || 1;
+          const idx  = slotCycles.indexOf(cur);
+          const next = slotCycles[idx === -1 ? 1 : (idx + 1) % slotCycles.length];
+          badge.dataset.slots = next;
+          badge.textContent   = slotLabel(next);
+          updateEncumbrance();
+          collectAndSave();
+        });
+
+        row.querySelector('.qty-down').addEventListener('click', () => {
+          const v = Math.max(1, parseInt(qtyVal.dataset.qty, 10) - 1);
+          qtyVal.dataset.qty = v;
+          qtyVal.textContent = v;
+          collectAndSave();
+        });
+
+        row.querySelector('.qty-up').addEventListener('click', () => {
+          const v = parseInt(qtyVal.dataset.qty, 10) + 1;
+          qtyVal.dataset.qty = v;
+          qtyVal.textContent = v;
+          collectAndSave();
+        });
 
         row.querySelector('.inv-del-btn').addEventListener('click', () => {
           row.remove();
@@ -1145,12 +1182,8 @@
           collectAndSave();
         });
 
-        row.querySelectorAll('input').forEach(inp => {
-          inp.addEventListener('input', () => {
-            if (inp.classList.contains('inv-item-slots')) updateEncumbrance();
-            collectAndSave();
-          });
-        });
+        row.querySelector('.inv-item-name').addEventListener('input', collectAndSave);
+        row.querySelector('.inv-item-notes').addEventListener('input', collectAndSave);
 
         return row;
       }
@@ -1158,8 +1191,8 @@
       function collectInventory() {
         return Array.from(document.querySelectorAll('#inv-list .inv-row')).map(row => ({
           name:  row.querySelector('.inv-item-name').value,
-          slots: parseFloat(row.querySelector('.inv-item-slots').value) || 0,
-          qty:   parseInt(row.querySelector('.inv-item-qty').value, 10) || 1,
+          slots: parseFloat(row.querySelector('.slot-badge').dataset.slots) || 1,
+          qty:   parseInt(row.querySelector('.qty-val').dataset.qty, 10) || 1,
           notes: row.querySelector('.inv-item-notes').value
         }));
       }

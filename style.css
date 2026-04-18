@@ -1585,7 +1585,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .inv-col-heads {
   display: grid;
-  grid-template-columns: 1fr 48px 44px 1fr 28px;
+  grid-template-columns: 1fr auto auto 1fr 28px;
   gap: 4px;
   padding: 0 2px 4px;
 }
@@ -1604,7 +1604,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .inv-row {
   display: grid;
-  grid-template-columns: 1fr 48px 44px 1fr 28px;
+  grid-template-columns: 1fr auto auto 1fr 28px;
   gap: 4px;
   margin-bottom: 4px;
   align-items: center;
@@ -1618,10 +1618,62 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   min-width: 0;
 }
 
-.inv-row input[type="number"] {
+.slot-badge {
   font-family: var(--font-num);
+  font-size: 0.78rem;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 4px 7px;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, color 0.15s;
+}
+
+.slot-badge:hover,
+.slot-badge:active {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.qty-stepper {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.qty-btn {
+  background: var(--surface);
+  border: none;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 3px 7px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s, color 0.12s;
+}
+
+.qty-btn:hover,
+.qty-btn:active {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.qty-val {
+  font-family: var(--font-num);
+  font-size: 0.82rem;
+  min-width: 22px;
   text-align: center;
-  padding: 5px 2px;
+  color: var(--text);
+  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .inv-del-btn {
