@@ -1184,23 +1184,24 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 }
 .ability-mod[role="button"] {
   cursor: pointer;
-  /* d20-style diamond */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 20px;
+  height: 20px;
   border: 1.5px solid var(--accent);
-  border-radius: 4px;
+  border-radius: 3px;
   transform: rotate(45deg);
   transition: background 0.12s;
+  flex-shrink: 0;
 }
 .ability-mod[role="button"] .mod-inner {
   display: inline-block;
   transform: rotate(-45deg);
-  font-size: 0.72rem;
-  line-height: 1;
+  font-family: var(--font-num);
+  font-size: 0.58rem;
   white-space: nowrap;
+  line-height: 1;
 }
 .ability-mod[role="button"]:hover { background: color-mix(in srgb, var(--accent) 20%, transparent); }
 .ability-mod[role="button"]:active { background: color-mix(in srgb, var(--accent) 35%, transparent); }
