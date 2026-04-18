@@ -718,8 +718,8 @@
       if (c.ancestry)  document.getElementById('char-ancestry').value = c.ancestry;
       if (c.xp  != null) document.getElementById('char-xp').value = c.xp;
       if (c.xpNext != null) document.getElementById('char-xp-next').value = c.xpNext;
-      if (c.hpCurrent != null) document.getElementById('hp-current').value = c.hpCurrent;
-      if (c.hpMax     != null) document.getElementById('hp-max').value = c.hpMax;
+      document.getElementById('hp-current').value = (c.hpCurrent != null && c.hpCurrent > 0) ? c.hpCurrent : 1;
+      document.getElementById('hp-max').value     = (c.hpMax     != null && c.hpMax     > 0) ? c.hpMax     : 1;
       if (c.luckTokens != null) document.getElementById('luck-tokens').value = c.luckTokens;
 
       if (c.alignment) {
