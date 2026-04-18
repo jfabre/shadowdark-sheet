@@ -131,6 +131,7 @@ zip -j "$ZIP_PATH" \
   manifest.json \
   index.html \
   script.js \
+  data.js \
   style.css \
   README.md \
   CHANGELOG.md
