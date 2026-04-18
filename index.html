@@ -39,18 +39,11 @@
           <!-- Class / Level / Ancestry -->
           <div class="identity-grid">
             <div class="field-group">
-              <label for="char-class">Class</label>
-              <select id="char-class">
-                <option value="">—</option>
-                <option value="Fighter">Fighter</option>
-                <option value="Priest">Priest</option>
-                <option value="Thief">Thief</option>
-                <option value="Wizard">Wizard</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label for="char-ancestry">Ancestry</label>
-              <select id="char-ancestry">
+              <label>Ancestry</label>
+              <div class="custom-select-trigger" id="ancestry-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-controls="ancestry-select-panel">
+                <span class="custom-select-label">—</span>
+              </div>
+              <select id="char-ancestry" class="custom-select-hidden" aria-hidden="true" tabindex="-1">
                 <option value="">—</option>
                 <option value="Human">Human</option>
                 <option value="Elf">Elf</option>
@@ -60,6 +53,36 @@
                 <option value="Goblin">Goblin</option>
                 <option value="Other">Other</option>
               </select>
+            </div>
+            <div class="custom-select-panel" id="ancestry-select-panel" role="listbox" aria-label="Ancestry options">
+              <div class="custom-select-option" data-value="" role="option">—</div>
+              <div class="custom-select-option" data-value="Human" role="option">Human</div>
+              <div class="custom-select-option" data-value="Elf" role="option">Elf</div>
+              <div class="custom-select-option" data-value="Dwarf" role="option">Dwarf</div>
+              <div class="custom-select-option" data-value="Halfling" role="option">Halfling</div>
+              <div class="custom-select-option" data-value="Half-Orc" role="option">Half-Orc</div>
+              <div class="custom-select-option" data-value="Goblin" role="option">Goblin</div>
+              <div class="custom-select-option" data-value="Other" role="option">Other</div>
+            </div>
+            <div class="field-group">
+              <label>Class</label>
+              <div class="custom-select-trigger" id="class-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-controls="class-select-panel">
+                <span class="custom-select-label">—</span>
+              </div>
+              <select id="char-class" class="custom-select-hidden" aria-hidden="true" tabindex="-1">
+                <option value="">—</option>
+                <option value="Fighter">Fighter</option>
+                <option value="Priest">Priest</option>
+                <option value="Thief">Thief</option>
+                <option value="Wizard">Wizard</option>
+              </select>
+            </div>
+            <div class="custom-select-panel" id="class-select-panel" role="listbox" aria-label="Class options">
+              <div class="custom-select-option" data-value="" role="option">—</div>
+              <div class="custom-select-option" data-value="Fighter" role="option">Fighter</div>
+              <div class="custom-select-option" data-value="Priest" role="option">Priest</div>
+              <div class="custom-select-option" data-value="Thief" role="option">Thief</div>
+              <div class="custom-select-option" data-value="Wizard" role="option">Wizard</div>
             </div>
             <div class="field-group">
               <label for="char-level">Level</label>

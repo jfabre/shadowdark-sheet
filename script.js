@@ -751,7 +751,116 @@
     updateXpBar();
     updateCoreIcon(document.getElementById('char-class').value);
 
-    // ── XP level-up particles ────────────────────────────────────────────────
+    // ── Custom class / ancestry dropdowns ───────────────────────────────────
+    (function initCustomSelects() {
+      function initCustomSelect(triggerId, panelId, selectId) {
+        const trigger = document.getElementById(triggerId);
+        const panel   = document.getElementById(panelId);
+        const native  = document.getElementById(selectId);
+        const options = panel.querySelectorAll('.custom-select-option');
+        let isOpen = false;
+        let activeIdx = -1;
+
+        function updateTrigger(value) {
+          const opt = panel.querySelector('.custom-select-option[data-value="' + value + '"]');
+          trigger.querySelector('.custom-select-label').textContent = opt ? opt.textContent : '—';
+          options.forEach(function(o) {
+            o.setAttribute('aria-selected', o.dataset.value === value ? 'true' : 'false');
+          });
+        }
+
+        function positionPanel() {
+          const rect = trigger.getBoundingClientRect();
+          panel.style.top   = rect.bottom + 'px';
+          panel.style.left  = rect.left   + 'px';
+          panel.style.width = rect.width  + 'px';
+        }
+
+        function highlightOption(idx) {
+          options.forEach(function(o, i) { o.classList.toggle('active', i === idx); });
+          activeIdx = idx;
+        }
+
+        function openDropdown() {
+          if (isOpen) return;
+          isOpen = true;
+          positionPanel();
+          panel.classList.add('open');
+          trigger.setAttribute('aria-expanded', 'true');
+          activeIdx = -1;
+        }
+
+        function closeDropdown() {
+          if (!isOpen) return;
+          isOpen = false;
+          panel.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+          options.forEach(function(o) { o.classList.remove('active'); });
+          activeIdx = -1;
+        }
+
+        function selectValue(value) {
+          native.value = value;
+          updateTrigger(value);
+          native.dispatchEvent(new Event('change', { bubbles: true }));
+          closeDropdown();
+        }
+
+        trigger.addEventListener('click', function() {
+          if (isOpen) closeDropdown(); else openDropdown();
+        });
+
+        trigger.addEventListener('keydown', function(e) {
+          if (!isOpen && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            openDropdown();
+          } else if (isOpen) {
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              closeDropdown();
+              trigger.focus();
+            } else if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              highlightOption(Math.min(activeIdx + 1, options.length - 1));
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              highlightOption(Math.max(activeIdx - 1, 0));
+            } else if (e.key === 'Enter' && activeIdx >= 0) {
+              e.preventDefault();
+              selectValue(options[activeIdx].dataset.value);
+              trigger.focus();
+            }
+          }
+        });
+
+        options.forEach(function(opt) {
+          opt.addEventListener('click', function() { selectValue(opt.dataset.value); });
+          opt.addEventListener('mouseenter', function() {
+            highlightOption(Array.prototype.indexOf.call(options, opt));
+          });
+        });
+
+        document.addEventListener('click', function(e) {
+          if (isOpen && !trigger.contains(e.target) && !panel.contains(e.target)) {
+            closeDropdown();
+          }
+        });
+
+        return { update: updateTrigger };
+      }
+
+      const classSelect    = initCustomSelect('class-select-trigger',    'class-select-panel',    'char-class');
+      const ancestrySelect = initCustomSelect('ancestry-select-trigger', 'ancestry-select-panel', 'char-ancestry');
+
+      window._syncCustomSelects = function() {
+        classSelect.update(document.getElementById('char-class').value);
+        ancestrySelect.update(document.getElementById('char-ancestry').value);
+      };
+
+      window._syncCustomSelects();
+    })();
+
+
     (function() {
       var cont = document.querySelector('.xp-levelup-particles');
       if (!cont) return;
@@ -1800,10 +1909,12 @@
       }
 
       function refreshAttackBonuses() {
-        document.querySelectorAll('.atk-row').forEach(row => {
-          const statSel = row.querySelector('.atk-stat');
-          const bonusSpn = row.querySelector('.atk-bonus');
-          if (statSel && bonusSpn) bonusSpn.textContent = fmtMod(getStatMod(statSel.value));
+        document.querySelectorAll('.atk-row').forEach(function(row) {
+          const statSel  = row.querySelector('.atk-stat');
+          const bonusInp = row.querySelector('.atk-bonus');
+          if (!statSel || !bonusInp) return;
+          if (row._atk && row._atk.bonusOverride != null) return;
+          bonusInp.value = fmtMod(getStatMod(statSel.value));
         });
       }
 
@@ -1831,9 +1942,12 @@
           atk.name = weapon.name;
           atk.stat = weapon.stat;
           atk.damage = weapon.damage;
+          atk.bonusOverride = null;
           row.querySelector('[data-f="name"]').value = weapon.name;
           row.querySelector('.atk-stat').value = weapon.stat;
-          row.querySelector('.atk-bonus').textContent = fmtMod(getStatMod(weapon.stat));
+          const bonusInpAC = row.querySelector('.atk-bonus');
+          bonusInpAC.value = fmtMod(getStatMod(weapon.stat));
+          bonusInpAC.classList.remove('atk-bonus--override');
           row.querySelector('[data-f="damage"]').value = weapon.damage;
           persist();
         },
@@ -1875,19 +1989,21 @@
           return;
         }
 
-        attacks.forEach((atk, idx) => {
+        attacks.forEach(function(atk, idx) {
           const row = document.createElement('div');
           row.className = 'atk-row';
           row._atkIdx = idx;
+          row._atk = atk;
           const stat = atk.stat || 'STR';
-          const bonusVal = fmtMod(getStatMod(stat));
+          const bonusVal = atk.bonusOverride != null ? fmtMod(atk.bonusOverride) : fmtMod(getStatMod(stat));
+          const bonusOverrideClass = atk.bonusOverride != null ? ' atk-bonus--override' : '';
           row.innerHTML =
             `<input class="atk-f" placeholder="Weapon"  value="${esc(atk.name)}"   data-f="name"   />` +
             `<select class="atk-stat" title="Attack stat">` +
               `<option value="STR"${stat === 'STR' ? ' selected' : ''}>STR</option>` +
               `<option value="DEX"${stat === 'DEX' ? ' selected' : ''}>DEX</option>` +
             `</select>` +
-            `<span class="atk-bonus">${bonusVal}</span>` +
+            `<input type="text" class="atk-bonus${bonusOverrideClass}" value="${bonusVal}" title="Bonus to hit (editable)" />` +
             `<input class="atk-f" placeholder="1d6" value="${esc(atk.damage)}" data-f="damage" />` +
             `<div class="atk-row-btns">` +
               `<div class="btn-roll-cluster">` +
@@ -1898,16 +2014,40 @@
               `<button class="btn-trash" title="Remove attack">✕</button>` +
             `</div>`;
 
-          row.querySelectorAll('input[data-f]').forEach(inp => {
-            inp.addEventListener('input', () => { atk[inp.dataset.f] = inp.value; persist(); });
+          row.querySelectorAll('input[data-f]').forEach(function(inp) {
+            inp.addEventListener('input', function() { atk[inp.dataset.f] = inp.value; persist(); });
           });
 
           const statSel  = row.querySelector('.atk-stat');
-          const bonusSpn = row.querySelector('.atk-bonus');
-          statSel.addEventListener('change', () => {
+          const bonusInp = row.querySelector('.atk-bonus');
+
+          statSel.addEventListener('change', function() {
             atk.stat = statSel.value;
-            bonusSpn.textContent = fmtMod(getStatMod(statSel.value));
+            atk.bonusOverride = null;
+            bonusInp.value = fmtMod(getStatMod(statSel.value));
+            bonusInp.classList.remove('atk-bonus--override');
             persist();
+          });
+
+          bonusInp.addEventListener('input', function() {
+            const raw = bonusInp.value.trim();
+            const n   = parseInt(raw, 10);
+            if (!isNaN(n)) {
+              atk.bonusOverride = n;
+              bonusInp.classList.add('atk-bonus--override');
+            } else if (raw === '' || raw === '+' || raw === '-') {
+              atk.bonusOverride = null;
+              bonusInp.classList.remove('atk-bonus--override');
+            }
+            persist();
+          });
+
+          bonusInp.addEventListener('blur', function() {
+            if (atk.bonusOverride != null) {
+              bonusInp.value = fmtMod(atk.bonusOverride);
+            } else {
+              bonusInp.value = fmtMod(getStatMod(atk.stat || 'STR'));
+            }
           });
 
           const cluster = row.querySelector('.btn-roll-cluster');
@@ -1962,7 +2102,7 @@
 
       async function rollAttack(atk, row, mode) {
         if (mode === undefined) mode = 'normal';
-        const bonusN = getStatMod(atk.stat || 'STR');
+        const bonusN = atk.bonusOverride != null ? atk.bonusOverride : getStatMod(atk.stat || 'STR');
         const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
         const dmg  = atk.damage || '1d4';
         const name = atk.name || 'Attack';
