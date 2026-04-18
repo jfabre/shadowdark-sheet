@@ -2044,12 +2044,13 @@
           });
 
           bonusInp.addEventListener('input', function() {
-            const raw = bonusInp.value.trim();
-            const n   = parseInt(raw, 10);
-            if (!isNaN(n)) {
+            const raw      = bonusInp.value.trim();
+            const n        = parseInt(raw, 10);
+            const calcMod  = getStatMod(atk.stat || 'STR');
+            if (!isNaN(n) && n !== calcMod) {
               atk.bonusOverride = n;
               bonusInp.classList.add('atk-bonus--override');
-            } else if (raw === '' || raw === '+' || raw === '-') {
+            } else {
               atk.bonusOverride = null;
               bonusInp.classList.remove('atk-bonus--override');
             }

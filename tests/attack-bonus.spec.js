@@ -50,6 +50,17 @@ test.describe('Attack bonus', () => {
     await expect(page.locator('.atk-bonus').nth(0)).toHaveClass(/atk-bonus--override/);
   });
 
+  test('typing back the calculated value clears the override indicator', async ({ page }) => {
+    await setAbility(page, 'str', 14); // +2
+    await addAttack(page);
+    await setBonusValue(page, 0, '+5');
+    await expect(page.locator('.atk-bonus').nth(0)).toHaveClass(/atk-bonus--override/);
+
+    // Type the calculated value back — indicator should clear
+    await setBonusValue(page, 0, '+2');
+    await expect(page.locator('.atk-bonus').nth(0)).not.toHaveClass(/atk-bonus--override/);
+  });
+
   test('override does not update when ability score changes', async ({ page }) => {
     await setAbility(page, 'str', 10); // +0
     await addAttack(page);
