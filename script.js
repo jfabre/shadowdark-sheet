@@ -19,7 +19,11 @@
     else requestAnimationFrame(function() { _tsReadyResolve(); });
 
     // ── Advantage/Disadvantage roll state ──────────────
-    var pendingAdvRolls = new Map(); // rollId -> {name, mode, bonusN, dmgExpr}
+    // type: 'attack' | 'check' | 'spell'
+    // attack: { name, mode, bonusN, dmgExpr }
+    // check:  { name, mode, bonusN, type }
+    // spell:  { name, mode, bonusN, type, spellDC }
+    var pendingAdvRolls = new Map();
 
     function _collectDice(node, kind, acc) {
       if (!node) return;
@@ -52,18 +56,31 @@
       var kept  = pending.mode === 'advantage' ? Math.max.apply(null, d20s) : Math.min.apply(null, d20s);
       var total = kept + pending.bonusN;
       var bonus = pending.bonusN >= 0 ? '+' + pending.bonusN : '' + pending.bonusN;
-
-      var dmgTotal = 0;
-      event.resultsGroups.forEach(function(g) {
-        var tmp = []; _collectDice(g.result, 'd20', tmp);
-        if (!tmp.length) dmgTotal += _sumNode(g.result);
-      });
-
       var modeLabel = pending.mode === 'advantage' ? 'ADV' : 'DIS';
-      var msg = '\u2694 ' + pending.name + ' [' + modeLabel + ']'
-              + '  Hit: ' + total
-              + '  (' + d20s.join(' & ') + ' \u2192 kept ' + kept + ', ' + bonus + ')'
-              + '  |  Dmg: ' + dmgTotal;
+      var rollDetail = d20s.join(' & ') + ' \u2192 kept ' + kept + ', ' + bonus;
+      var msg;
+
+      if (pending.type === 'check') {
+        msg = pending.name + ' [' + modeLabel + ']'
+            + '  \u2192 ' + total
+            + '  (' + rollDetail + ')';
+      } else if (pending.type === 'spell') {
+        var outcome = total >= pending.spellDC ? 'success' : 'fail';
+        msg = '\u2728 ' + pending.name + ' [' + modeLabel + ']'
+            + '  \u2192 ' + total + ' vs DC ' + pending.spellDC + ' \u2014 ' + outcome
+            + '  (' + rollDetail + ')';
+      } else {
+        // attack
+        var dmgTotal = 0;
+        event.resultsGroups.forEach(function(g) {
+          var tmp = []; _collectDice(g.result, 'd20', tmp);
+          if (!tmp.length) dmgTotal += _sumNode(g.result);
+        });
+        msg = '\u2694 ' + pending.name + ' [' + modeLabel + ']'
+            + '  Hit: ' + total
+            + '  (' + rollDetail + ')'
+            + '  |  Dmg: ' + dmgTotal;
+      }
 
       if (window.TS && TS.chat && typeof TS.chat.send === 'function') {
         TS.chat.send(msg, 'board');
@@ -78,6 +95,53 @@
         catch (e) { console.warn('TS.dice.putDiceInTray failed, using fallback:', e); }
       }
       return false;
+    }
+
+    // ── Generic check/spell roller (stat checks, initiative, spellcasting) ──
+    // opts: { type: 'check' | 'spell', spellDC?: number }
+    async function rollCheck(label, bonusN, mode, opts) {
+      const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
+      const type = opts.type || 'check';
+
+      if (window.TS && window.TS.dice && typeof window.TS.dice.putDiceInTray === 'function') {
+        try {
+          if (mode === 'normal') {
+            window.TS.dice.putDiceInTray([{ name: label, roll: `1d20${bonusStr}` }], false);
+          } else {
+            const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
+            const result = await window.TS.dice.putDiceInTray(
+              [{ name: `${label} (${modeLabel})`, roll: '2d20' }], false
+            );
+            if (result && result.rollId) {
+              pendingAdvRolls.set(result.rollId, { name: label, mode, bonusN, type, spellDC: opts.spellDC });
+            }
+          }
+          return;
+        } catch (e) {
+          console.warn('TS.dice.putDiceInTray failed, using fallback:', e);
+        }
+      }
+
+      // Browser fallback
+      const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
+      let d20, total, detail;
+      if (mode === 'normal') {
+        d20   = Math.ceil(Math.random() * 20);
+        total = d20 + bonusN;
+        detail = `d20=${d20}${bonusStr}`;
+      } else {
+        const r1 = Math.ceil(Math.random() * 20);
+        const r2 = Math.ceil(Math.random() * 20);
+        d20   = mode === 'advantage' ? Math.max(r1, r2) : Math.min(r1, r2);
+        total = d20 + bonusN;
+        detail = `${modeLabel} ${r1}&${r2}\u2192${d20}${bonusStr}`;
+      }
+      if (type === 'spell') {
+        const outcome = total >= opts.spellDC ? 'success' : 'fail';
+        showToast(`${label}: ${total} (${detail}) \u2014 ${outcome}`);
+      } else {
+        showToast(`${label}: ${total} (${detail})`);
+      }
     }
 
     // ── Storage Adapter ────────────────────────────────
@@ -658,12 +722,17 @@
         <input class="ability-score" id="ability-${stat.toLowerCase()}"
                type="number" min="1" max="20" value="10"
                inputmode="numeric" />
-        <span class="ability-mod" id="mod-${stat.toLowerCase()}">+0</span>
+        <div class="btn-roll-cluster ability-roll-cluster">
+          <button class="btn-adv"    title="Roll ${stat} check with advantage">▲</button>
+          <span class="ability-mod" id="mod-${stat.toLowerCase()}">+0</span>
+          <button class="btn-disadv" title="Roll ${stat} check with disadvantage">▼</button>
+        </div>
       `;
       abilityGrid.appendChild(cell);
 
-      const input = cell.querySelector('.ability-score');
-      const modEl = cell.querySelector('.ability-mod');
+      const input  = cell.querySelector('.ability-score');
+      const modEl  = cell.querySelector('.ability-mod');
+      const cluster = cell.querySelector('.ability-roll-cluster');
 
       let _abilitySaveTimer = null;
       input.addEventListener('input', () => {
@@ -675,25 +744,37 @@
         clearTimeout(_abilitySaveTimer);
         _abilitySaveTimer = setTimeout(coreAutoSave, 300);
       });
-      // Tap cell to focus score input
+      // Tap cell to focus score input (but not when interacting with the roll cluster)
       cell.addEventListener('click', e => {
-        if (e.target !== input && e.target !== modEl) input.focus();
+        if (e.target !== input && !cluster.contains(e.target)) input.focus();
       });
-      // Mod badge rolls a stat check
+      // Mod badge rolls a normal stat check
       modEl.setAttribute('role', 'button');
       modEl.setAttribute('tabindex', '0');
       modEl.title = `Roll ${stat} check`;
-      function rollStatCheck() {
+      function rollStatCheck(mode) {
         const bonusN = abilityMod(input.value);
-        const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
-        const label = `${stat} (${fmtMod(bonusN)})`;
-        if (!sendToTray([{ name: label, roll: `1d20${bonusStr}` }])) {
-          const d20 = Math.ceil(Math.random() * 20);
-          showToast(`${label}: ${d20 + bonusN} (d20=${d20}${bonusStr})`);
-        }
+        const label  = `${stat} (${fmtMod(bonusN)})`;
+        rollCheck(label, bonusN, mode || 'normal', { type: 'check' });
       }
-      modEl.addEventListener('click', rollStatCheck);
-      modEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rollStatCheck(); } });
+      modEl.addEventListener('click', () => { rollStatCheck('normal'); collapseStatCluster(); });
+      modEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rollStatCheck('normal'); } });
+      cluster.querySelector('.btn-adv').addEventListener('click',    () => { rollStatCheck('advantage');    collapseStatCluster(); });
+      cluster.querySelector('.btn-disadv').addEventListener('click', () => { rollStatCheck('disadvantage'); collapseStatCluster(); });
+
+      function collapseStatCluster() { cluster.classList.remove('expanded'); }
+
+      // Touch: tap cluster to expand; tap outside to collapse
+      cluster.addEventListener('pointerdown', function(e) {
+        if (e.pointerType === 'touch' && !cluster.classList.contains('expanded')) {
+          cluster.classList.add('expanded');
+          e.preventDefault();
+        }
+      });
+      document.addEventListener('pointerdown', function onDocPD(e) {
+        if (!cluster.isConnected) { document.removeEventListener('pointerdown', onDocPD); return; }
+        if (!cluster.contains(e.target)) collapseStatCluster();
+      });
     });
 
     // Alignment selector
@@ -1780,24 +1861,46 @@
       function refreshInit() {
         const initEl = document.getElementById('cbt-init');
         const mod = getStatMod('DEX');
-        initEl.textContent = fmtMod(mod);
-        // Wire roll on first call only
         if (!initEl._rollWired) {
           initEl._rollWired = true;
-          initEl.setAttribute('role', 'button');
-          initEl.setAttribute('tabindex', '0');
-          initEl.title = 'Roll Initiative';
-          function rollInitiative() {
+          initEl.innerHTML =
+            `<div class="btn-roll-cluster init-roll-cluster">` +
+              `<button class="btn-adv"    title="Roll Initiative with advantage">▲</button>` +
+              `<span class="init-val">${fmtMod(mod)}</span>` +
+              `<button class="btn-disadv" title="Roll Initiative with disadvantage">▼</button>` +
+            `</div>`;
+
+          const cluster  = initEl.querySelector('.init-roll-cluster');
+          const valSpan  = initEl.querySelector('.init-val');
+
+          function rollInitiative(mode) {
             const bonusN = getStatMod('DEX');
-            const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
-            const label = `Initiative (${fmtMod(bonusN)})`;
-            if (!sendToTray([{ name: label, roll: `1d20${bonusStr}` }])) {
-              const d20 = Math.ceil(Math.random() * 20);
-              showToast(`${label}: ${d20 + bonusN} (d20=${d20}${bonusStr})`);
-            }
+            const label  = `Initiative (${fmtMod(bonusN)})`;
+            rollCheck(label, bonusN, mode || 'normal', { type: 'check' });
           }
-          initEl.addEventListener('click', rollInitiative);
-          initEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rollInitiative(); } });
+
+          valSpan.setAttribute('role', 'button');
+          valSpan.setAttribute('tabindex', '0');
+          valSpan.title = 'Roll Initiative';
+          valSpan.addEventListener('click', () => { rollInitiative('normal'); collapseInitCluster(); });
+          valSpan.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rollInitiative('normal'); } });
+          cluster.querySelector('.btn-adv').addEventListener('click',    () => { rollInitiative('advantage');    collapseInitCluster(); });
+          cluster.querySelector('.btn-disadv').addEventListener('click', () => { rollInitiative('disadvantage'); collapseInitCluster(); });
+
+          function collapseInitCluster() { cluster.classList.remove('expanded'); }
+
+          cluster.addEventListener('pointerdown', function(e) {
+            if (e.pointerType === 'touch' && !cluster.classList.contains('expanded')) {
+              cluster.classList.add('expanded');
+              e.preventDefault();
+            }
+          });
+          document.addEventListener('pointerdown', function onDocPD(e) {
+            if (!cluster.isConnected) { document.removeEventListener('pointerdown', onDocPD); return; }
+            if (!cluster.contains(e.target)) collapseInitCluster();
+          });
+        } else {
+          initEl.querySelector('.init-val').textContent = fmtMod(mod);
         }
       }
 
@@ -2032,9 +2135,11 @@
           const castStat = cls === 'wizard' ? 'INT' : cls === 'priest' ? 'WIS' : null;
           const castBtnHtml = castStat
             ? `<div class="btn-roll-cluster spell-cast-cluster">` +
+                `<button class="btn-adv"    title="Cast ${esc(sp.name) || 'spell'} with advantage">▲</button>` +
                 `<button class="btn-cast btn-roll" title="Cast ${esc(sp.name) || 'spell'} (DC ${dc}, ${castStat})">` +
                   `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h0"/><path d="M17.8 6.2 19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2 11 5"/></svg>` +
                 `</button>` +
+                `<button class="btn-disadv" title="Cast ${esc(sp.name) || 'spell'} with disadvantage">▼</button>` +
               `</div>`
             : '';
 
@@ -2076,6 +2181,10 @@
             dcChip.textContent = `DC ${10 + sp.tier}`;
             const castBtn = item.querySelector('.btn-cast');
             if (castBtn) castBtn.title = `Cast ${sp.name || 'spell'} (DC ${10 + sp.tier}, ${castStat})`;
+            const advBtn    = item.querySelector('.spell-cast-cluster .btn-adv');
+            const disadvBtn = item.querySelector('.spell-cast-cluster .btn-disadv');
+            if (advBtn)    advBtn.title    = `Cast ${sp.name || 'spell'} with advantage`;
+            if (disadvBtn) disadvBtn.title = `Cast ${sp.name || 'spell'} with disadvantage`;
             persist();
           });
           item.querySelector('.sp-range').addEventListener('input',    e => { sp.range    = e.target.value; persist(); });
@@ -2087,20 +2196,33 @@
             renderSpells();
           });
 
-          // Cast roll button
+          // Cast roll buttons (normal, adv, disadv)
           if (castStat) {
-            item.querySelector('.btn-cast').addEventListener('click', () => {
-              const bonusN   = getStatMod(castStat);
-              const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
+            const castCluster = item.querySelector('.spell-cast-cluster');
+
+            function rollCast(mode) {
+              const bonusN  = getStatMod(castStat);
               const spellName = sp.name || 'Spell';
               const spellDC   = 10 + (sp.tier || 1);
               const label = `Cast ${spellName} (DC ${spellDC})`;
-              if (!sendToTray([{ name: label, roll: `1d20${bonusStr}` }])) {
-                const d20   = Math.ceil(Math.random() * 20);
-                const total = d20 + bonusN;
-                const result = total >= spellDC ? 'success' : 'fail';
-                showToast(`${label}: ${total} (d20=${d20}${bonusStr}) — ${result}`);
+              rollCheck(label, bonusN, mode, { type: 'spell', spellDC });
+            }
+
+            function collapseSpellCluster() { castCluster.classList.remove('expanded'); }
+
+            item.querySelector('.btn-cast').addEventListener('click', () => { rollCast('normal'); collapseSpellCluster(); });
+            castCluster.querySelector('.btn-adv').addEventListener('click',    () => { rollCast('advantage');    collapseSpellCluster(); });
+            castCluster.querySelector('.btn-disadv').addEventListener('click', () => { rollCast('disadvantage'); collapseSpellCluster(); });
+
+            castCluster.addEventListener('pointerdown', function(e) {
+              if (e.pointerType === 'touch' && !castCluster.classList.contains('expanded')) {
+                castCluster.classList.add('expanded');
+                e.preventDefault();
               }
+            });
+            document.addEventListener('pointerdown', function onDocPD(e) {
+              if (!castCluster.isConnected) { document.removeEventListener('pointerdown', onDocPD); return; }
+              if (!castCluster.contains(e.target)) collapseSpellCluster();
             });
           }
 
