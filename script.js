@@ -44,22 +44,17 @@
     }
 
      function onRollResults(event) {
-       // TaleSpire does not populate event.rollId reliably — it arrives as undefined.
-       // Since only one adv/dis roll can be in flight at a time, we use the first
-       // pending entry if the event contains d20 results, otherwise ignore it.
-       if (window.TS && TS.debug) TS.debug.log('[onRollResults] fired hasGroups=' + !!event.resultsGroups + ' pendingSize=' + pendingAdvRolls.size + ' eventKeys=' + JSON.stringify(Object.keys(event || {})));
-       if (window.TS && TS.debug) TS.debug.log('[onRollResults] event=' + JSON.stringify(event));
-       if (!event.resultsGroups) return;
+       // TaleSpire wraps the payload: event = { kind: 'rollResults', payload: { resultsGroups, ... } }
+       var data = (event && event.payload) ? event.payload : event;
+       if (!data || !data.resultsGroups) return;
 
        // Check this event actually contains d20 dice before consuming a pending entry
        var d20s = [];
-       event.resultsGroups.forEach(function(g) { _collectDice(g.result, 'd20', d20s); });
-       if (window.TS && TS.debug) TS.debug.log('[onRollResults] d20s=' + JSON.stringify(d20s));
+       data.resultsGroups.forEach(function(g) { _collectDice(g.result, 'd20', d20s); });
        if (!d20s.length) return;
 
        // Grab and clear the oldest pending entry (FIFO)
        var firstKey = pendingAdvRolls.keys().next().value;
-       if (window.TS && TS.debug) TS.debug.log('[onRollResults] firstKey=' + firstKey);
        if (firstKey === undefined) return;
        var pending = pendingAdvRolls.get(firstKey);
        pendingAdvRolls.delete(firstKey);
@@ -83,7 +78,7 @@
       } else {
         // attack
         var dmgTotal = 0;
-        event.resultsGroups.forEach(function(g) {
+        data.resultsGroups.forEach(function(g) {
           var tmp = []; _collectDice(g.result, 'd20', tmp);
           if (!tmp.length) dmgTotal += _sumNode(g.result);
         });
