@@ -724,7 +724,7 @@
                inputmode="numeric" />
         <div class="btn-roll-cluster ability-roll-cluster">
           <button class="btn-adv"    title="Roll ${stat} check with advantage">▲</button>
-          <span class="ability-mod" id="mod-${stat.toLowerCase()}">+0</span>
+          <span class="ability-mod" id="mod-${stat.toLowerCase()}"><span class="mod-inner">+0</span></span>
           <button class="btn-disadv" title="Roll ${stat} check with disadvantage">▼</button>
         </div>
       `;
@@ -737,7 +737,7 @@
       let _abilitySaveTimer = null;
       input.addEventListener('input', () => {
         const mod = abilityMod(input.value);
-        modEl.textContent = fmtMod(mod);
+        modEl.querySelector('.mod-inner').textContent = fmtMod(mod);
         if (!window.SD.character.abilities) window.SD.character.abilities = {};
         window.SD.character.abilities[stat] = Number(input.value) || 10;
         Events.emit('ability:change', stat);
@@ -854,7 +854,7 @@
             const input = document.getElementById(`ability-${stat.toLowerCase()}`);
             const modEl = document.getElementById(`mod-${stat.toLowerCase()}`);
             input.value = score;
-            modEl.textContent = fmtMod(abilityMod(score));
+            modEl.querySelector('.mod-inner').textContent = fmtMod(abilityMod(score));
           }
         });
       }
