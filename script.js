@@ -70,6 +70,16 @@
       }
     }
 
+    // ── Dice tray helper ───────────────────────────────
+    // Returns true if TaleSpire handled the roll; false → caller shows fallback UI.
+    function sendToTray(rolls) {
+      if (window.TS && window.TS.dice && typeof window.TS.dice.putDiceInTray === 'function') {
+        try { window.TS.dice.putDiceInTray(rolls, false); return true; }
+        catch (e) { console.warn('TS.dice.putDiceInTray failed, using fallback:', e); }
+      }
+      return false;
+    }
+
     // ── Storage Adapter ────────────────────────────────
     // Abstracts browser localStorage vs TaleSpire campaign storage.
     // In TaleSpire, all keys are packed into a single JSON blob
@@ -667,8 +677,23 @@
       });
       // Tap cell to focus score input
       cell.addEventListener('click', e => {
-        if (e.target !== input) input.focus();
+        if (e.target !== input && e.target !== modEl) input.focus();
       });
+      // Mod badge rolls a stat check
+      modEl.setAttribute('role', 'button');
+      modEl.setAttribute('tabindex', '0');
+      modEl.title = `Roll ${stat} check`;
+      function rollStatCheck() {
+        const bonusN = abilityMod(input.value);
+        const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
+        const label = `${stat} (${fmtMod(bonusN)})`;
+        if (!sendToTray([{ name: label, roll: `1d20${bonusStr}` }])) {
+          const d20 = Math.ceil(Math.random() * 20);
+          showToast(`${label}: ${d20 + bonusN} (d20=${d20}${bonusStr})`);
+        }
+      }
+      modEl.addEventListener('click', rollStatCheck);
+      modEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rollStatCheck(); } });
     });
 
     // Alignment selector
@@ -1717,7 +1742,27 @@
       }
 
       function refreshInit() {
-        document.getElementById('cbt-init').textContent = fmtMod(getStatMod('DEX'));
+        const initEl = document.getElementById('cbt-init');
+        const mod = getStatMod('DEX');
+        initEl.textContent = fmtMod(mod);
+        // Wire roll on first call only
+        if (!initEl._rollWired) {
+          initEl._rollWired = true;
+          initEl.setAttribute('role', 'button');
+          initEl.setAttribute('tabindex', '0');
+          initEl.title = 'Roll Initiative';
+          function rollInitiative() {
+            const bonusN = getStatMod('DEX');
+            const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
+            const label = `Initiative (${fmtMod(bonusN)})`;
+            if (!sendToTray([{ name: label, roll: `1d20${bonusStr}` }])) {
+              const d20 = Math.ceil(Math.random() * 20);
+              showToast(`${label}: ${d20 + bonusN} (d20=${d20}${bonusStr})`);
+            }
+          }
+          initEl.addEventListener('click', rollInitiative);
+          initEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rollInitiative(); } });
+        }
       }
 
       function refreshAC(skipPersist) {
@@ -1955,16 +2000,30 @@
           const item = document.createElement('div');
           item.className = 'spell-item';
 
+          const tier = sp.tier || 1;
+          const dc   = 10 + tier;
+          const cls  = (window.SD.character.class || '').toLowerCase();
+          const castStat = cls === 'wizard' ? 'INT' : cls === 'priest' ? 'WIS' : null;
+          const castBtnHtml = castStat
+            ? `<div class="btn-roll-cluster spell-cast-cluster">` +
+                `<button class="btn-cast btn-roll" title="Cast ${esc(sp.name) || 'spell'} (DC ${dc}, ${castStat})">` +
+                  `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h0"/><path d="M17.8 6.2 19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2 11 5"/></svg>` +
+                `</button>` +
+              `</div>`
+            : '';
+
           item.innerHTML =
             `<div class="spell-hdr">` +
               `<span class="spell-toggle">▶</span>` +
               `<input class="spell-name-inp" placeholder="Spell name" value="${esc(sp.name)}" />` +
-              `<span class="spell-tier-badge">T${sp.tier || 1}</span>` +
+              `<span class="spell-tier-badge">T${tier}</span>` +
+              `<span class="spell-dc">DC ${dc}</span>` +
+              castBtnHtml +
               `<button class="btn-trash" title="Remove spell">✕</button>` +
             `</div>` +
             `<div class="spell-body">` +
               `<div class="spell-meta-row">` +
-                `<label>Tier<input type="number" class="sp-tier" min="1" max="9" value="${sp.tier || 1}" inputmode="numeric" /></label>` +
+                `<label>Tier<input type="number" class="sp-tier" min="1" max="9" value="${tier}" inputmode="numeric" /></label>` +
                 `<label>Range<input class="sp-range" placeholder="Near" value="${esc(sp.range)}" /></label>` +
                 `<label>Duration<input class="sp-dur" placeholder="Instant" value="${esc(sp.duration)}" /></label>` +
               `</div>` +
@@ -1975,9 +2034,10 @@
           const body   = item.querySelector('.spell-body');
           const toggle = item.querySelector('.spell-toggle');
           const badge  = item.querySelector('.spell-tier-badge');
+          const dcChip = item.querySelector('.spell-dc');
 
           hdr.addEventListener('click', e => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('.btn-roll-cluster')) return;
             const open = body.style.display === 'block';
             body.style.display = open ? 'none' : 'block';
             toggle.textContent  = open ? '▶' : '▼';
@@ -1987,6 +2047,9 @@
           item.querySelector('.sp-tier').addEventListener('input', e => {
             sp.tier = parseInt(e.target.value) || 1;
             badge.textContent = `T${sp.tier}`;
+            dcChip.textContent = `DC ${10 + sp.tier}`;
+            const castBtn = item.querySelector('.btn-cast');
+            if (castBtn) castBtn.title = `Cast ${sp.name || 'spell'} (DC ${10 + sp.tier}, ${castStat})`;
             persist();
           });
           item.querySelector('.sp-range').addEventListener('input',    e => { sp.range    = e.target.value; persist(); });
@@ -1997,6 +2060,23 @@
             persist();
             renderSpells();
           });
+
+          // Cast roll button
+          if (castStat) {
+            item.querySelector('.btn-cast').addEventListener('click', () => {
+              const bonusN   = getStatMod(castStat);
+              const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
+              const spellName = sp.name || 'Spell';
+              const spellDC   = 10 + (sp.tier || 1);
+              const label = `Cast ${spellName} (DC ${spellDC})`;
+              if (!sendToTray([{ name: label, roll: `1d20${bonusStr}` }])) {
+                const d20   = Math.ceil(Math.random() * 20);
+                const total = d20 + bonusN;
+                const result = total >= spellDC ? 'success' : 'fail';
+                showToast(`${label}: ${total} (d20=${d20}${bonusStr}) — ${result}`);
+              }
+            });
+          }
 
           list.appendChild(item);
         });
