@@ -856,27 +856,9 @@
 
       let filePickerOpen = false;
 
-      async function openFilePicker() {
+      function openFilePicker() {
         if (filePickerOpen) return;
         filePickerOpen = true;
-
-        // Prefer async File System Access API (non-blocking)
-        if (window.showOpenFilePicker) {
-          try {
-            const [handle] = await window.showOpenFilePicker({
-              multiple: false,
-              types: [{ description: 'Images', accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp', '.gif'] } }]
-            });
-            const file = await handle.getFile();
-            filePickerOpen = false;
-            handleFile(file);
-            return;
-          } catch (e) {
-            filePickerOpen = false;
-            if (e.name !== 'AbortError') console.warn('File picker error:', e);
-            return;
-          }
-        }
 
         // Fallback: defer click() off the call stack to reduce UI freeze
         setTimeout(() => fileInput.click(), 0);
