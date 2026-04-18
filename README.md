@@ -2,7 +2,7 @@
 
 A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/pages/shadowdark), built as a [TaleSpire Symbiote](https://symbiote-docs.talespire.com/). Works standalone in any browser too.
 
-![Version](https://img.shields.io/badge/version-1.1.0-orange)
+![Version](https://img.shields.io/badge/version-0.7.1-orange)
 ![Platform](https://img.shields.io/badge/platform-TaleSpire%20%7C%20Browser-blue)
 ![License](https://img.shields.io/badge/license-personal%20use-lightgrey)
 
@@ -52,6 +52,7 @@ Zero dependencies. Pure vanilla HTML + CSS + JS.
 
 - `index.html` — single-page layout with three tab panels
 - `style.css` — CSS custom properties for theming, responsive layout
+- `data.js` — game reference data (weapons, spells, class features, talent tables)
 - `script.js` — all logic: storage adapter, event bus, autocomplete factory, ability scores, combat, gear, class features, themes
 - `manifest.json` — TaleSpire Symbiote manifest
 
@@ -67,7 +68,7 @@ Fonts loaded from Google Fonts:
 Run the deploy script to copy files into TaleSpire's local Symbiotes folder:
 
 ```bash
-./deploy.sh
+./deploy-talespire.sh
 ```
 
 This copies to `~/Library/Application Support/com.bouncyrock.talespire/Symbiotes/the Dark Spire/`.
@@ -76,7 +77,7 @@ Then open TaleSpire and add "The Dark Spire" from the Symbiotes panel.
 
 ### TaleSpire (Windows)
 
-Copy `index.html`, `script.js`, `style.css`, and `manifest.json` to:
+Copy `index.html`, `script.js`, `data.js`, `style.css`, and `manifest.json` to:
 
 ```
 %AppData%\com.bouncyrock.talespire\Symbiotes\the Dark Spire\

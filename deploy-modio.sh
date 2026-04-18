@@ -112,8 +112,11 @@ perl -pi -e 's|(<span id="app-version">)v[\d.]+|${1}v'"$NEW_VERSION"'|' index.ht
 # ── Update APP_VERSION in script.js ──────────────────
 perl -pi -e "s|(const APP_VERSION = ')[\\d.]+'|\${1}$NEW_VERSION'|" script.js
 
+# ── Update version badge in README.md ────────────────
+perl -pi -e 's|(version-)[\d.]+(-orange)|\1'"$NEW_VERSION"'\2|' README.md
+
 # ── Commit and tag ───────────────────────────────────
-git add manifest.json index.html script.js CHANGELOG.md
+git add manifest.json index.html script.js README.md CHANGELOG.md
 git commit -m "release: v$NEW_VERSION"
 git tag "v$NEW_VERSION"
 
