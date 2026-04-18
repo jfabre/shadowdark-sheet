@@ -1866,7 +1866,7 @@
             `<div class="atk-row-btns">` +
               `<div class="btn-roll-cluster">` +
                 `<button class="btn-adv" title="Roll with advantage">▲</button>` +
-                `<button class="btn-roll" title="Roll attack &amp; damage">${ICON_DICE}</button>` +
+                `<button class="btn-roll" title="Roll attack &amp; damage">${ICON_SWORD}</button>` +
                 `<button class="btn-disadv" title="Roll with disadvantage">▼</button>` +
               `</div>` +
               `<button class="btn-trash" title="Remove attack">✕</button>` +
