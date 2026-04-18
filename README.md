@@ -2,19 +2,19 @@
 
 A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/pages/shadowdark), built as a [TaleSpire Symbiote](https://symbiote-docs.talespire.com/). Works standalone in any browser too.
 
-![Version](https://img.shields.io/badge/.8.0-orange)
+![Version](https://img.shields.io/badge/v0.8.1-orange)
 ![Platform](https://img.shields.io/badge/platform-TaleSpire%20%7C%20Browser-blue)
 ![License](https://img.shields.io/badge/license-personal%20use-lightgrey)
 
 ## Features
 
 ### Core Tab
-- **Character identity** — name, class (Fighter / Priest / Thief / Wizard), level, ancestry, alignment
+- **Character identity** — name, ancestry, class (Fighter / Priest / Thief / Wizard), and level; ancestry and class use styled custom dropdowns
 - **Character portrait** — upload and crop an image, stored in-app
 - **HP & XP tracking** — current/max HP and XP with next-level target
-- **Ability scores** — full 2×3 grid (STR, DEX, CON, INT, WIS, CHA) with auto-computed modifiers
-- **Combat stats** — AC (auto-calculated from armor + DEX + shield), initiative (derived from DEX), luck tokens
-- **Attacks** — add weapon rows with autocomplete from the full Shadowdark weapon table (15 weapons); auto-fills damage die and stat bonus
+- **Ability scores** — full 2×3 grid (STR, DEX, CON, INT, WIS, CHA) with auto-computed modifiers and ± stepper buttons
+- **Combat stats** — AC (auto-calculated from armor + DEX + shield), initiative (derived from DEX), luck tokens; AC and luck have ± steppers
+- **Attacks** — add weapon rows with autocomplete from the full Shadowdark weapon table (15 weapons); auto-fills damage die and stat bonus; bonus-to-hit is editable (manual override shown with accent underline; clears when value matches the calculated mod)
 - **Spells** — add spell rows with autocomplete for all Tier 1–2 Priest and Wizard spells (34 spells); auto-fills tier, range, duration, and description
 
 ### Inventory Tab
@@ -26,11 +26,12 @@ A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/
 
 ### Traits Tab
 - **Talents** — shows earned talent slots based on level (at levels 1, 3, 5, 7, 9) with class-specific autocomplete from the talent roll tables; Human ancestry gets a bonus talent at level 1
+- **Alignment, Deity, Languages, Background, Notes & Backstory** — free-text fields; Notes & Backstory has a large auto-growing textarea
+- **Ancestral features** — collapsible reference for each ancestry's traits and languages
 - **Class features** — collapsible reference for each class's abilities (Hauler, Weapon Mastery, Backstab, Spellcasting, etc.)
-- **Background, Languages, Deity, Notes** — free-text fields with auto-growing textareas
 
 ### Themes
-Six color themes, switchable from the 🎨 button (top-right). **Dungeon** is the default.
+Six color themes, switchable from the 🎨 button (top-right). Click a swatch to preview without committing; press **Apply** to save, or close to revert. **Dungeon** is the default.
 
 | Theme | Vibe |
 |-------|------|
