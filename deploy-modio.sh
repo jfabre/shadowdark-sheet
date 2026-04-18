@@ -5,6 +5,7 @@
 # Usage:
 #   ./deploy-modio.sh              # auto-bump patch (0.5.0 → 0.5.1)
 #   ./deploy-modio.sh --version 1.0.0   # explicit version
+#   ./deploy-modio.sh --version 1.0.0 --no-changelog  # skip changelog generation (use when pre-written)
 set -euo pipefail
 
 SRC="$(cd "$(dirname "$0")" && pwd)"
@@ -12,9 +13,11 @@ cd "$SRC"
 
 # ── Parse arguments ──────────────────────────────────
 NEW_VERSION=""
+SKIP_CHANGELOG=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --version) NEW_VERSION="$2"; shift 2 ;;
+    --no-changelog) SKIP_CHANGELOG=true; shift ;;
     *) echo "Unknown arg: $1"; exit 1 ;;
   esac
 done
@@ -57,22 +60,25 @@ else
 fi
 
 # ── Generate changelog entry ─────────────────────────
-TODAY=$(date +%Y-%m-%d)
-COMMITS=$(git --no-pager log --oneline --no-decorate "$LOG_RANGE" | sed 's/^[a-f0-9]* /- /')
+if [[ "$SKIP_CHANGELOG" == "true" ]]; then
+  echo "── Skipping changelog generation (--no-changelog) ──"
+else
+  TODAY=$(date +%Y-%m-%d)
+  COMMITS=$(git --no-pager log --oneline --no-decorate "$LOG_RANGE" | sed 's/^[a-f0-9]* /- /')
 
-ENTRY="## [$NEW_VERSION] - $TODAY
+  ENTRY="## [$NEW_VERSION] - $TODAY
 
 $COMMITS"
 
-echo ""
-echo "── Changelog entry ──"
-echo "$ENTRY"
-echo ""
+  echo ""
+  echo "── Changelog entry ──"
+  echo "$ENTRY"
+  echo ""
 
-# ── Prepend to CHANGELOG.md ─────────────────────────
-if [[ -f CHANGELOG.md ]]; then
-  # Insert after the header block (first blank line after the title)
-  python3 -c "
+  # ── Prepend to CHANGELOG.md ─────────────────────────
+  if [[ -f CHANGELOG.md ]]; then
+    # Insert after the header block (first blank line after the title)
+    python3 -c "
 import re
 with open('CHANGELOG.md') as f:
     content = f.read()
@@ -87,12 +93,13 @@ else:
 with open('CHANGELOG.md', 'w') as f:
     f.write(content)
 "
-else
-  cat > CHANGELOG.md <<EOF
+  else
+    cat > CHANGELOG.md <<EOF
 # Changelog
 
 $ENTRY
 EOF
+  fi
 fi
 
 # ── Update manifest.json version ─────────────────────

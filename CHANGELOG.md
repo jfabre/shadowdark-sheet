@@ -3,6 +3,45 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.8.0] - 2026-04-18
+
+### Dice Integration
+- feat: roll stat checks, initiative, and spellcasting from the sheet directly into TaleSpire
+- feat: advantage / disadvantage buttons on attack rolls — sends 2d20, keeps the right one
+- feat: advantage / disadvantage buttons on stat checks, initiative, and spells
+- ux: roll results displayed in a bottom-panel toast card (monospace detail line, centred on screen)
+- ux: attack results shown in toast instead of inline text
+
+### Combat Tab
+- ux: attack rows now show sword icon; hover glow on attack and spell buttons
+- ux: advantage / disadvantage buttons enlarged for easier tapping
+- fix: attack table header / column misalignment corrected
+- fix: correct TaleSpire dice API field names (notation/label → name/roll)
+
+### HP & XP
+- ux: HP and XP redesigned as compact side-by-side stat cards
+- ux: HP bar uses green at full health (instead of theme accent)
+- ux: Dying label repositioned to HP title — no layout shift
+- ux: level-up sparkles and shimmer on XP card when XP reaches maximum
+- fix: HP defaults to 1/1 on new or empty sheets (prevents false Dying state on load)
+
+### Core Sheet
+- ux: ability modifier styled as a rotated diamond badge (d20 aesthetic)
+- ux: AC, Luck, and Initiative numbers unified to 1.1rem to match modifier size
+- ux: spells section hidden automatically for non-caster classes
+- ux: character creation guide popup shown exactly once per new sheet
+- fix: spells correctly re-render when class is changed in the dropdown
+- fix: portrait placeholder text centred
+- fix: portrait picker fixed in TaleSpire (uses input.click() fallback)
+
+### Gear / Inventory
+- ux: inventory slots/qty inputs replaced with slot badge and qty stepper
+- fix: half-slot option removed (not a Shadowdark rule)
+
+### Themes & Polish
+- feat: scrollbar styled to match the active theme
+- ux: Inventory section heading restored in Gear tab
+
 ## [0.7.1] - 2026-04-15
 
 - fix: update APP_VERSION to 0.7.0 and sync version bump in deploy script
