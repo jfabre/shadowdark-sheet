@@ -1431,6 +1431,18 @@ body {
   color: var(--muted);
   text-transform: uppercase;
 }
+.ability-stepper {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  justify-content: center;
+}
+.ability-stepper .cbt-step-btn {
+  font-size: 0.65rem;
+  padding: 1px 4px;
+}
+
 .ability-score,
 input[type="number"].ability-score {
   background: transparent;
