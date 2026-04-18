@@ -97,53 +97,6 @@
       return false;
     }
 
-    // ── Generic check/spell roller (stat checks, initiative, spellcasting) ──
-    // opts: { type: 'check' | 'spell', spellDC?: number }
-    async function rollCheck(label, bonusN, mode, opts) {
-      const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
-      const type = opts.type || 'check';
-
-      if (window.TS && window.TS.dice && typeof window.TS.dice.putDiceInTray === 'function') {
-        try {
-          if (mode === 'normal') {
-            window.TS.dice.putDiceInTray([{ name: label, roll: `1d20${bonusStr}` }], false);
-          } else {
-            const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
-            const result = await window.TS.dice.putDiceInTray(
-              [{ name: `${label} (${modeLabel})`, roll: '2d20' }], false
-            );
-            if (result && result.rollId) {
-              pendingAdvRolls.set(result.rollId, { name: label, mode, bonusN, type, spellDC: opts.spellDC });
-            }
-          }
-          return;
-        } catch (e) {
-          console.warn('TS.dice.putDiceInTray failed, using fallback:', e);
-        }
-      }
-
-      // Browser fallback
-      const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
-      let d20, total, detail;
-      if (mode === 'normal') {
-        d20   = Math.ceil(Math.random() * 20);
-        total = d20 + bonusN;
-        detail = `d20=${d20}${bonusStr}`;
-      } else {
-        const r1 = Math.ceil(Math.random() * 20);
-        const r2 = Math.ceil(Math.random() * 20);
-        d20   = mode === 'advantage' ? Math.max(r1, r2) : Math.min(r1, r2);
-        total = d20 + bonusN;
-        detail = `${modeLabel} ${r1}&${r2}\u2192${d20}${bonusStr}`;
-      }
-      if (type === 'spell') {
-        const outcome = total >= opts.spellDC ? 'success' : 'fail';
-        showToast(`${label}: ${total} (${detail}) \u2014 ${outcome}`);
-      } else {
-        showToast(`${label}: ${total} (${detail})`);
-      }
-    }
-
     // ── Storage Adapter ────────────────────────────────
     // Abstracts browser localStorage vs TaleSpire campaign storage.
     // In TaleSpire, all keys are packed into a single JSON blob
@@ -705,6 +658,53 @@
 
     window.SD = { loadCharacter, saveCharacter };
     window.SD.character = loadCharacter();
+
+    // ── Generic check/spell roller (stat checks, initiative, spellcasting) ──
+    // opts: { type: 'check' | 'spell', spellDC?: number }
+    async function rollCheck(label, bonusN, mode, opts) {
+      const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
+      const type = opts.type || 'check';
+
+      if (window.TS && window.TS.dice && typeof window.TS.dice.putDiceInTray === 'function') {
+        try {
+          if (mode === 'normal') {
+            window.TS.dice.putDiceInTray([{ name: label, roll: `1d20${bonusStr}` }], false);
+          } else {
+            const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
+            const result = await window.TS.dice.putDiceInTray(
+              [{ name: `${label} (${modeLabel})`, roll: '2d20' }], false
+            );
+            if (result && result.rollId) {
+              pendingAdvRolls.set(result.rollId, { name: label, mode, bonusN, type, spellDC: opts.spellDC });
+            }
+          }
+          return;
+        } catch (e) {
+          console.warn('TS.dice.putDiceInTray failed, using fallback:', e);
+        }
+      }
+
+      // Browser fallback
+      const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
+      let d20, total, detail;
+      if (mode === 'normal') {
+        d20   = Math.ceil(Math.random() * 20);
+        total = d20 + bonusN;
+        detail = `d20=${d20}${bonusStr}`;
+      } else {
+        const r1 = Math.ceil(Math.random() * 20);
+        const r2 = Math.ceil(Math.random() * 20);
+        d20   = mode === 'advantage' ? Math.max(r1, r2) : Math.min(r1, r2);
+        total = d20 + bonusN;
+        detail = `${modeLabel} ${r1}&${r2}\u2192${d20}${bonusStr}`;
+      }
+      if (type === 'spell') {
+        const outcome = total >= opts.spellDC ? 'success' : 'fail';
+        showToast(`${label}: ${total} (${detail}) \u2014 ${outcome}`);
+      } else {
+        showToast(`${label}: ${total} (${detail})`);
+      }
+    }
 
     // ── CORE tab ───────────────────────────────────────
     function updateCoreIcon(className) {
