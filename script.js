@@ -2442,11 +2442,16 @@
       const guide = Modal('creation-guide', 'guide-close');
       document.getElementById('guide-x').addEventListener('click', function() { guide.close(); });
 
+      function markGuideSeen() { StorageAdapter.setItem('guide_seen', '1'); }
+
       window._openGuide = function() { guide.open(); };
 
-      // Auto-show when sheet is empty (no name and no class)
-      const c = window.SD.character;
-      if (!c.name && !c.class) window._openGuide();
+      // Close paths both mark the guide as seen so it never auto-shows again
+      document.getElementById('guide-close').addEventListener('click', markGuideSeen);
+      document.getElementById('guide-x').addEventListener('click', markGuideSeen);
+
+      // Auto-show exactly once — on first ever visit (flag not yet set)
+      if (!StorageAdapter.getItem('guide_seen')) window._openGuide();
     })();
 
     // ── Settings menu ─────────────────────────────────
