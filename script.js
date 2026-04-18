@@ -47,15 +47,18 @@
        // TaleSpire does not populate event.rollId reliably — it arrives as undefined.
        // Since only one adv/dis roll can be in flight at a time, we use the first
        // pending entry if the event contains d20 results, otherwise ignore it.
+       if (window.TS && TS.debug) TS.debug.log('[onRollResults] fired hasGroups=' + !!event.resultsGroups + ' pendingSize=' + pendingAdvRolls.size);
        if (!event.resultsGroups) return;
 
        // Check this event actually contains d20 dice before consuming a pending entry
        var d20s = [];
        event.resultsGroups.forEach(function(g) { _collectDice(g.result, 'd20', d20s); });
+       if (window.TS && TS.debug) TS.debug.log('[onRollResults] d20s=' + JSON.stringify(d20s));
        if (!d20s.length) return;
 
        // Grab and clear the oldest pending entry (FIFO)
        var firstKey = pendingAdvRolls.keys().next().value;
+       if (window.TS && TS.debug) TS.debug.log('[onRollResults] firstKey=' + firstKey);
        if (firstKey === undefined) return;
        var pending = pendingAdvRolls.get(firstKey);
        pendingAdvRolls.delete(firstKey);
@@ -553,6 +556,7 @@
             window.TS.dice.putDiceInTray([{ name: label, roll: `1d20${bonusStr}` }], false);
           } else {
             const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
+            if (window.TS && TS.debug) TS.debug.log('[rollCheck] adv/dis calling putDiceInTray');
             const rollId = await window.TS.dice.putDiceInTray(
               [{ name: `${label} (${modeLabel})`, roll: '2d20' }], false
             );
