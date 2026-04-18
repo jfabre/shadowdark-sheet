@@ -59,7 +59,7 @@
         if (!tmp.length) dmgTotal += _sumNode(g.result);
       });
 
-      var modeLabel = pending.mode === 'advantage' ? 'ADV' : 'DISADV';
+      var modeLabel = pending.mode === 'advantage' ? 'ADV' : 'DIS';
       var msg = '\u2694 ' + pending.name + ' [' + modeLabel + ']'
               + '  Hit: ' + total
               + '  (' + d20s.join(' & ') + ' \u2192 kept ' + kept + ', ' + bonus + ')'
@@ -1898,7 +1898,7 @@
                 { name: `${name} — dmg`, roll: dmg }
               ], false);
             } else {
-              const modeLabel = mode === 'advantage' ? 'ADV' : 'DISADV';
+              const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
               const result = await window.TS.dice.putDiceInTray([
                 { name: `${name} — hit (${modeLabel})`, roll: '2d20' },
                 { name: `${name} — dmg`, roll: dmg }
@@ -1928,7 +1928,7 @@
           const kept = mode === 'advantage' ? Math.max(r1, r2) : Math.min(r1, r2);
           const total = kept + bonusN;
           const dmgTotal = rollDice(dmg);
-          const modeLabel = mode === 'advantage' ? 'ADV' : 'DISADV';
+          const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
           resultEl.textContent = `${modeLabel} ${r1}&${r2}\u2192${kept}${bonusStr} \u2014 dmg ${dmgTotal}`;
         }
 
