@@ -1208,8 +1208,8 @@ body {
 }
 
 /* HP colour states */
-.hp-card.hp-ok   .stat-current  { color: var(--accent); }
-.hp-card.hp-ok   .stat-bar-fill { background: var(--accent); }
+.hp-card.hp-ok   .stat-current  { color: color-mix(in srgb, var(--accent) 25%, #52b96e 75%); }
+.hp-card.hp-ok   .stat-bar-fill { background: color-mix(in srgb, var(--accent) 25%, #52b96e 75%); }
 
 .hp-card.hp-hurt .stat-current  { color: #b87c2a; }
 .hp-card.hp-hurt .stat-bar-fill { background: #b87c2a; }
