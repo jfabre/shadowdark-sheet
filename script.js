@@ -63,7 +63,7 @@
       var total = kept + pending.bonusN;
       var bonus = pending.bonusN >= 0 ? '+' + pending.bonusN : '' + pending.bonusN;
       var modeLabel = pending.mode === 'advantage' ? 'ADV' : 'DIS';
-      var rollDetail = d20s.join(' & ') + ' \u2192 kept ' + kept + ', ' + bonus;
+       var rollDetail = kept + bonus;
       var msg;
 
       if (pending.type === 'check') {
