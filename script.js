@@ -741,7 +741,10 @@
       document.getElementById(id).addEventListener('input', coreAutoSave);
     });
     // char-class is a <select>, fires 'change'
-    document.getElementById('char-class').addEventListener('change', coreAutoSave);
+    document.getElementById('char-class').addEventListener('change', () => {
+      coreAutoSave();
+      window.SD.renderSpells?.();
+    });
 
     // Load saved values into CORE fields
     function coreLoad() {
@@ -2103,6 +2106,7 @@
       }
 
       bootCombat();
+      window.SD.renderSpells = renderSpells;
     })();
   
     // ── Theme selector ─────────────────────────────────
