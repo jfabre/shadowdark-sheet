@@ -839,6 +839,10 @@ body {
   /* Standard scrollbar: Firefox and Chrome 121+ */
   scrollbar-width: thin;
   scrollbar-color: var(--accent) transparent;
+  transition: scrollbar-color 0.4s ease;
+}
+#content.scrollbar-hidden {
+  scrollbar-color: transparent transparent;
 }
 
 /* Webkit scrollbar: TaleSpire Chromium 111 and Safari */
@@ -851,6 +855,10 @@ body {
 #content::-webkit-scrollbar-thumb {
   background: var(--accent);
   border-radius: 2px;
+  transition: background 0.4s ease;
+}
+#content.scrollbar-hidden::-webkit-scrollbar-thumb {
+  background: transparent;
 }
 #content::-webkit-scrollbar-thumb:hover {
   filter: brightness(1.15);

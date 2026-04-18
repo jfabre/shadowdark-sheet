@@ -1844,8 +1844,20 @@
         }
       });
 
+      // Auto-hide scrollbar after 1.5s of scroll inactivity
+      const contentEl = document.getElementById('content');
+      let scrollbarHideTimer = null;
+      contentEl.classList.add('scrollbar-hidden');
+      contentEl.addEventListener('scroll', () => {
+        contentEl.classList.remove('scrollbar-hidden');
+        clearTimeout(scrollbarHideTimer);
+        scrollbarHideTimer = setTimeout(() => {
+          contentEl.classList.add('scrollbar-hidden');
+        }, 1500);
+      }, { passive: true });
+
       // Dismiss all autocomplete dropdowns on scroll
-      document.getElementById('content').addEventListener('scroll', () => {
+      contentEl.addEventListener('scroll', () => {
         document.querySelectorAll('.ac-dropdown').forEach(dd => dd.remove());
       }, { passive: true });
 
