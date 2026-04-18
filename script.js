@@ -1985,6 +1985,12 @@
 
       // ── Spells ───────────────────────────────────────────
       function renderSpells() {
+        const charClass = (document.getElementById('char-class').value || '').toLowerCase().trim();
+        const isCaster  = charClass === 'priest' || charClass === 'wizard';
+        const section   = document.getElementById('spell-section');
+        section.hidden  = !isCaster;
+        if (!isCaster) return;
+
         const list   = document.getElementById('cbt-spell-list');
         const spells = getCombat().spells;
         list.innerHTML = '';
