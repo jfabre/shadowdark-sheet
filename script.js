@@ -1088,10 +1088,10 @@
         row.className = 'inv-row';
         row.dataset.rowId = id;
 
-        const slotCycles = [0.5, 1, 2, 3, 4];
-        const initSlots = parseFloat(data.slots) || 1;
+        const slotCycles = [1, 2, 3, 4];
+        const initSlots = Math.max(1, Math.round(parseFloat(data.slots) || 1));
         const initQty   = parseInt(data.qty, 10) || 1;
-        const slotLabel = s => s === 0.5 ? '▣ ½' : `▣ ${s}`;
+        const slotLabel = s => `▣ ${s}`;
 
         row.innerHTML = `
           <input type="text" class="inv-item-name"  placeholder="Item"  value="${esc(data.name)}" />
