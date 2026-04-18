@@ -1800,25 +1800,31 @@
 
       function rollAttack(atk, row) {
         const bonusN = getStatMod(atk.stat || 'STR');
-        const bonusStr = bonusN >= 0 ? `+${bonusN}` : `${bonusN}`;
+        const bonusStr = bonusN === 0 ? '' : (bonusN > 0 ? `+${bonusN}` : `${bonusN}`);
         const dmg  = atk.damage || '1d4';
         const name = atk.name || 'Attack';
 
+        // TaleSpire path — put dice in the 3D tray
         if (window.TS && window.TS.dice && typeof window.TS.dice.putDiceInTray === 'function') {
-          window.TS.dice.putDiceInTray([
-            { notation: `1d20${bonusStr}`, label: `${name} — hit` },
-            { notation: dmg,              label: `${name} — dmg` }
-          ]);
-          return;
+          try {
+            window.TS.dice.putDiceInTray([
+              { name: `${name} — hit`, roll: `1d20${bonusStr}` },
+              { name: `${name} — dmg`, roll: dmg }
+            ], false);
+            return;
+          } catch (e) {
+            // Fall through to browser roller (e.g. notInBoard)
+            console.warn('TS.dice.putDiceInTray failed, using fallback:', e);
+          }
         }
 
+        // Browser fallback
         const d20      = Math.ceil(Math.random() * 20);
         const total    = d20 + bonusN;
         const dmgTotal = rollDice(dmg);
-        const bonusFmt = bonusStr;
 
         const resultEl = row.querySelector('.atk-result');
-        resultEl.textContent = `${name}: hit ${total} (d20=${d20}${bonusFmt}) — dmg ${dmgTotal}`;
+        resultEl.textContent = `${name}: hit ${total} (d20=${d20}${bonusStr}) — dmg ${dmgTotal}`;
         resultEl.classList.add('visible');
         clearTimeout(resultEl._timer);
         resultEl._timer = setTimeout(() => {
