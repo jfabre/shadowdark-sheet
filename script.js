@@ -47,7 +47,8 @@
        // TaleSpire does not populate event.rollId reliably — it arrives as undefined.
        // Since only one adv/dis roll can be in flight at a time, we use the first
        // pending entry if the event contains d20 results, otherwise ignore it.
-       if (window.TS && TS.debug) TS.debug.log('[onRollResults] fired hasGroups=' + !!event.resultsGroups + ' pendingSize=' + pendingAdvRolls.size);
+       if (window.TS && TS.debug) TS.debug.log('[onRollResults] fired hasGroups=' + !!event.resultsGroups + ' pendingSize=' + pendingAdvRolls.size + ' eventKeys=' + JSON.stringify(Object.keys(event || {})));
+       if (window.TS && TS.debug) TS.debug.log('[onRollResults] event=' + JSON.stringify(event));
        if (!event.resultsGroups) return;
 
        // Check this event actually contains d20 dice before consuming a pending entry
