@@ -2039,7 +2039,7 @@ input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
   border-bottom: 1px solid var(--border);
   color: var(--accent);
   font-family: var(--font-num);
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   text-align: center;
   padding: 1px 0;
   -webkit-appearance: textfield;
@@ -2058,7 +2058,7 @@ input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 .cbt-stat-derived {
   color: var(--accent);
   font-family: var(--font-num);
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   line-height: 1;
   padding: 2px 0 2px;
 }
