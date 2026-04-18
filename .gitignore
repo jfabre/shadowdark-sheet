@@ -89,3 +89,4 @@ __pycache__/
 # Gas Town (added by gt)
 .runtime/
 CLAUDE.local.md
+.superpowers/
