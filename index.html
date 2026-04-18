@@ -548,7 +548,14 @@
   </div>
 
   <!-- ── Toast notification ──────────────────────────── -->
-  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+    <span class="toast-icon" aria-hidden="true">⚄</span>
+    <div class="toast-body">
+      <span class="toast-label"></span>
+      <span class="toast-detail"></span>
+    </div>
+    <div class="toast-bar"></div>
+  </div>
 
   <script src="script.js"></script>
 

@@ -2150,19 +2150,47 @@
     })();
 
     // ── Toast notification ─────────────────────────────
+    let _toastTimer = null;
     function showToast(message, isError) {
-      const el = document.getElementById('toast');
-      el.textContent = message;
+      const el     = document.getElementById('toast');
+      const labelEl  = el.querySelector('.toast-label');
+      const detailEl = el.querySelector('.toast-detail');
+      const barEl    = el.querySelector('.toast-bar');
+
+      // Parse "Label: detail" or fall back to single line
+      const colonIdx = message.indexOf(':');
+      if (colonIdx !== -1) {
+        labelEl.textContent  = message.slice(0, colonIdx).trim();
+        detailEl.textContent = message.slice(colonIdx + 1).trim();
+        detailEl.hidden = false;
+      } else {
+        labelEl.textContent  = message;
+        detailEl.textContent = '';
+        detailEl.hidden = true;
+      }
+
       el.classList.toggle('toast--error', !!isError);
       el.hidden = false;
-      // Force reflow so transition triggers
+      // Reset bar animation
+      barEl.style.animation = 'none';
       void el.offsetWidth;
       el.classList.add('show');
-      setTimeout(() => {
+      barEl.style.animation = '';
+
+      if (_toastTimer) clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(() => {
         el.classList.remove('show');
-        setTimeout(() => { el.hidden = true; }, 300);
-      }, 2000);
+        setTimeout(() => { el.hidden = true; }, 350);
+      }, 4500);
     }
+
+    // Click-to-dismiss toast
+    document.getElementById('toast').addEventListener('click', () => {
+      const el = document.getElementById('toast');
+      if (_toastTimer) { clearTimeout(_toastTimer); _toastTimer = null; }
+      el.classList.remove('show');
+      setTimeout(() => { el.hidden = true; }, 350);
+    });
 
     // ── Clipboard helper ──────────────────────────────
     async function copyToClipboard(text) {
