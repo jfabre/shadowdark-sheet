@@ -546,11 +546,11 @@
             window.TS.dice.putDiceInTray([{ name: label, roll: `1d20${bonusStr}` }], false);
           } else {
             const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
-            const result = await window.TS.dice.putDiceInTray(
+            const rollId = await window.TS.dice.putDiceInTray(
               [{ name: `${label} (${modeLabel})`, roll: '2d20' }], false
             );
-            if (result && result.rollId) {
-              pendingAdvRolls.set(result.rollId, { name: label, mode, bonusN, type, spellDC: opts.spellDC });
+            if (rollId) {
+              pendingAdvRolls.set(rollId, { name: label, mode, bonusN, type, spellDC: opts.spellDC });
             }
           }
           return;
@@ -1974,12 +1974,12 @@
               ], false);
             } else {
               const modeLabel = mode === 'advantage' ? 'ADV' : 'DIS';
-              const result = await window.TS.dice.putDiceInTray([
+              const rollId = await window.TS.dice.putDiceInTray([
                 { name: `${name} — hit (${modeLabel})`, roll: '2d20' },
                 { name: `${name} — dmg`, roll: dmg }
               ], false);
-              if (result && result.rollId) {
-                pendingAdvRolls.set(result.rollId, { name, mode, bonusN, dmgExpr: dmg });
+              if (rollId) {
+                pendingAdvRolls.set(rollId, { name, mode, bonusN, dmgExpr: dmg });
               }
             }
             return;
