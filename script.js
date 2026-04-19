@@ -1086,10 +1086,8 @@
     // Set DING_COOLDOWN_MS = 0 while tuning AUDIO_WARMUP_MS; restore to 30_000 when done.
     const DING_COOLDOWN_MS  = 60_000;
     const AUDIO_WARMUP_MS   = 300;
-    const DING_VOLUME       = 0.6;
     const _dingAudio = new Audio('ding.mp3');
     _dingAudio.preload = 'auto';
-    _dingAudio.volume  = DING_VOLUME;
     let _lastDingAt = 0;
     function _maybePlayDing() {
       const xp     = Number(document.getElementById('char-xp').value) || 0;
