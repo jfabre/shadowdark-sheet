@@ -2295,7 +2295,8 @@ input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
 .cbt-step-btn:hover  { opacity: 1; color: var(--accent); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .cbt-step-btn:active { opacity: 1; color: var(--accent); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 25%, transparent); }
 
-.cbt-stat-num {
+.cbt-stat-num,
+input[type="number"].cbt-stat-num {
   width: 100%;
   background: transparent;
   border: none;
