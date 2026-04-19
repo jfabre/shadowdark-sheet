@@ -960,6 +960,22 @@
     ['hp-current','hp-max'].forEach(function(id) {
       document.getElementById(id).addEventListener('input', updateHpBar);
     });
+
+    // ── Party sync: re-broadcast CI on name or HP change ──────────
+    (function() {
+      var _ciTimer = null;
+      function broadcastCi() {
+        clearTimeout(_ciTimer);
+        _ciTimer = setTimeout(function() {
+          PartySync.broadcastPortraitAndInfo();
+        }, 300);
+      }
+      ['char-name', 'hp-current', 'hp-max'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('input', broadcastCi);
+      });
+    })();
+
     ['char-xp','char-xp-next'].forEach(function(id) {
       document.getElementById(id).addEventListener('input', updateXpBar);
     });
