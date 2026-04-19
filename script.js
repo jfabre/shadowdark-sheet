@@ -760,19 +760,20 @@
     });
 
     // ── XP level-up ding ────────────────────────────────
+    // Triggered via animationstart on the shimmer so the sound is frame-accurate
+    // with the visual — no input-event audio latency offset.
     const DING_COOLDOWN_MS = 30_000;
     const _dingAudio = new Audio('ding.mp3');
+    _dingAudio.preload = 'auto';
     let _lastDingAt = 0;
-    function _maybePlayDing() {
-      const xp     = Number(document.getElementById('char-xp').value) || 0;
-      const xpNext = Number(document.getElementById('char-xp-next').value) || 0;
-      if (xpNext > 0 && xp >= xpNext && Date.now() - _lastDingAt > DING_COOLDOWN_MS) {
+    document.getElementById('xp-card').addEventListener('animationstart', function(e) {
+      if (e.animationName !== 'xp-shimmer') return;
+      if (Date.now() - _lastDingAt > DING_COOLDOWN_MS) {
         _lastDingAt = Date.now();
         _dingAudio.currentTime = 0;
         _dingAudio.play().catch(() => {});
       }
-    }
-    document.getElementById('char-xp').addEventListener('input', _maybePlayDing);
+    });
 
     // Load saved values into CORE fields
     function coreLoad() {
