@@ -720,7 +720,7 @@
     // ── Party Panel ──────────────────────────────────────────────────────────────
 
     function _hpState(hpCurrent, hpTotal) {
-      if (!hpTotal) return { lit: 0, cls: '' };
+      if (hpTotal <= 0) return { lit: 0, cls: '' };
       var pct = hpCurrent / hpTotal;
       if (pct > 0.66) return { lit: 3, cls: 'lit-ok' };
       if (pct > 0.33) return { lit: 2, cls: 'lit-hurt' };
@@ -742,14 +742,14 @@
         img.alt = '';
         img.src = (m.portraitReady && m.portraitUrl) ? m.portraitUrl : DEFAULT_PORTRAIT;
 
-        var nameEl = document.createElement('div');
+        var nameEl = document.createElement('span');
         nameEl.className = 'party-name';
         nameEl.textContent = m.name || 'Adventurer';
 
         var dots = document.createElement('div');
         dots.className = 'party-dots';
         for (var d = 0; d < 3; d++) {
-          var dot = document.createElement('span');
+          var dot = document.createElement('div');
           dot.className = 'party-dot' + (d < state.lit ? ' ' + state.cls : '');
           dots.appendChild(dot);
         }
