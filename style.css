@@ -2301,7 +2301,7 @@ input[type="number"].cbt-stat-num {
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--border);
-  color: var(--accent);
+  color: var(--text);
   font-family: var(--font-num);
   font-size: 1.25rem;
   text-align: center;
