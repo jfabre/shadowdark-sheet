@@ -987,20 +987,24 @@
     });
 
     // ── XP level-up ding ────────────────────────────────
-    // Triggered via animationstart on the shimmer so the sound is frame-accurate
-    // with the visual — no input-event audio latency offset.
-    const DING_COOLDOWN_MS = 30_000;
+    // Audio plays immediately on input; the levelup animation is delayed by
+    // AUDIO_WARMUP_MS so both land at the same perceived moment.
+    // Set DING_COOLDOWN_MS = 0 while tuning AUDIO_WARMUP_MS; restore to 30_000 when done.
+    const DING_COOLDOWN_MS  = 0;
+    const AUDIO_WARMUP_MS   = 100;
     const _dingAudio = new Audio('ding.mp3');
     _dingAudio.preload = 'auto';
     let _lastDingAt = 0;
-    document.getElementById('xp-card').addEventListener('animationstart', function(e) {
-      if (e.animationName !== 'xp-shimmer') return;
-      if (Date.now() - _lastDingAt > DING_COOLDOWN_MS) {
+    function _maybePlayDing() {
+      const xp     = Number(document.getElementById('char-xp').value) || 0;
+      const xpNext = Number(document.getElementById('char-xp-next').value) || 0;
+      if (xpNext > 0 && xp >= xpNext && Date.now() - _lastDingAt > DING_COOLDOWN_MS) {
         _lastDingAt = Date.now();
         _dingAudio.currentTime = 0;
         _dingAudio.play().catch(() => {});
       }
-    });
+    }
+    document.getElementById('char-xp').addEventListener('input', _maybePlayDing);
 
     // Load saved values into CORE fields
     function coreLoad() {
@@ -2876,7 +2880,9 @@
       var pct     = max > 0 ? Math.min(1, Math.max(0, current / max)) : 0;
       bar.style.width = (pct * 100) + '%';
       if (max > 0 && current >= max) {
-        card.classList.add('xp-levelup');
+        if (!card.classList.contains('xp-levelup')) {
+          setTimeout(() => card.classList.add('xp-levelup'), AUDIO_WARMUP_MS);
+        }
       } else {
         card.classList.remove('xp-levelup');
       }
