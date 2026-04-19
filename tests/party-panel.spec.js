@@ -123,22 +123,20 @@ test('0 lit dots when hp total is unknown', async ({ page }) => {
 
 // ── Toggle interaction ────────────────────────────────────────────────────────
 
-test('btn-party becomes active after clicking party button', async ({ page }) => {
+test('btn-toggle activates party view on click', async ({ page }) => {
   await page.evaluate(() => renderPartyPanel({
     'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false }
   }));
-  await page.click('#btn-party');
-  const partyActive = await page.$eval('#btn-party', el => el.classList.contains('active'));
-  const charActive  = await page.$eval('#btn-char',  el => el.classList.contains('active'));
-  expect(partyActive).toBe(true);
-  expect(charActive).toBe(false);
+  await page.click('#btn-toggle');
+  const hasPartyActive = await page.$eval('.portrait-info-col', el => el.classList.contains('party-active'));
+  expect(hasPartyActive).toBe(true);
 });
 
 test('party-pane visible after clicking party button', async ({ page }) => {
   await page.evaluate(() => renderPartyPanel({
     'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false }
   }));
-  await page.click('#btn-party');
+  await page.click('#btn-toggle');
   const hasPartyActive = await page.$eval('.portrait-info-col', el => el.classList.contains('party-active'));
   expect(hasPartyActive).toBe(true);
 });
@@ -147,8 +145,8 @@ test('char-pane restored after switching back to character view', async ({ page 
   await page.evaluate(() => renderPartyPanel({
     'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false }
   }));
-  await page.click('#btn-party');
-  await page.click('#btn-char');
+  await page.click('#btn-toggle');
+  await page.click('#btn-toggle');
   const hasPartyActive = await page.$eval('.portrait-info-col', el => el.classList.contains('party-active'));
   expect(hasPartyActive).toBe(false);
 });

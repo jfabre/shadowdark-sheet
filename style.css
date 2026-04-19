@@ -2731,14 +2731,6 @@ input[type="number"].cbt-stat-num {
 .view-pill {
   display: flex;
   align-items: center;
-  gap: 1px;
-}
-
-.view-pill-divider {
-  width: 1px;
-  height: 12px;
-  background: var(--border);
-  flex-shrink: 0;
 }
 
 .view-pill-btn {
@@ -2752,17 +2744,21 @@ input[type="number"].cbt-stat-num {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.5;
+  opacity: 0.6;
   transition: color .15s, opacity .15s;
 }
 
-.view-pill-btn.active {
-  color: var(--muted);
-  opacity: 1;
+.view-pill-btn:hover {
+  opacity: 0.9;
 }
 
-.view-pill-btn:not(.active):hover {
-  opacity: 0.75;
+.toggle-side {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.party-active .toggle-side {
+  opacity: 1;
 }
 
 #party-pane {
