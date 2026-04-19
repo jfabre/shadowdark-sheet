@@ -731,12 +731,43 @@
       return { lit: 1, cls: 'lit-crit' };
     }
 
+    var _toggleBound = false;
+
+    function _bindToggle() {
+      if (_toggleBound) return;
+      _toggleBound = true;
+      var btnChar  = document.getElementById('btn-char');
+      var btnParty = document.getElementById('btn-party');
+      function show(view) {
+        var isParty = view === 'party';
+        document.getElementById('char-pane').style.display  = isParty ? 'none' : '';
+        document.getElementById('party-pane').style.display = isParty ? ''     : 'none';
+        btnChar.classList.toggle('active',  !isParty);
+        btnParty.classList.toggle('active',  isParty);
+      }
+      btnChar.addEventListener('click',  function() { show('char'); });
+      btnParty.addEventListener('click', function() { show('party'); });
+    }
+
     function renderPartyPanel(party) {
-      var panel = document.getElementById('party-panel');
-      var list = document.getElementById('party-list');
-      var ids = Object.keys(party);
-      panel.style.display = ids.length ? '' : 'none';
-      list.innerHTML = '';
+      var toggle = document.getElementById('view-toggle');
+      var pane   = document.getElementById('party-pane');
+      var ids    = Object.keys(party);
+
+      if (!ids.length) {
+        toggle.style.display = 'none';
+        document.getElementById('char-pane').style.display  = '';
+        pane.style.display = 'none';
+        document.getElementById('btn-char').classList.add('active');
+        document.getElementById('btn-party').classList.remove('active');
+        pane.innerHTML = '';
+        return;
+      }
+
+      toggle.style.display = '';
+      _bindToggle();
+      pane.innerHTML = '';
+
       for (var i = 0; i < ids.length; i++) {
         var m = party[ids[i]];
         var state = _hpState(m.hpCurrent, m.hpTotal);
@@ -784,7 +815,7 @@
         card.appendChild(portraitEl);
         card.appendChild(info);
 
-        list.appendChild(card);
+        pane.appendChild(card);
       }
     }
 

@@ -2708,3 +2708,47 @@ input[type="number"].cbt-stat-num {
 .party-dot.lit-ok   { background: #52b96e; }
 .party-dot.lit-hurt { background: #b87c2a; }
 .party-dot.lit-crit { background: #b84040; }
+
+/* ── View Toggle Pill ────────────────────────────────── */
+#view-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.view-pill {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  gap: 0;
+}
+
+.view-pill-btn {
+  background: none;
+  border: none;
+  padding: 5px 16px;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, color .15s;
+}
+
+.view-pill-btn.active {
+  background: var(--border);
+  color: var(--accent);
+}
+
+.view-pill-btn:not(.active):hover {
+  color: var(--text);
+}
+
+#party-pane {
+  flex: 1;
+  min-width: 0;
+  align-content: center;
+}
