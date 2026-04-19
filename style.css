@@ -2727,12 +2727,12 @@ input[type="number"].cbt-stat-num {
 .view-pill {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
 }
 
 .view-pill-divider {
   width: 1px;
-  height: 16px;
+  height: 12px;
   background: var(--border);
   flex-shrink: 0;
 }
@@ -2740,37 +2740,25 @@ input[type="number"].cbt-stat-num {
 .view-pill-btn {
   background: none;
   border: none;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   color: var(--muted);
   cursor: pointer;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  transition: color .15s, background .15s;
+  opacity: 0.5;
+  transition: color .15s, opacity .15s;
 }
 
 .view-pill-btn.active {
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-}
-
-.view-pill-btn.active::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--accent);
+  color: var(--muted);
+  opacity: 1;
 }
 
 .view-pill-btn:not(.active):hover {
-  color: var(--text);
+  opacity: 0.75;
 }
 
 #party-pane {
