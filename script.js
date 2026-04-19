@@ -2700,6 +2700,7 @@
 
       // Help
       const helpModal = Modal('help-modal', 'help-close');
+      document.getElementById('help-close-x').addEventListener('click', function() { helpModal.close(); });
       document.getElementById('menu-help').addEventListener('click', function() {
         toggleMenu(false);
         helpModal.open();
