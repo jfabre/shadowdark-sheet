@@ -77,3 +77,102 @@ test('DEFAULT_PORTRAIT is a valid data URI', async ({ page }) => {
   const val = await page.evaluate(() => DEFAULT_PORTRAIT);
   expect(val).toMatch(/^data:image\/svg\+xml;base64,/);
 });
+
+// ── PartySync guards ───────────────────────────────────
+
+test('PartySync.broadcastPortraitAndInfo is a no-op when window.TS is absent', async ({ page }) => {
+  await loadApp(page);
+  // In the browser (no TaleSpire), TS is absent — calling broadcast should not throw.
+  const threw = await page.evaluate(() => {
+    try {
+      PartySync.broadcastPortraitAndInfo();
+      return false;
+    } catch(e) {
+      return true;
+    }
+  });
+  expect(threw).toBe(false);
+});
+
+test('PartySync.broadcastPortraitAndInfo does not attempt to send when no portrait is set', async ({ page }) => {
+  await loadApp(page);
+  // Patch TS.sync.send so we can detect if it gets called.
+  const callCount = await page.evaluate(() => {
+    var calls = 0;
+    window.TS = window.TS || {};
+    TS.sync = TS.sync || {};
+    TS.sync.send = function() { calls++; };
+    PartySync.broadcastPortraitAndInfo();
+    return calls;
+  });
+  expect(callCount).toBe(0);
+});
+
+// ── PartySync.handleIncoming ───────────────────────────
+
+test('handleIncoming "ci" message updates partyMap name and HP', async ({ page }) => {
+  await loadApp(page);
+  const member = await page.evaluate(() => {
+    var fakeEvent = { str: JSON.stringify({ t: 'ci', name: 'Aldric', hpCurrent: 8, hpTotal: 12 }) };
+    PartySync.handleIncoming('client-001', fakeEvent);
+    return PartySync.getParty()['client-001'];
+  });
+  expect(member.name).toBe('Aldric');
+  expect(member.hpCurrent).toBe(8);
+  expect(member.hpTotal).toBe(12);
+  expect(member.portraitUrl).toMatch(/^data:image\/svg\+xml;base64,/); // default portrait
+  expect(member.portraitReady).toBe(false);
+});
+
+test('handleIncoming "pc" chunks reassemble into a portrait', async ({ page }) => {
+  await loadApp(page);
+  const result = await page.evaluate(() => {
+    // Simulate sending a small "portrait" as 2 chunks of 4 chars each.
+    var fakeB64 = 'aabbccdd'; // 8 chars → 2 chunks of 4
+    var chunks = chunkString(fakeB64, 4);
+    chunks.forEach(function(chunk, i) {
+      var fakeEvent = { str: JSON.stringify({ t: 'pc', s: i, n: chunks.length, d: chunk }) };
+      PartySync.handleIncoming('client-002', fakeEvent);
+    });
+    var member = PartySync.getParty()['client-002'];
+    return { portraitReady: member.portraitReady, url: member.portraitUrl };
+  });
+  expect(result.portraitReady).toBe(true);
+  expect(result.url).toBe('data:image/jpeg;base64,aabbccdd');
+});
+
+test('handleIncoming "pc" partial transfer does not create a party entry', async ({ page }) => {
+  await loadApp(page);
+  const result = await page.evaluate(() => {
+    // Send only chunk 0 of a 3-chunk transfer.
+    var fakeEvent = { str: JSON.stringify({ t: 'pc', s: 0, n: 3, d: 'aaaa' }) };
+    PartySync.handleIncoming('client-003', fakeEvent);
+    // Partial pc transfer uses _receiveBuffers, not _partyMap — no entry yet.
+    return PartySync.getParty()['client-003'];
+  });
+  expect(result).toBeUndefined();
+});
+
+test('clientDisconnected removes peer from party map', async ({ page }) => {
+  await loadApp(page);
+  const result = await page.evaluate(() => {
+    var fakeEvent = { str: JSON.stringify({ t: 'ci', name: 'Bob', hpCurrent: 5, hpTotal: 10 }) };
+    PartySync.handleIncoming('client-004', fakeEvent);
+    PartySync.clientDisconnected('client-004');
+    return PartySync.getParty()['client-004'];
+  });
+  expect(result).toBeUndefined();
+});
+
+test('handleIncoming drops malformed JSON silently', async ({ page }) => {
+  await loadApp(page);
+  const threw = await page.evaluate(() => {
+    try {
+      PartySync.handleIncoming('client-005', { str: '{not valid json' });
+      return false;
+    } catch(e) {
+      return true;
+    }
+  });
+  expect(threw).toBe(false);
+});
