@@ -2576,6 +2576,28 @@ input[type="number"].cbt-stat-num {
 }
 .spell-desc-ta:focus { outline: none; border-color: var(--accent); }
 
+/* ── Lost spell state ───────────────────────────────── */
+.btn-spell-lost {
+  background: transparent;
+  border: none;
+  color: var(--border);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0 3px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.btn-spell-lost:hover { color: var(--muted); }
+
+.spell-item.spell-lost { border-left: 3px solid #7a1a1a; }
+.spell-item.spell-lost .spell-name-inp { color: var(--muted); opacity: 0.6; }
+.spell-item.spell-lost .spell-tier-badge,
+.spell-item.spell-lost .spell-dc { opacity: 0.45; }
+.spell-item.spell-lost .spell-body { opacity: 0.45; }
+.spell-item.spell-lost .btn-spell-lost { color: #c84b4b; }
+.spell-item.spell-lost .btn-spell-lost:hover { color: #e06060; }
+
 @media (max-width: 360px) {
   .portrait-info-row {
     flex-direction: column;
