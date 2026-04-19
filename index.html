@@ -19,18 +19,6 @@
       <!-- Character name -->
       <input type="text" id="char-name" class="char-name-input" placeholder="Character Name" autocomplete="off" />
 
-      <!-- Portrait view toggle pill (shown by JS when party has members) -->
-      <div id="view-toggle" style="display:none">
-        <div class="view-pill">
-          <button class="view-pill-btn active" id="btn-char" aria-label="Character view">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><circle cx="7" cy="4" r="2.8"/><path d="M1 13 C1 9.5 3.5 8 7 8 C10.5 8 13 9.5 13 13Z"/></svg>
-          </button>
-          <button class="view-pill-btn" id="btn-party" aria-label="Party view">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><circle cx="3.5" cy="4.5" r="2"/><path d="M0 12.5 C0 10 1.5 9 3.5 9 C4.5 9 5.4 9.4 6 10"/><circle cx="10.5" cy="4.5" r="2"/><path d="M14 12.5 C14 10 12.5 9 10.5 9 C9.5 9 8.6 9.4 8 10"/><circle cx="7" cy="3.5" r="2.2"/><path d="M2.5 13 C2.5 10 4.5 8.8 7 8.8 C9.5 8.8 11.5 10 11.5 13Z"/></svg>
-          </button>
-        </div>
-      </div>
-
       <!-- Portrait + Identity/Alignment row -->
       <div class="portrait-info-row">
         <!-- Character portrait -->
@@ -42,115 +30,126 @@
               <span class="portrait-text">Click, drop, or paste</span>
             </div>
             <button class="portrait-clear" id="portrait-clear" aria-label="Remove portrait">✕</button>
+            <!-- View toggle pill — shown by JS when party has members -->
+            <div id="view-toggle" style="display:none">
+              <div class="view-pill">
+                <button class="view-pill-btn active" id="btn-char" aria-label="Character view">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><circle cx="7" cy="4" r="2.8"/><path d="M1 13 C1 9.5 3.5 8 7 8 C10.5 8 13 9.5 13 13Z"/></svg>
+                </button>
+                <button class="view-pill-btn" id="btn-party" aria-label="Party view">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><circle cx="4.5" cy="3.5" r="1.9"/><path d="M0.5 13 C0.5 10 2 8.5 4.5 8.5 C7 8.5 8.5 10 8.5 13Z"/><circle cx="9.5" cy="3.5" r="1.9"/><path d="M5.5 13 C5.5 10 7 8.5 9.5 8.5 C12 8.5 13.5 10 13.5 13Z"/></svg>
+                </button>
+              </div>
+            </div>
           </div>
           <input type="file" id="portrait-file" accept="image/*,.png,.jpg,.jpeg,.webp,.gif" hidden />
         </div>
 
         <!-- Right column: identity + alignment -->
         <div class="portrait-info-col">
-          <div id="char-pane">
-            <!-- Class / Level / Ancestry -->
-          <div class="identity-grid">
-            <div class="field-group">
-              <label>Ancestry</label>
-              <div class="custom-select-trigger" id="ancestry-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-controls="ancestry-select-panel">
-                <span class="custom-select-label">—</span>
-              </div>
-              <select id="char-ancestry" class="custom-select-hidden" aria-hidden="true" tabindex="-1">
-                <option value="">—</option>
-                <option value="Human">Human</option>
-                <option value="Elf">Elf</option>
-                <option value="Dwarf">Dwarf</option>
-                <option value="Halfling">Halfling</option>
-                <option value="Half-Orc">Half-Orc</option>
-                <option value="Goblin">Goblin</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div class="custom-select-panel" id="ancestry-select-panel" role="listbox" aria-label="Ancestry options">
-              <div class="custom-select-option" data-value="" role="option">—</div>
-              <div class="custom-select-option" data-value="Human" role="option">Human</div>
-              <div class="custom-select-option" data-value="Elf" role="option">Elf</div>
-              <div class="custom-select-option" data-value="Dwarf" role="option">Dwarf</div>
-              <div class="custom-select-option" data-value="Halfling" role="option">Halfling</div>
-              <div class="custom-select-option" data-value="Half-Orc" role="option">Half-Orc</div>
-              <div class="custom-select-option" data-value="Goblin" role="option">Goblin</div>
-              <div class="custom-select-option" data-value="Other" role="option">Other</div>
-            </div>
-            <div class="field-group">
-              <label>Class</label>
-              <div class="custom-select-trigger" id="class-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-controls="class-select-panel">
-                <span class="custom-select-label">—</span>
-              </div>
-              <select id="char-class" class="custom-select-hidden" aria-hidden="true" tabindex="-1">
-                <option value="">—</option>
-                <option value="Fighter">Fighter</option>
-                <option value="Priest">Priest</option>
-                <option value="Thief">Thief</option>
-                <option value="Wizard">Wizard</option>
-              </select>
-            </div>
-            <div class="custom-select-panel" id="class-select-panel" role="listbox" aria-label="Class options">
-              <div class="custom-select-option" data-value="" role="option">—</div>
-              <div class="custom-select-option" data-value="Fighter" role="option">Fighter</div>
-              <div class="custom-select-option" data-value="Priest" role="option">Priest</div>
-              <div class="custom-select-option" data-value="Thief" role="option">Thief</div>
-              <div class="custom-select-option" data-value="Wizard" role="option">Wizard</div>
-            </div>
-            <div class="field-group">
-              <label for="char-level">Level</label>
-              <input type="number" id="char-level" min="1" max="10" value="1" />
-            </div>
-          </div>
-
-          <!-- HP and XP cards -->
-          <div class="hp-xp-row">
-
-            <!-- HP card -->
-            <div class="stat-card hp-card hp-ok" id="hp-card">
-              <div class="stat-card-label">HP</div>
-              <div class="stat-card-controls">
-                <button class="stat-step-btn stat-step-down" data-target="hp-current" data-max="hp-max" aria-label="Take damage">−</button>
-                <div class="stat-values">
-                  <input type="number" id="hp-current" class="stat-current" min="0" value="1" inputmode="numeric" />
-                  <span class="stat-sep">/</span>
-                  <input type="number" id="hp-max" class="stat-max" min="0" value="1" inputmode="numeric" />
+          <div class="pane-track">
+            <div id="char-pane">
+              <!-- Class / Level / Ancestry -->
+            <div class="identity-grid">
+              <div class="field-group">
+                <label>Ancestry</label>
+                <div class="custom-select-trigger" id="ancestry-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-controls="ancestry-select-panel">
+                  <span class="custom-select-label">—</span>
                 </div>
-                <button class="stat-step-btn stat-step-up" data-target="hp-current" data-max="hp-max" aria-label="Heal">＋</button>
+                <select id="char-ancestry" class="custom-select-hidden" aria-hidden="true" tabindex="-1">
+                  <option value="">—</option>
+                  <option value="Human">Human</option>
+                  <option value="Elf">Elf</option>
+                  <option value="Dwarf">Dwarf</option>
+                  <option value="Halfling">Halfling</option>
+                  <option value="Half-Orc">Half-Orc</option>
+                  <option value="Goblin">Goblin</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
-              <div class="stat-bar-track">
-                <div class="stat-bar-fill" id="hp-bar"></div>
+              <div class="custom-select-panel" id="ancestry-select-panel" role="listbox" aria-label="Ancestry options">
+                <div class="custom-select-option" data-value="" role="option">—</div>
+                <div class="custom-select-option" data-value="Human" role="option">Human</div>
+                <div class="custom-select-option" data-value="Elf" role="option">Elf</div>
+                <div class="custom-select-option" data-value="Dwarf" role="option">Dwarf</div>
+                <div class="custom-select-option" data-value="Halfling" role="option">Halfling</div>
+                <div class="custom-select-option" data-value="Half-Orc" role="option">Half-Orc</div>
+                <div class="custom-select-option" data-value="Goblin" role="option">Goblin</div>
+                <div class="custom-select-option" data-value="Other" role="option">Other</div>
               </div>
-              <div class="hp-dying-label">⚰ Dying</div>
-            </div>
-
-            <!-- XP card -->
-            <div class="stat-card" id="xp-card">
-              <div class="stat-card-label">XP</div>
-              <div class="stat-card-controls">
-                <button class="stat-step-btn stat-step-down" data-target="char-xp" data-max="char-xp-next" aria-label="Decrease XP">−</button>
-                <div class="stat-values">
-                  <input type="number" id="char-xp" class="stat-current" min="0" value="0" inputmode="numeric" />
-                  <span class="stat-sep">/</span>
-                  <input type="number" id="char-xp-next" class="stat-max" min="0" value="10" inputmode="numeric" />
+              <div class="field-group">
+                <label>Class</label>
+                <div class="custom-select-trigger" id="class-select-trigger" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-controls="class-select-panel">
+                  <span class="custom-select-label">—</span>
                 </div>
-                <button class="stat-step-btn stat-step-up" data-target="char-xp" data-max="char-xp-next" aria-label="Increase XP">＋</button>
+                <select id="char-class" class="custom-select-hidden" aria-hidden="true" tabindex="-1">
+                  <option value="">—</option>
+                  <option value="Fighter">Fighter</option>
+                  <option value="Priest">Priest</option>
+                  <option value="Thief">Thief</option>
+                  <option value="Wizard">Wizard</option>
+                </select>
               </div>
-              <div class="stat-bar-track">
-                <div class="stat-bar-fill" id="xp-bar"></div>
+              <div class="custom-select-panel" id="class-select-panel" role="listbox" aria-label="Class options">
+                <div class="custom-select-option" data-value="" role="option">—</div>
+                <div class="custom-select-option" data-value="Fighter" role="option">Fighter</div>
+                <div class="custom-select-option" data-value="Priest" role="option">Priest</div>
+                <div class="custom-select-option" data-value="Thief" role="option">Thief</div>
+                <div class="custom-select-option" data-value="Wizard" role="option">Wizard</div>
               </div>
-              <div class="xp-levelup-particles" aria-hidden="true"></div>
-              <div class="xp-levelup-label">✦ Level Up</div>
+              <div class="field-group">
+                <label for="char-level">Level</label>
+                <input type="number" id="char-level" min="1" max="10" value="1" />
+              </div>
             </div>
 
-          </div><!-- /.hp-xp-row -->
+            <!-- HP and XP cards -->
+            <div class="hp-xp-row">
+
+              <!-- HP card -->
+              <div class="stat-card hp-card hp-ok" id="hp-card">
+                <div class="stat-card-label">HP</div>
+                <div class="stat-card-controls">
+                  <button class="stat-step-btn stat-step-down" data-target="hp-current" data-max="hp-max" aria-label="Take damage">−</button>
+                  <div class="stat-values">
+                    <input type="number" id="hp-current" class="stat-current" min="0" value="1" inputmode="numeric" />
+                    <span class="stat-sep">/</span>
+                    <input type="number" id="hp-max" class="stat-max" min="0" value="1" inputmode="numeric" />
+                  </div>
+                  <button class="stat-step-btn stat-step-up" data-target="hp-current" data-max="hp-max" aria-label="Heal">＋</button>
+                </div>
+                <div class="stat-bar-track">
+                  <div class="stat-bar-fill" id="hp-bar"></div>
+                </div>
+                <div class="hp-dying-label">⚰ Dying</div>
+              </div>
+
+              <!-- XP card -->
+              <div class="stat-card" id="xp-card">
+                <div class="stat-card-label">XP</div>
+                <div class="stat-card-controls">
+                  <button class="stat-step-btn stat-step-down" data-target="char-xp" data-max="char-xp-next" aria-label="Decrease XP">−</button>
+                  <div class="stat-values">
+                    <input type="number" id="char-xp" class="stat-current" min="0" value="0" inputmode="numeric" />
+                    <span class="stat-sep">/</span>
+                    <input type="number" id="char-xp-next" class="stat-max" min="0" value="10" inputmode="numeric" />
+                  </div>
+                  <button class="stat-step-btn stat-step-up" data-target="char-xp" data-max="char-xp-next" aria-label="Increase XP">＋</button>
+                </div>
+                <div class="stat-bar-track">
+                  <div class="stat-bar-fill" id="xp-bar"></div>
+                </div>
+                <div class="xp-levelup-particles" aria-hidden="true"></div>
+                <div class="xp-levelup-label">✦ Level Up</div>
+              </div>
+
+            </div><!-- /.hp-xp-row -->
 
           </div><!-- /#char-pane -->
-
-          <div id="party-pane" class="party-list" style="display:none"></div>
-
-        </div>
-      </div>
+            <div id="party-pane" class="party-list"></div>
+          </div><!-- /.pane-track -->
+        </div><!-- /.portrait-info-col -->
+      </div><!-- /.portrait-info-row -->
 
       <!-- AC / Initiative / Luck -->
       <div class="cbt-stats">
