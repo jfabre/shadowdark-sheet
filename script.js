@@ -1602,31 +1602,6 @@
         });
       }
 
-      // ── talent autocomplete ─────────────────────────────
-      createAutocomplete({
-        containerEl: document.getElementById('talents-list'),
-        inputSelector: '.talent-input',
-        getMatches(query) {
-          const cls = (document.getElementById('char-class').value || '').toLowerCase();
-          const talents = CLASS_TALENTS[cls] || [];
-          return talents.filter(t => !query || t.text.toLowerCase().includes(query.toLowerCase()));
-        },
-        onSelect(inputEl, item) {
-          inputEl.value = item.text;
-          inputEl.dispatchEvent(new Event('input', { bubbles: true }));
-        },
-        renderItem(item) {
-          const opt = document.createElement('div');
-          const rollSpan = document.createElement('span');
-          rollSpan.className = 'ac-roll';
-          rollSpan.textContent = item.roll;
-          const textSpan = document.createElement('span');
-          textSpan.textContent = item.text;
-          opt.appendChild(rollSpan);
-          opt.appendChild(textSpan);
-          return opt;
-        }
-      });
 
       // ── class features ─────────────────────────────────
       function renderFeatures(className) {

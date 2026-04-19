@@ -61,36 +61,6 @@ const SPELL_DB = [
 
 const TALENT_LEVELS = [1, 3, 5, 7, 9];
 
-const CLASS_TALENTS = {
-  fighter: [
-    { roll: '2',     text: 'Gain Weapon Mastery with one additional weapon type' },
-    { roll: '3–6',   text: '+1 to melee and ranged attacks' },
-    { roll: '7–9',   text: '+2 to Strength, Dexterity, or Constitution stat' },
-    { roll: '10–11', text: '+1 AC from a chosen armor type' },
-    { roll: '12',    text: 'Choose a talent or +2 points to distribute to stats' },
-  ],
-  priest: [
-    { roll: '2',     text: 'Gain advantage on casting one spell you know' },
-    { roll: '3–6',   text: '+1 to melee or ranged attacks' },
-    { roll: '7–9',   text: '+1 to priest spellcasting checks' },
-    { roll: '10–11', text: '+2 to Strength or Wisdom stat' },
-    { roll: '12',    text: 'Choose a talent or +2 points to distribute to stats' },
-  ],
-  thief: [
-    { roll: '2',     text: 'Gain advantage on initiative rolls' },
-    { roll: '3–5',   text: 'Backstab deals +1 dice of damage' },
-    { roll: '6–9',   text: '+2 to Strength, Dexterity, or Charisma stat' },
-    { roll: '10–11', text: '+1 to melee and ranged attacks' },
-    { roll: '12',    text: 'Choose a talent or +2 points to distribute to stats' },
-  ],
-  wizard: [
-    { roll: '2',     text: 'Make one random magic item' },
-    { roll: '3–7',   text: '+2 to Intelligence stat or +1 to wizard spellcasting checks' },
-    { roll: '8–9',   text: 'Gain advantage on casting one spell you know' },
-    { roll: '10–11', text: 'Learn one additional wizard spell of any tier you know' },
-    { roll: '12',    text: 'Choose a talent or +2 points to distribute to stats' },
-  ],
-};
 
 const ANCESTRY_FEATURES = {
   dwarf:    { languages: 'Common, Dwarvish', traits: [{ name: 'Stout', desc: 'Start with +2 HP. Roll hit points per level with advantage.' }] },
