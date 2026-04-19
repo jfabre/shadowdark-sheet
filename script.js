@@ -122,9 +122,13 @@
     // Default 128×128 portrait shown before a peer's image is received.
     var DEFAULT_PORTRAIT = (function() {
       var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">' +
-        '<rect width="128" height="128" fill="#2a2a3e"/>' +
-        '<circle cx="64" cy="46" r="24" fill="#5a5a7e"/>' +
-        '<ellipse cx="64" cy="108" rx="36" ry="28" fill="#5a5a7e"/>' +
+        '<rect width="128" height="128" fill="#191410"/>' +
+        '<path d="M4 16 L4 4 L16 4 M112 4 L124 4 L124 16 M4 112 L4 124 L16 124 M112 124 L124 124 L124 112" fill="none" stroke="#4a3820" stroke-width="1.5"/>' +
+        '<path d="M14 128 C18 90 42 78 64 76 C86 78 110 90 114 128Z" fill="#272018"/>' +
+        '<ellipse cx="64" cy="54" rx="28" ry="32" fill="#272018"/>' +
+        '<ellipse cx="64" cy="57" rx="19" ry="21" fill="#100c08"/>' +
+        '<ellipse cx="64" cy="55" rx="11" ry="13" fill="#181410"/>' +
+        '<path d="M36 52 Q38 24 64 20 Q90 24 92 52" fill="none" stroke="#3a2e18" stroke-width="1.2"/>' +
         '</svg>';
       return 'data:image/svg+xml;base64,' + btoa(svg);
     })();
@@ -737,10 +741,26 @@
         var m = party[ids[i]];
         var state = _hpState(m.hpCurrent, m.hpTotal);
 
-        var img = document.createElement('img');
-        img.className = 'party-portrait';
-        img.alt = '';
-        img.src = (m.portraitReady && m.portraitUrl) ? m.portraitUrl : DEFAULT_PORTRAIT;
+        var portraitEl;
+        if (m.portraitReady && m.portraitUrl) {
+          portraitEl = document.createElement('img');
+          portraitEl.className = 'party-portrait';
+          portraitEl.alt = '';
+          portraitEl.src = m.portraitUrl;
+        } else {
+          portraitEl = document.createElement('div');
+          portraitEl.className = 'party-portrait party-portrait-default';
+          portraitEl.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 68" width="100%" height="100%">' +
+            '<rect width="90" height="68" fill="var(--surface)"/>' +
+            '<path d="M3 11 L3 3 L11 3 M79 3 L87 3 L87 11 M3 57 L3 65 L11 65 M79 65 L87 65 L87 57" fill="none" stroke="var(--muted)" stroke-width="1.5"/>' +
+            '<path d="M3 65 C8 50 28 40 45 38 C62 40 82 50 87 65Z" fill="var(--border)"/>' +
+            '<ellipse cx="45" cy="25" rx="17" ry="19" fill="var(--border)"/>' +
+            '<ellipse cx="45" cy="27" rx="12" ry="13" fill="var(--surface)"/>' +
+            '<ellipse cx="45" cy="25" rx="7" ry="9" fill="var(--surface)"/>' +
+            '<path d="M28 24 Q30 8 45 6 Q60 8 62 24" fill="none" stroke="var(--muted)" stroke-width="1"/>' +
+            '</svg>';
+        }
 
         var nameEl = document.createElement('span');
         nameEl.className = 'party-name';
@@ -761,7 +781,7 @@
 
         var card = document.createElement('div');
         card.className = 'party-card';
-        card.appendChild(img);
+        card.appendChild(portraitEl);
         card.appendChild(info);
 
         list.appendChild(card);
