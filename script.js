@@ -103,9 +103,13 @@
     // Default 128×128 portrait shown before a peer's image is received.
     var DEFAULT_PORTRAIT = (function() {
       var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">' +
-        '<rect width="128" height="128" fill="#2a2a3e"/>' +
-        '<circle cx="64" cy="46" r="24" fill="#5a5a7e"/>' +
-        '<ellipse cx="64" cy="108" rx="36" ry="28" fill="#5a5a7e"/>' +
+        '<rect width="128" height="128" fill="#191410"/>' +
+        '<path d="M4 16 L4 4 L16 4 M112 4 L124 4 L124 16 M4 112 L4 124 L16 124 M112 124 L124 124 L124 112" fill="none" stroke="#4a3820" stroke-width="1.5"/>' +
+        '<path d="M14 128 C18 90 42 78 64 76 C86 78 110 90 114 128Z" fill="#272018"/>' +
+        '<ellipse cx="64" cy="54" rx="28" ry="32" fill="#272018"/>' +
+        '<ellipse cx="64" cy="57" rx="19" ry="21" fill="#100c08"/>' +
+        '<ellipse cx="64" cy="55" rx="11" ry="13" fill="#181410"/>' +
+        '<path d="M36 52 Q38 24 64 20 Q90 24 92 52" fill="none" stroke="#3a2e18" stroke-width="1.2"/>' +
         '</svg>';
       return 'data:image/svg+xml;base64,' + btoa(svg);
     })();
@@ -506,6 +510,7 @@
 
       return { hide };
     }
+
 
     // ── Boot ───────────────────────────────────────────
     // Wrapped in async IIFE so TaleSpire's async getBlob() resolves
