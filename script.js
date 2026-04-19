@@ -986,6 +986,21 @@
       window.SD.renderSpells?.();
     });
 
+    // ── XP level-up ding ────────────────────────────────
+    const DING_COOLDOWN_MS = 30_000;
+    const _dingAudio = new Audio('ding.mp3');
+    let _lastDingAt = 0;
+    function _maybePlayDing() {
+      const xp     = Number(document.getElementById('char-xp').value) || 0;
+      const xpNext = Number(document.getElementById('char-xp-next').value) || 0;
+      if (xpNext > 0 && xp >= xpNext && Date.now() - _lastDingAt > DING_COOLDOWN_MS) {
+        _lastDingAt = Date.now();
+        _dingAudio.currentTime = 0;
+        _dingAudio.play().catch(() => {});
+      }
+    }
+    document.getElementById('char-xp').addEventListener('input', _maybePlayDing);
+
     // Load saved values into CORE fields
     function coreLoad() {
       const c = window.SD.character;
