@@ -726,6 +726,7 @@
     await StorageAdapter.init();
     await PortraitStore.init();
     await PortraitStore.migrateFromCampaignBlob();
+    PartySync.init();
 
     // Game data (ABILITY_STATS, WEAPONS, SPELL_DB, etc.) loaded from data.js
 
