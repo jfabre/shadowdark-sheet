@@ -990,8 +990,8 @@
     // Audio plays immediately on input; the levelup animation is delayed by
     // AUDIO_WARMUP_MS so both land at the same perceived moment.
     // Set DING_COOLDOWN_MS = 0 while tuning AUDIO_WARMUP_MS; restore to 30_000 when done.
-    const DING_COOLDOWN_MS  = 0;
-    const AUDIO_WARMUP_MS   = 100;
+    const DING_COOLDOWN_MS  = 60_000;
+    const AUDIO_WARMUP_MS   = 300;
     const _dingAudio = new Audio('ding.mp3');
     _dingAudio.preload = 'auto';
     let _lastDingAt = 0;

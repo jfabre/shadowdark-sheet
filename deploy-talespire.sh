@@ -6,7 +6,7 @@ SRC="$(cd "$(dirname "$0")" && pwd)"
 DEST="$HOME/Library/Application Support/com.bouncyrock.talespire/Symbiotes/the Dark Spire"
 
 mkdir -p "$DEST"
-cp "$SRC/index.html" "$SRC/script.js" "$SRC/data.js" "$SRC/style.css" "$SRC/manifest.json" "$DEST/"
+cp "$SRC/index.html" "$SRC/script.js" "$SRC/data.js" "$SRC/style.css" "$SRC/manifest.json" "$SRC/ding.mp3" "$DEST/"
 
 echo "✓ Deployed to: $DEST"
 ls -lh "$DEST"
