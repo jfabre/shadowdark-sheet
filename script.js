@@ -381,17 +381,20 @@
       }
 
       // ── Broadcasting ───────────────────────────────
-      function broadcastPortraitAndInfo() {
+      function _broadcastCi() {
         if (!window.TS) return;
-        var portrait = PortraitStore.get();
-        if (!portrait) return; // No portrait set — do not send anything.
-
         var name      = (document.getElementById('char-name')  || {}).value || '';
         var hpCurrent = parseInt(((document.getElementById('hp-current') || {}).value || '0'), 10) || 0;
         var hpTotal   = parseInt(((document.getElementById('hp-max')     || {}).value || '0'), 10) || 0;
-
-        // Send lightweight character info immediately (no chunking needed).
         _safeSend({ t: 'ci', name: name, hpCurrent: hpCurrent, hpTotal: hpTotal }, 'board');
+      }
+
+      function broadcastPortraitAndInfo() {
+        if (!window.TS) return;
+        var portrait = PortraitStore.get();
+        if (!portrait) return; // No portrait set — do not send portrait chunks.
+
+        _broadcastCi();
 
         // Downscale portrait to 128×128 then chunk and send.
         var canvas = document.createElement('canvas');
@@ -512,6 +515,7 @@
       return {
         init:                     init,
         broadcastPortraitAndInfo: broadcastPortraitAndInfo,
+        broadcastCi:              _broadcastCi,
         getParty:                 getParty,
         onPartyChange:            onPartyChange,
         handleIncoming:           handleIncoming,
@@ -1062,15 +1066,15 @@
     // ── Party sync: re-broadcast CI on name or HP change ──────────
     (function() {
       var _ciTimer = null;
-      function broadcastCi() {
+      function debouncedCi() {
         clearTimeout(_ciTimer);
         _ciTimer = setTimeout(function() {
-          PartySync.broadcastPortraitAndInfo();
+          PartySync.broadcastCi();
         }, 300);
       }
       ['char-name', 'hp-current', 'hp-max'].forEach(function(id) {
         var el = document.getElementById(id);
-        if (el) el.addEventListener('input', broadcastCi);
+        if (el) el.addEventListener('input', debouncedCi);
       });
     })();
 
