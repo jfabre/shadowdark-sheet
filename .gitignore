@@ -95,3 +95,6 @@ CLAUDE.local.md
 node_modules/
 test-results/
 playwright-report/
+
+# Visual companion brainstorm sessions
+.superpowers/
