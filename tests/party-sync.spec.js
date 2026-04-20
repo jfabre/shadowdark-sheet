@@ -176,3 +176,59 @@ test('handleIncoming drops malformed JSON silently', async ({ page }) => {
   });
   expect(threw).toBe(false);
 });
+
+// ── pc guard: invalid n/s fields ───────────────────────
+
+test('handleIncoming "pc" with missing n drops the message', async ({ page }) => {
+  await loadApp(page);
+  const result = await page.evaluate(() => {
+    PartySync.handleIncoming('client-006', { str: JSON.stringify({ t: 'pc', s: 0, d: 'aaaa' }) });
+    return PartySync.getParty()['client-006'];
+  });
+  expect(result).toBeUndefined();
+});
+
+test('handleIncoming "pc" with n=0 drops the message', async ({ page }) => {
+  await loadApp(page);
+  const result = await page.evaluate(() => {
+    PartySync.handleIncoming('client-007', { str: JSON.stringify({ t: 'pc', s: 0, n: 0, d: 'aaaa' }) });
+    return PartySync.getParty()['client-007'];
+  });
+  expect(result).toBeUndefined();
+});
+
+test('handleIncoming "pc" with s >= n drops the message', async ({ page }) => {
+  await loadApp(page);
+  const result = await page.evaluate(() => {
+    PartySync.handleIncoming('client-008', { str: JSON.stringify({ t: 'pc', s: 3, n: 3, d: 'aaaa' }) });
+    return PartySync.getParty()['client-008'];
+  });
+  expect(result).toBeUndefined();
+});
+
+test('handleIncoming "pc" with string-coercible n and s still works', async ({ page }) => {
+  await loadApp(page);
+  const result = await page.evaluate(() => {
+    var fakeB64 = 'aabbccdd';
+    var chunks = chunkString(fakeB64, 4);
+    chunks.forEach(function(chunk, i) {
+      // Send n and s as strings to verify coercion tolerance.
+      var fakeEvent = { str: JSON.stringify({ t: 'pc', s: String(i), n: String(chunks.length), d: chunk }) };
+      PartySync.handleIncoming('client-009', fakeEvent);
+    });
+    var member = PartySync.getParty()['client-009'];
+    return member ? member.portraitReady : false;
+  });
+  expect(result).toBe(true);
+});
+
+// ── clientConnected guard ──────────────────────────────
+
+test('clientConnected with undefined id creates no ghost entry', async ({ page }) => {
+  await loadApp(page);
+  const result = await page.evaluate(() => {
+    PartySync.clientConnected(undefined);
+    return PartySync.getParty()[undefined];
+  });
+  expect(result).toBeUndefined();
+});

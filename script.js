@@ -447,11 +447,13 @@
           _notify();
 
         } else if (msg.t === 'pc') {
+          var pcTotal = +msg.n, pcSlot = +msg.s;
+          if (isNaN(pcTotal) || pcTotal <= 0 || isNaN(pcSlot) || pcSlot < 0 || pcSlot >= pcTotal) return;
           if (!_receiveBuffers[senderId]) {
-            _receiveBuffers[senderId] = { chunks: [], total: msg.n, timer: null };
+            _receiveBuffers[senderId] = { chunks: [], total: pcTotal, timer: null };
           }
           var buf = _receiveBuffers[senderId];
-          buf.chunks[msg.s] = msg.d;
+          buf.chunks[pcSlot] = msg.d;
 
           // Reset the 15-second incomplete-transfer timeout.
           clearTimeout(buf.timer);
@@ -477,6 +479,7 @@
 
       // ── Peer lifecycle ─────────────────────────────
       function clientConnected(clientId) {
+        if (!clientId) return;
         if (!_partyMap[clientId]) {
           _partyMap[clientId] = _skeleton(clientId);
         }
