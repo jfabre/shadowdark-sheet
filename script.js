@@ -340,6 +340,8 @@
       var _sendGeneration = 0;
       // Registered onPartyChange callbacks.
       var _callbacks = [];
+      // Own client ID — excluded from _partyMap so self never appears as a party card.
+      var _myClientId = null;
 
       function _notify() {
         _callbacks.forEach(function(fn) {
@@ -360,14 +362,19 @@
       // ── Initialisation ─────────────────────────────
       function init() {
         if (!window.TS) return;
-        TS.sync.getClientsConnected()
+        var ownIdPromise = (TS.clients && typeof TS.clients.whoAmI === 'function')
+          ? TS.clients.whoAmI().then(function(me) { _myClientId = me && me.id ? me.id : null; })
+          : Promise.resolve();
+        ownIdPromise
+          .then(function() { return TS.sync.getClientsConnected(); })
           .then(function(clients) {
             clients.forEach(function(c) {
-              if (!_partyMap[c.id]) {
+              if (c.id !== _myClientId && !_partyMap[c.id]) {
                 _partyMap[c.id] = _skeleton(c.id);
               }
             });
-            if (clients.length > 0) {
+            var hasOthers = clients.some(function(c) { return c.id !== _myClientId; });
+            if (hasOthers) {
               // Ask existing peers to send us their data.
               _safeSend({ t: 'pr' }, 'board');
             }
@@ -391,10 +398,9 @@
 
       function broadcastPortraitAndInfo() {
         if (!window.TS) return;
+        _broadcastCi();
         var portrait = PortraitStore.get();
         if (!portrait) return; // No portrait set — do not send portrait chunks.
-
-        _broadcastCi();
 
         // Downscale portrait to 128×128 then chunk and send.
         var canvas = document.createElement('canvas');
@@ -439,6 +445,7 @@
 
       // ── Receiving ──────────────────────────────────
       function handleIncoming(senderId, event) {
+        if (senderId === _myClientId) return; // ignore echoes from self
         var msg;
         try { msg = JSON.parse(event.str); } catch(e) { return; }
 
@@ -483,6 +490,7 @@
       // ── Peer lifecycle ─────────────────────────────
       function clientConnected(clientId) {
         if (!clientId) return;
+        if (clientId === _myClientId) return; // ignore self reconnect events
         if (!_partyMap[clientId]) {
           _partyMap[clientId] = _skeleton(clientId);
         }
