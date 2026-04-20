@@ -1,6 +1,6 @@
 /* ── Reset ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
+html, body { height: 100%; overflow-x: hidden; }
 
 /* ── Theme tokens ───────────────────────────────────── */
 :root {
@@ -886,6 +886,7 @@ body {
 #content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px 14px calc(var(--tab-h) + 8px);
   /* Standard scrollbar: Firefox and Chrome 121+ */
   scrollbar-width: thin;
@@ -2770,6 +2771,7 @@ input[type="number"].cbt-stat-num {
   display: flex;
   flex-direction: row;
   width: 100%;
+  overflow: hidden;
   transition: transform 0.25s ease;
 }
 
