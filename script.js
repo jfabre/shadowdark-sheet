@@ -458,10 +458,10 @@
       });
 
       containerEl.addEventListener('input', e => {
-        if (e.target.matches(inputSelector) && dd) {
-          position(e.target);
-          render(e.target, e.target.value.trim());
-        }
+        if (!e.target.matches(inputSelector)) return;
+        if (!dd) { show(e.target); return; }
+        position(e.target);
+        render(e.target, e.target.value.trim());
       });
 
       containerEl.addEventListener('keydown', e => {
