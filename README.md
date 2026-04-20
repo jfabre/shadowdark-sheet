@@ -25,7 +25,9 @@ A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/
 - **Inventory** — dynamic item list with name, slots, quantity, notes, and delete; includes item autocomplete
 
 ### Traits Tab
-- **Talents** — shows earned talent slots based on level (at levels 1, 3, 5, 7, 9) with class-specific autocomplete from the talent roll tables; Human ancestry gets a bonus talent at level 1
+- **Talents** — shows earned talent slots based on level (at levels 1, 3, 5, 7, 9); Human ancestry gets a bonus talent at level 1
+- **Alignment, Deity, Languages, Background, Notes & Backstory** — free-text fields; Notes & Backstory has a large auto-growing textarea
+- **Ancestral features** — collapsible reference for each ancestry's traits and languages
 - **Class features** — collapsible reference for each class's abilities (Hauler, Weapon Mastery, Backstab, Spellcasting, etc.)
 - **Background, Languages, Deity, Notes** — free-text fields with auto-growing textareas
 
@@ -52,7 +54,7 @@ Zero dependencies. Pure vanilla HTML + CSS + JS.
 
 - `index.html` — single-page layout with three tab panels
 - `style.css` — CSS custom properties for theming, responsive layout
-- `data.js` — game reference data (weapons, spells, class features, talent tables)
+- `data.js` — game reference data (weapons, spells, class features)
 - `script.js` — all logic: storage adapter, event bus, autocomplete factory, ability scores, combat, gear, class features, themes
 - `manifest.json` — TaleSpire Symbiote manifest
 
