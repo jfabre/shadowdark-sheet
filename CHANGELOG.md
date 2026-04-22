@@ -3,6 +3,34 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.0] - 2026-04-22
+
+### Combat
+- feat: editable attack bonus with manual override per attack row
+- feat: +/− stepper buttons on all ability scores
+- fix: clear attack bonus override when it matches the calculated modifier
+- fix: center-align Bonus column header in attacks table
+- fix: AC, luck, and initiative number sizes match ability score modifiers
+
+### Spells
+- feat: lost spell toggle — mark spells as expended (red border, dimmed row)
+
+### Core & Class Tab
+- refactor: Racial Features renamed to Ancestral Features
+- fix: auto-grow textareas when switching tabs
+
+### Gear
+- fix: inventory table header columns align with row content
+
+### UX
+- feat: × close button on Help modal
+- feat: level-up XP ding — audio feedback when XP reaches the level threshold
+- fix: prevent horizontal scroll on Core tab
+- fix: reopen autocomplete dropdown after clearing a selected value
+
+### Content
+- chore: remove copyrighted CLASS_TALENTS data and talent autocomplete
+
 ## [0.8.1] - 2026-04-18
 
 ### Themes & UX
