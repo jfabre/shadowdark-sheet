@@ -292,8 +292,6 @@
         } else {
           localStorage.setItem(PORTRAIT_KEY, dataUrl);
         }
-        // Broadcast the new portrait to party members whenever it changes.
-        PartySync.broadcastPortraitAndInfo();
       }
 
       async function remove() {
