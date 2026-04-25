@@ -749,8 +749,8 @@
         btnChar.classList.toggle('active',  !isParty);
         btnParty.classList.toggle('active',  isParty);
       }
-      btnChar.addEventListener('click',  function(e) { e.stopPropagation(); show('char'); });
-      btnParty.addEventListener('click', function(e) { e.stopPropagation(); show('party'); });
+      btnChar.addEventListener('click',  function() { show('char'); });
+      btnParty.addEventListener('click', function() { show('party'); });
     }
 
     function renderPartyPanel(party) {
