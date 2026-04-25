@@ -2,7 +2,7 @@
 
 A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/pages/shadowdark), built as a [TaleSpire Symbiote](https://symbiote-docs.talespire.com/). Works standalone in any browser too.
 
-![Version](https://img.shields.io/badge/v0.8.1-orange)
+![Version](https://img.shields.io/badge/version-0.9.1-orange)
 ![Platform](https://img.shields.io/badge/platform-TaleSpire%20%7C%20Browser-blue)
 ![License](https://img.shields.io/badge/license-personal%20use-lightgrey)
 
@@ -11,11 +11,20 @@ A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/
 ### Core Tab
 - **Character identity** — name, ancestry, class (Fighter / Priest / Thief / Wizard), and level; ancestry and class use styled custom dropdowns
 - **Character portrait** — upload and crop an image, stored in-app
-- **HP & XP tracking** — current/max HP and XP with next-level target
+- **HP & XP tracking** — current/max HP and XP with next-level target; a shimmer animation plays when XP hits the level-up threshold
 - **Ability scores** — full 2×3 grid (STR, DEX, CON, INT, WIS, CHA) with auto-computed modifiers and ± stepper buttons
 - **Combat stats** — AC (auto-calculated from armor + DEX + shield), initiative (derived from DEX), luck tokens; AC and luck have ± steppers
 - **Attacks** — add weapon rows with autocomplete from the full Shadowdark weapon table (15 weapons); auto-fills damage die and stat bonus; bonus-to-hit is editable (manual override shown with accent underline; clears when value matches the calculated mod)
-- **Spells** — add spell rows with autocomplete for all Tier 1–2 Priest and Wizard spells (34 spells); auto-fills tier, range, duration, and description; mark individual spells as lost (expended) with a toggle — dimmed with a red accent, restored on rest
+- **Spells** — add spell rows with autocomplete for all Tier 1–2 Priest and Wizard spells (34 spells); auto-fills tier, range, duration, and description; mark individual spells as lost (expended) with a toggle — dimmed with a red accent; spell section is hidden automatically for non-caster classes
+
+### TaleSpire Dice Integration
+Click any stat, initiative, attack, or spell to reveal a roll cluster. Roll straight, with **advantage** (▲), or **disadvantage** (▼):
+- **Ability checks** — rolls d20 + modifier, posts result to board chat
+- **Initiative** — rolls d20 + DEX mod
+- **Attacks** — rolls attack d20 + bonus and damage die together; result includes hit total and damage
+- **Spell casts** — rolls d20 vs spell DC, posts success or failure to board chat
+
+Results are sent to TaleSpire's dice tray and board chat automatically. Falls back to a toast notification in the browser.
 
 ### Inventory Tab
 - **Encumbrance** — real-time slot tracker with progress bar; accounts for armor, coins, and inventory
@@ -31,7 +40,7 @@ A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/
 - **Class features** — collapsible reference for each class's abilities (Hauler, Weapon Mastery, Backstab, Spellcasting, etc.)
 
 ### Themes
-Six color themes, switchable from the 🎨 button (top-right). Click a swatch to preview without committing; press **Apply** to save, or close to revert. **Dungeon** is the default.
+Nine color themes, switchable from the 🎨 button (top-right). Click a swatch to preview without committing; press **Apply** to save, or close to revert. **Dungeon** is the default.
 
 | Theme | Vibe |
 |-------|------|
@@ -41,6 +50,9 @@ Six color themes, switchable from the 🎨 button (top-right). Click a swatch to
 | **TaleSpire** | Warm amber, matches TaleSpire UI |
 | **Frostgrave** | Icy blue, cold tones |
 | **Arcane** | Deep purple, mystical |
+| **Emerald Grove** | Deep forest green, nature tones |
+| **Silverstone** | Light grey, clean and minimal |
+| **Shadowfell** | Near-black, muted silver accents |
 
 ### Storage
 - **TaleSpire** — saves to local campaign storage via the Symbiote API (`TS.localStorage.campaign`); each player's data is stored separately on their own machine, scoped by campaign
