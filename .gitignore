@@ -96,5 +96,11 @@ node_modules/
 test-results/
 playwright-report/
 
+# Copilot CLI local config
+.copilot/
+
+# Gas Town session hooks
+.github/hooks/
+
 # Visual companion brainstorm sessions
 .superpowers/
