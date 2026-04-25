@@ -3,6 +3,114 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.1] - 2026-04-25
+
+- docs: add lost spell toggle to README features
+- feat: remove XP level-up ding sound, keep shimmer animation (sd-209)
+- fix: match adv/dis roll results by rollId instead of FIFO
+- Revert "docs: add party portraits design spec"
+- Revert "docs: add party portraits implementation plan"
+- Revert "feat: add interopId and sync subscriptions to manifest"
+- Revert "feat: add DEFAULT_PORTRAIT constant and chunkString/reassembleChunks helpers"
+- Revert "test: chunkString, reassembleChunks, and DEFAULT_PORTRAIT"
+- Revert "feat: add PartySync module"
+- Revert "feat: add onSyncMessage and onSyncClientEvent global callbacks"
+- Revert "feat: broadcast portrait via PartySync on PortraitStore.set()"
+- Revert "feat: debounced CI broadcast on name and HP input changes"
+- Revert "feat: call PartySync.init() on boot"
+- Revert "test: PartySync guards, handleIncoming, and peer lifecycle"
+- Revert "docs: party panel UI design spec and 3-design mockup"
+- Revert "docs: update party panel spec to Design B with 3-dot health state, add implementation plan"
+- Revert "feat: add party panel HTML structure and CSS"
+- Revert "test: party panel spec — 10 failing tests for renderPartyPanel"
+- Revert "feat: party panel UI with portrait cards and 3-dot health state"
+- Revert "fix: party panel spec compliance — element types and hpState threshold"
+- Revert "test: fix party panel tests to use correct server port"
+- Revert "feat: default portrait uses inline SVG with CSS variables, hooded figure framed within bracket corners"
+- Revert "feat: replace party panel with pill toggle on portrait row"
+- Revert "docs: toggle button placement & slide transition spec"
+- Revert "feat: move toggle pill inside portrait frame with slide transition"
+- Revert "fix: stop toggle pill clicks from bubbling to portrait modal"
+- Revert "fix: move toggle pill to char-name row, restore char-pane spacing"
+- Revert "feat: switch toggle to icon-only with dot indicator style"
+- Revert "fix: reduce toggle icon emphasis, focus stays on content"
+- Revert "fix: party cards vertical stack layout, portrait left + info right"
+- Revert "fix: revert party cards to horizontal, balance info vertically within card"
+- Revert "feat: torch (char) + bonfire (party) toggle icons"
+- Revert "feat: replace two-button toggle with single dagger-to-swords icon"
+- Revert "chore: add DING_VOLUME constant at 0.6"
+- Revert "chore: remove DING_VOLUME — system volume handles loudness"
+- Revert "fix: restore party card proportions — align-items flex-start on party-list"
+- Revert "fix: vertically center party cards within their container"
+- Revert "chore: remove demo party panel mock data"
+- Revert "docs: add party panel pre-release test checklist"
+- Revert "fix: guard pc message fields and clientConnected against bad TS event shapes"
+- Revert "fix: split broadcastCi from broadcastPortraitAndInfo"
+- Revert "fix: filter self from party panel, always broadcast ci (#party)"
+- fix: reopen autocomplete dropdown after clearing a previously selected value
+- fix: prevent horizontal page scroll on Core tab
+- fix: filter self from party panel, always broadcast ci (#party)
+- fix: split broadcastCi from broadcastPortraitAndInfo
+- fix: guard pc message fields and clientConnected against bad TS event shapes
+- docs: add party panel pre-release test checklist
+- docs: remove stale talent autocomplete references from README
+- chore: remove demo party panel mock data
+- fix: vertically center party cards within their container
+- fix: restore party card proportions — align-items flex-start on party-list
+- chore: remove DING_VOLUME — system volume handles loudness
+- chore: add DING_VOLUME constant at 0.6
+- feat: replace two-button toggle with single dagger-to-swords icon
+- feat: torch (char) + bonfire (party) toggle icons
+- fix: revert party cards to horizontal, balance info vertically within card
+- fix: party cards vertical stack layout, portrait left + info right
+- fix: reduce toggle icon emphasis, focus stays on content
+- feat: switch toggle to icon-only with dot indicator style
+- fix: move toggle pill to char-name row, restore char-pane spacing
+- fix: stop toggle pill clicks from bubbling to portrait modal
+- feat: move toggle pill inside portrait frame with slide transition
+- docs: toggle button placement & slide transition spec
+- feat: replace party panel with pill toggle on portrait row
+- feat: default portrait uses inline SVG with CSS variables, hooded figure framed within bracket corners
+- test: fix party panel tests to use correct server port
+- fix: party panel spec compliance — element types and hpState threshold
+- feat: party panel UI with portrait cards and 3-dot health state
+- test: party panel spec — 10 failing tests for renderPartyPanel
+- feat: add party panel HTML structure and CSS
+- docs: update party panel spec to Design B with 3-dot health state, add implementation plan
+- docs: party panel UI design spec and 3-design mockup
+- feat: finalize XP ding — tune timing, add ding.mp3, update deploy scripts
+- fix: sync ding to animation by delaying levelup class by AUDIO_WARMUP_MS
+- fix: sync ding to animationstart of xp-shimmer for frame-accurate timing
+- feat: play ding.mp3 when XP reaches level-up threshold
+- docs: add XP level-up ding design spec
+- test: PartySync guards, handleIncoming, and peer lifecycle
+- feat: call PartySync.init() on boot
+- feat: debounced CI broadcast on name and HP input changes
+- feat: broadcast portrait via PartySync on PortraitStore.set()
+- feat: add onSyncMessage and onSyncClientEvent global callbacks
+- feat: add PartySync module
+- feat: add × close button and polish to help modal
+- feat: add lost spell toggle — CSS and JS implementation
+- test: chunkString, reassembleChunks, and DEFAULT_PORTRAIT
+- feat: add DEFAULT_PORTRAIT constant and chunkString/reassembleChunks helpers
+- feat: add interopId and sync subscriptions to manifest
+- docs: add party portraits implementation plan
+- docs: add party portraits design spec
+- fix: restore cbt-stat-num text color to var(--text) after specificity bump
+- fix: increase cbt-stat-num selector specificity to beat input[type=number] override
+- fix: match AC and luck token font-size to ability scores (1.25rem)
+- chore: remove copyrighted CLASS_TALENTS data and talent autocomplete
+- fix: align inventory table header columns with row content
+- chore: prompt to review README features section before release commit
+- docs: update README for v0.8.1 features
+- fix: auto-grow textareas when tab becomes visible
+- refactor: rename Racial Features to Ancestral Features, move above Class Features
+- refactor: move Class/Racial Features below Notes & Backstory
+- fix: clear attack bonus override when value matches calculated mod
+- feat: add +/- stepper buttons to ability scores
+- fix: center-align Bonus column header in attacks table
+- feat: editable attack bonus with manual override
+
 ## [0.8.1] - 2026-04-18
 
 ### Themes & UX
