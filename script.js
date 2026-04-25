@@ -99,35 +99,6 @@
       return false;
     }
 
-    // ── Party sync helpers ─────────────────────────────
-    // Default 128×128 portrait shown before a peer's image is received.
-    var DEFAULT_PORTRAIT = (function() {
-      var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">' +
-        '<rect width="128" height="128" fill="#2a2a3e"/>' +
-        '<circle cx="64" cy="46" r="24" fill="#5a5a7e"/>' +
-        '<ellipse cx="64" cy="108" rx="36" ry="28" fill="#5a5a7e"/>' +
-        '</svg>';
-      return 'data:image/svg+xml;base64,' + btoa(svg);
-    })();
-
-    // Split a string into an array of chunks of at most `size` characters.
-    function chunkString(str, size) {
-      var chunks = [];
-      for (var i = 0; i < str.length; i += size) {
-        chunks.push(str.slice(i, i + size));
-      }
-      return chunks;
-    }
-
-    // Reassemble an array of chunks back into a string.
-    // Returns null if any slot from 0..(total-1) is missing.
-    function reassembleChunks(chunks, total) {
-      for (var i = 0; i < total; i++) {
-        if (chunks[i] === undefined || chunks[i] === null) return null;
-      }
-      return chunks.slice(0, total).join('');
-    }
-
     // ── Storage Adapter ────────────────────────────────
     // Abstracts browser localStorage vs TaleSpire campaign storage.
     // In TaleSpire, all keys are packed into a single JSON blob
@@ -2211,7 +2182,7 @@
 
         spells.forEach((sp, idx) => {
           const item = document.createElement('div');
-          item.className = 'spell-item' + (sp.lost ? ' spell-lost' : '');
+          item.className = 'spell-item';
 
           const tier = sp.tier || 1;
           const dc   = 10 + tier;
@@ -2234,7 +2205,6 @@
               `<span class="spell-tier-badge">T${tier}</span>` +
               `<span class="spell-dc">DC ${dc}</span>` +
               castBtnHtml +
-              `<button class="btn-spell-lost" title="${sp.lost ? 'Restore spell' : 'Mark as lost'}">◉</button>` +
               `<button class="btn-trash" title="Remove spell">✕</button>` +
             `</div>` +
             `<div class="spell-body">` +
@@ -2275,13 +2245,6 @@
           item.querySelector('.sp-range').addEventListener('input',    e => { sp.range    = e.target.value; persist(); });
           item.querySelector('.sp-dur').addEventListener('input',      e => { sp.duration = e.target.value; persist(); });
           item.querySelector('.spell-desc-ta').addEventListener('input', e => { sp.desc   = e.target.value; persist(); });
-          item.querySelector('.btn-spell-lost').addEventListener('click', () => {
-            sp.lost = !sp.lost;
-            item.classList.toggle('spell-lost', sp.lost);
-            item.querySelector('.btn-spell-lost').title = sp.lost ? 'Restore spell' : 'Mark as lost';
-            persist();
-          });
-
           item.querySelector('.btn-trash').addEventListener('click', () => {
             getCombat().spells.splice(idx, 1);
             persist();
