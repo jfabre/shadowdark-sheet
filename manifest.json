@@ -5,8 +5,7 @@
   "entryPoint": "/index.html",
   "version": "0.8.1",
   "environment": {
-    "loadTargetBehavior": "popup",
-    "capabilities": ["runInBackground"]
+    "loadTargetBehavior": "popup"
   },
   "about": {
     "authors": [
@@ -15,19 +14,12 @@
   },
   "api": {
     "version": "0.1",
-    "interop": {
-      "id": "37ff6976-7da5-48f8-815c-2801420a55f6"
-    },
     "subscriptions": {
       "symbiote": {
         "onStateChangeEvent": "onTaleSpireStateChange"
       },
       "dice": {
         "onRollResults": "onRollResults"
-      },
-      "sync": {
-        "onSyncMessage": "onSyncMessage",
-        "onClientEvent": "onSyncClientEvent"
       }
     }
   }
