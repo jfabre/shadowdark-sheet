@@ -94,19 +94,18 @@ test('PartySync.broadcastPortraitAndInfo is a no-op when window.TS is absent', a
   expect(threw).toBe(false);
 });
 
-test('PartySync.broadcastPortraitAndInfo sends ci but no portrait chunks when no portrait is set', async ({ page }) => {
+test('PartySync.broadcastPortraitAndInfo does not attempt to send when no portrait is set', async ({ page }) => {
   await loadApp(page);
-  const types = await page.evaluate(() => {
-    var seen = [];
+  // Patch TS.sync.send so we can detect if it gets called.
+  const callCount = await page.evaluate(() => {
+    var calls = 0;
     window.TS = window.TS || {};
     TS.sync = TS.sync || {};
-    TS.sync.send = function(jsonStr) { seen.push(JSON.parse(jsonStr).t); };
+    TS.sync.send = function() { calls++; };
     PartySync.broadcastPortraitAndInfo();
-    return seen;
+    return calls;
   });
-  // ci (character info) is always broadcast; pc (portrait chunk) requires a portrait.
-  expect(types).toContain('ci');
-  expect(types).not.toContain('pc');
+  expect(callCount).toBe(0);
 });
 
 // ── broadcastCi ───────────────────────────────────────
