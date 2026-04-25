@@ -14,45 +14,40 @@ The `PartySync` module broadcasts and receives party member data (portrait, name
 
 ## Goal
 
-Render a live "Party" section in the character sheet that shows all connected party members' portraits, names, and a 3-dot health state indicator — visible only when at least one other player is acknowledged by the sync API.
+Render a live "Party" section in the character sheet that shows all connected party members' portraits, names, and HP — visible only when at least one other player is acknowledged by the sync API.
 
 ---
 
 ## Design Decision
 
-Three design options were prototyped in `docs/party-panel-concepts.html`. **Design B (Party Cards)** was chosen, modified to replace HP bars/numbers with a 3-dot health state indicator.
+Three design options were prototyped (`docs/party-panel-concepts.html`):
 
-The 3-dot system encodes health tier without revealing exact HP values:
-
-| Dots | State | HP ratio |
+| | Design | Footprint |
 |---|---|---|
-| ●●● (green) | Healthy | > 66% |
-| ●●· (amber) | Hurt | > 33% and ≤ 66% |
-| ●·· (red) | Critical | ≤ 33% |
-| ··· (muted) | Unknown | hpTotal = 0 |
+| A | Campfire Ring — circular avatar chips, HP via ring colour only | ~70px |
+| B | Party Cards — portrait-first cards, horizontal scroll | ~120px |
+| C | Squad Status — compact vertical list with portrait + name + HP bar | Scales with party size |
+
+**Chosen: Design C (Squad Status)** — most readable during combat, scales cleanly to 4–6 players, HP numbers are unambiguous, no horizontal scrolling.
 
 ---
 
 ## Layout
 
-Placed between `.cbt-stats` (AC / Initiative / Luck Token) and the Ability Scores section label.
+Placed between `.cbt-stats` (AC / Initiative / Luck Token) and the `Ability Scores` section label. Identical positioning pattern to other labelled sections.
 
 ```
 [ AC / Initiative / Luck Token row ]
 ─────────────────────────────────── ← party section (hidden when empty)
   PARTY
-  ┌──────┐ ┌──────┐ ┌──────┐
-  │      │ │      │ │      │  ← portraits (68px tall, 90px wide cards)
-  │  A   │ │  M   │ │  G   │
-  ├──────┤ ├──────┤ ├──────┤
-  │Aldric│ │Mireth│ │Grond │
-  │ ●●● │ │ ●●· │ │ ●·· │
-  └──────┘ └──────┘ └──────┘
-─────────────────────────────────── ← always present below
+  [ portrait | name         | ██░░░░  2/14 ]
+  [ portrait | name         | ████░░  5/12 ]
+  [ portrait | name         | ██████ 10/12 ]
+─────────────────────────────────── ← section always present below
   ABILITY SCORES
+  [ STR ] [ DEX ] [ CON ]
+  [ INT ] [ WIS ] [ CHA ]
 ```
-
-Scrolls horizontally if more than ~4 players.
 
 ---
 
@@ -63,35 +58,53 @@ Scrolls horizontally if more than ~4 players.
 ```js
 {
   "<clientId>": {
-    clientId:      string,
-    name:          string,        // "" if not yet received
-    hpCurrent:     number,
-    hpTotal:       number,
-    portraitUrl:   string,        // data URL or DEFAULT_PORTRAIT
+    clientId:     string,
+    name:         string,        // "" if not yet received
+    hpCurrent:    number,
+    hpTotal:      number,
+    portraitUrl:  string,        // data URL or DEFAULT_PORTRAIT
     portraitReady: boolean
   }
 }
 ```
 
-The panel registers a callback via `PartySync.onPartyChange(renderPartyPanel)` in `boot()`. Any update to `_partyMap` triggers a re-render.
+The panel registers a callback via `PartySync.onPartyChange(renderPartyPanel)` in `boot()`. Any update to `_partyMap` (peer connects, CI message, portrait transfer complete) triggers a re-render.
 
 ---
 
 ## Visibility Logic
 
 ```
-Object.keys(party).length === 0  →  panel.style.display = 'none'
-Object.keys(party).length  >= 1  →  panel.style.display = ''
+Object.keys(PartySync.getParty()).length === 0  →  section hidden
+Object.keys(PartySync.getParty()).length  >= 1  →  section visible
 ```
 
-`display: none` used (not CSS transitions) for Chromium 111 compatibility.
+The `<div id="party-panel">` element is toggled with `display: none` (not CSS animation for Chromium 111 compatibility).
+
+---
+
+## Per-Member Row
+
+Each row shows:
+- **Portrait** — 32×32px, `border-radius: 4px`, `object-fit: cover`. Uses `portraitUrl` (which defaults to `DEFAULT_PORTRAIT` until the real portrait arrives).
+- **Name** — truncated with `text-overflow: ellipsis`. Falls back to `"..."` if name is `""`.
+- **HP bar** — thin 3px track, fill coloured by HP ratio.
+- **HP fraction** — `current / total` in `var(--font-num)`, coloured to match bar.
+
+### HP colour thresholds (matches existing `hp-card` states)
+
+| Ratio | Colour |
+|---|---|
+| > 0.66 | `#52b96e` (ok / green) |
+| > 0.33 | `#b87c2a` (hurt / amber) |
+| ≤ 0.33 | `#b84040` (crit / red) |
+| total = 0 | `var(--muted)` (unknown) |
 
 ---
 
 ## HTML Structure
 
-Inserted in `index.html` between the `.cbt-stats` closing `</div>` and the
-`<!-- Ability scores -->` comment:
+Added to `index.html` between `.cbt-stats` and the Ability Scores `section-label`:
 
 ```html
 <!-- Party panel (populated and shown/hidden by JS) -->
@@ -101,18 +114,15 @@ Inserted in `index.html` between the `.cbt-stats` closing `</div>` and the
 </div>
 ```
 
-Each card rendered by JS:
+Row template (generated by JS, one per party member):
 
 ```html
-<div class="party-card">
+<div class="party-row">
   <img class="party-portrait" src="…" alt="…" />
-  <div class="party-card-info">
-    <span class="party-name">…</span>
-    <div class="party-dots">
-      <div class="party-dot [lit-ok|lit-hurt|lit-crit]"></div>
-      <div class="party-dot [lit-ok|lit-hurt|lit-crit]"></div>
-      <div class="party-dot [lit-ok|lit-hurt|lit-crit]"></div>
-    </div>
+  <span class="party-name">…</span>
+  <div class="party-hp">
+    <div class="party-hp-bar"><div class="party-hp-fill" style="width:NN%"></div></div>
+    <span class="party-hp-frac">N / N</span>
   </div>
 </div>
 ```
@@ -121,94 +131,73 @@ Each card rendered by JS:
 
 ## CSS
 
-Appended to `style.css`:
+New rules added to `style.css`:
 
 ```css
-/* ── Party Panel ─────────────────────────────────── */
 #party-panel { margin-bottom: 8px; }
 
-.party-list {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-}
+.party-list { display: flex; flex-direction: column; gap: 0; }
 
-.party-card {
-  flex: 0 0 90px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
+.party-row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
 }
+.party-row:last-child { border-bottom: none; }
 
 .party-portrait {
-  width: 100%;
-  height: 68px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
   object-fit: cover;
-  display: block;
+  flex-shrink: 0;
   background: var(--surface);
-}
-
-.party-card-info {
-  padding: 5px 6px 7px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
 }
 
 .party-name {
-  font-size: 0.65rem;
-  letter-spacing: 0.04em;
+  flex: 1;
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 100%;
-  text-align: center;
 }
 
-.party-dots {
+.party-hp {
   display: flex;
-  gap: 4px;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+  min-width: 70px;
 }
 
-.party-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
+.party-hp-bar {
+  width: 100%;
+  height: 3px;
   background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
 }
 
-.party-dot.lit-ok   { background: #52b96e; }
-.party-dot.lit-hurt { background: #b87c2a; }
-.party-dot.lit-crit { background: #b84040; }
+.party-hp-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.party-hp-frac {
+  font-family: var(--font-num);
+  font-size: 0.58rem;
+}
 ```
 
 ---
 
-## JavaScript
+## JavaScript — `renderPartyPanel()`
 
-### `_hpState(hpCurrent, hpTotal)`
-
-Helper that maps HP ratio → `{ lit: number, cls: string }`:
-
-```js
-function _hpState(hpCurrent, hpTotal) {
-  if (hpTotal <= 0) return { lit: 0, cls: '' };
-  var ratio = hpCurrent / hpTotal;
-  if (ratio > 0.66) return { lit: 3, cls: 'lit-ok' };
-  if (ratio > 0.33) return { lit: 2, cls: 'lit-hurt' };
-  return { lit: 1, cls: 'lit-crit' };
-}
-```
-
-### `renderPartyPanel(party)`
-
-Placed just before the `(async function boot()` IIFE:
+New function in `script.js` (near the bottom of the IIFE, above `boot()`):
 
 ```js
 function renderPartyPanel(party) {
@@ -216,47 +205,63 @@ function renderPartyPanel(party) {
   var list  = document.getElementById('party-list');
   if (!panel || !list) return;
 
-  var ids = Object.keys(party);
-  panel.style.display = ids.length ? '' : 'none';
-  if (!ids.length) return;
+  var members = Object.keys(party);
+  panel.style.display = members.length ? '' : 'none';
+  if (!members.length) return;
 
   list.innerHTML = '';
-  ids.forEach(function(id) {
+  members.forEach(function(id) {
     var m = party[id];
 
-    var card = document.createElement('div');
-    card.className = 'party-card';
+    var row = document.createElement('div');
+    row.className = 'party-row';
 
+    // Portrait
     var img = document.createElement('img');
-    img.className = 'party-portrait';
-    img.src = m.portraitUrl || DEFAULT_PORTRAIT;
-    img.alt = m.name || 'Party member';
-    card.appendChild(img);
+    img.className   = 'party-portrait';
+    img.src         = m.portraitUrl || DEFAULT_PORTRAIT;
+    img.alt         = m.name || 'Party member';
+    row.appendChild(img);
 
-    var info = document.createElement('div');
-    info.className = 'party-card-info';
-
+    // Name
     var nameEl = document.createElement('span');
-    nameEl.className = 'party-name';
-    nameEl.textContent = m.name || '\u2026';
-    info.appendChild(nameEl);
+    nameEl.className   = 'party-name';
+    nameEl.textContent = m.name || '…';
+    row.appendChild(nameEl);
 
-    var dotsEl = document.createElement('div');
-    dotsEl.className = 'party-dots';
-    var state = _hpState(m.hpCurrent, m.hpTotal);
-    for (var i = 0; i < 3; i++) {
-      var dot = document.createElement('div');
-      dot.className = 'party-dot' + (i < state.lit ? ' ' + state.cls : '');
-      dotsEl.appendChild(dot);
-    }
-    info.appendChild(dotsEl);
-    card.appendChild(info);
-    list.appendChild(card);
+    // HP
+    var hp  = document.createElement('div');
+    hp.className = 'party-hp';
+
+    var ratio = m.hpTotal > 0 ? m.hpCurrent / m.hpTotal : 0;
+    var colour = m.hpTotal === 0 ? 'var(--muted)'
+               : ratio > 0.66   ? '#52b96e'
+               : ratio > 0.33   ? '#b87c2a'
+                                 : '#b84040';
+    var pct = m.hpTotal > 0 ? Math.round(ratio * 100) : 0;
+
+    var track = document.createElement('div');
+    track.className = 'party-hp-bar';
+    var fill = document.createElement('div');
+    fill.className = 'party-hp-fill';
+    fill.style.width      = pct + '%';
+    fill.style.background = colour;
+    track.appendChild(fill);
+    hp.appendChild(track);
+
+    var frac = document.createElement('span');
+    frac.className   = 'party-hp-frac';
+    frac.style.color = colour;
+    frac.textContent = m.hpCurrent + ' / ' + m.hpTotal;
+    hp.appendChild(frac);
+
+    row.appendChild(hp);
+    list.appendChild(row);
   });
 }
 ```
 
-Registered in `boot()` after `PartySync.init()`:
+Registered in `boot()`:
 
 ```js
 PartySync.onPartyChange(renderPartyPanel);
@@ -267,23 +272,26 @@ PartySync.onPartyChange(renderPartyPanel);
 ## Out of Scope
 
 - Clicking a party member card (no interaction in this iteration)
-- Sorting party members (rendered in insertion/connection order)
-- Scrollable list cap / max player count enforcement
-- Portrait full-size lightbox view
+- Sorting party members (rendered in insertion order, i.e. connection order)
+- Scrollable party list (all members shown; vertical growth accepted for large parties)
+- Any overlay or lightbox for portrait full-size view
+- Party member's own sheet (the panel is read-only)
 
 ---
 
-## Tests (`tests/party-panel.spec.js`)
+## Tests
 
-| # | Behaviour |
+New test file: `tests/party-panel.spec.js`
+
+| # | Test |
 |---|---|
-| 1 | Panel hidden when `renderPartyPanel({})` called |
-| 2 | Panel visible when called with one member |
-| 3 | Panel hidden again after re-call with `{}` |
-| 4 | One `.party-card` per party member |
-| 5 | Portrait `img.src` matches member `portraitUrl` |
-| 6 | Name span shows member name; falls back to `"…"` when name is `""` |
-| 7 | HP > 66%: all 3 dots have class `lit-ok` |
-| 8 | HP > 33% and ≤ 66%: first 2 dots `lit-hurt`, third unlit |
-| 9 | HP ≤ 33%: first dot `lit-crit`, other two unlit |
-| 10 | hpTotal = 0: no dot has a `lit-*` class |
+| 1 | Panel hidden when `getParty()` returns `{}` |
+| 2 | Panel visible after `onPartyChange` fires with one member |
+| 3 | Panel hidden again when party becomes empty |
+| 4 | One row rendered per party member |
+| 5 | Portrait `src` set to `portraitUrl` |
+| 6 | Name `textContent` matches member name; falls back to `"…"` when empty |
+| 7 | HP bar fill width and colour: >66% → green |
+| 8 | HP bar fill width and colour: ≤33% → red |
+| 9 | HP fraction text is `"hpCurrent / hpTotal"` |
+| 10 | `hpTotal === 0` → bar at 0%, colour is muted |

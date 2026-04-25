@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Party Panel — Final Design</title>
+  <title>Party Panel — Design Concepts</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <style>
+    /* ── Design tokens (matches app default dark theme) ─────── */
     :root {
       --font-hdr: 'IM Fell English', serif;
       --font-num: 'Share Tech Mono', monospace;
@@ -16,6 +17,8 @@
       --muted:    #6b6050;
       --surface:  #151515;
       --border:   #2a2520;
+
+      /* HP state colours */
       --hp-ok:   #52b96e;
       --hp-hurt: #b87c2a;
       --hp-crit: #b84040;
@@ -31,6 +34,7 @@
       min-height: 100vh;
     }
 
+    /* ── Page chrome ─────────────────────────────────────────── */
     .page-title {
       font-family: var(--font-hdr);
       color: var(--accent);
@@ -42,7 +46,7 @@
       font-size: 0.7rem;
       color: var(--muted);
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       letter-spacing: 0.05em;
     }
 
@@ -68,17 +72,46 @@
     .toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
     .toggle-btn.active { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
 
-    /* Sheet simulation */
+    /* ── Design block wrapper ────────────────────────────────── */
+    .design-block {
+      max-width: 420px;
+      margin: 0 auto 48px;
+    }
+    .design-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .design-tag {
+      font-family: var(--font-hdr);
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+    .design-name {
+      font-size: 0.75rem;
+      color: var(--text);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .design-desc {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Simulated sheet shell ───────────────────────────────── */
     .sheet-shell {
-      max-width: 380px;
-      margin: 0 auto;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 10px;
     }
 
-    /* Context rows */
+    /* Context: cbt-stats row above the party section */
     .cbt-stats {
       display: flex;
       gap: 6px;
@@ -99,15 +132,19 @@
       text-transform: uppercase;
       margin-bottom: 3px;
     }
-    .cbt-stat-value { color: var(--accent); font-size: 1.1rem; }
+    .cbt-stat-value {
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
 
+    /* Context: Ability Scores label below */
     .section-label {
       font-size: 0.65rem;
       letter-spacing: 0.1em;
       color: var(--muted);
       text-transform: uppercase;
-      margin-bottom: 6px;
       margin-top: 8px;
+      margin-bottom: 6px;
     }
     .ability-grid-stub {
       display: grid;
@@ -121,32 +158,116 @@
       padding: 10px 6px;
       text-align: center;
     }
-    .ability-cell-name  { font-size: 0.55rem; color: var(--muted); text-transform: uppercase; }
-    .ability-cell-mod   { font-size: 1.1rem; color: var(--accent); }
-    .ability-cell-score { font-size: 0.6rem; color: var(--muted); }
+    .ability-cell-name { font-size: 0.55rem; color: var(--muted); text-transform: uppercase; }
+    .ability-cell-mod  { font-size: 1.1rem; color: var(--accent); }
+    .ability-cell-score{ font-size: 0.6rem; color: var(--muted); }
 
-    /* ── Party panel ───────────────────────────────────── */
-    #party-panel {
-      margin-bottom: 8px;
+    /* ── Shared party section wrapper ────────────────────────── */
+    .party-section {
       overflow: hidden;
-      transition: max-height 0.3s ease, opacity 0.25s ease;
-      max-height: 300px;
+      transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+      max-height: 200px;
       opacity: 1;
+      margin-bottom: 8px;
     }
-    #party-panel.hidden {
+    .party-section.hidden {
       max-height: 0;
       opacity: 0;
+      margin-bottom: 0;
     }
 
-    .party-list {
+    .party-section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    /* ── HP helper ───────────────────────────────────────────── */
+    .hp-bar-track {
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      height: 3px;
+    }
+    .hp-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
+    /* ════════════════════════════════════════════════════════
+       DESIGN A — "Campfire Ring"
+       Circular avatar chips in a horizontal row.
+       HP state shown via ring border colour only.
+       Minimal vertical footprint.
+    ═══════════════════════════════════════════════════════ */
+    .party-a {
+      display: flex;
+      gap: 12px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .party-a-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .party-a-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2.5px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-family: var(--font-hdr);
+      color: var(--bg);
+      transition: border-color 0.3s;
+      flex-shrink: 0;
+    }
+    .party-a-avatar.hp-ok   { border-color: var(--hp-ok); }
+    .party-a-avatar.hp-hurt { border-color: var(--hp-hurt); }
+    .party-a-avatar.hp-crit { border-color: var(--hp-crit); }
+    .party-a-name {
+      font-size: 0.6rem;
+      color: var(--muted);
+      text-align: center;
+      max-width: 48px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .party-a-hp {
+      font-size: 0.58rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    .party-a-hp.hp-ok   { color: var(--hp-ok); }
+    .party-a-hp.hp-hurt { color: var(--hp-hurt); }
+    .party-a-hp.hp-crit { color: var(--hp-crit); }
+
+    /* ════════════════════════════════════════════════════════
+       DESIGN B — "Party Cards"
+       Horizontal row of portrait cards.
+       Each card: portrait (top) + name + HP bar + fraction.
+    ═══════════════════════════════════════════════════════ */
+    .party-b {
       display: flex;
       gap: 6px;
       overflow-x: auto;
       padding-bottom: 2px;
     }
-
-    .party-card {
-      flex: 0 0 90px;
+    .party-b-card {
+      flex: 0 0 96px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -154,164 +275,343 @@
       display: flex;
       flex-direction: column;
     }
-
-    .party-portrait {
+    .party-b-portrait {
       width: 100%;
-      height: 68px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .party-card-info {
-      padding: 5px 6px 7px;
+      height: 72px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 5px;
+      justify-content: center;
+      font-family: var(--font-hdr);
+      font-size: 1.6rem;
+      color: rgba(255,255,255,0.6);
+      overflow: hidden;
     }
-
-    .party-name {
+    .party-b-portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .party-b-info {
+      padding: 5px 6px 6px;
+    }
+    .party-b-name {
       font-size: 0.65rem;
-      letter-spacing: 0.04em;
       color: var(--text);
+      text-align: center;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      width: 100%;
-      text-align: center;
+      margin-bottom: 4px;
+      letter-spacing: 0.04em;
     }
-
-    /* ── 3-dot health indicator ────────────────────────── */
-    .party-dots {
+    .party-b-hp-row {
       display: flex;
+      align-items: center;
       gap: 4px;
-      justify-content: center;
     }
-    .party-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--border);
-      transition: background 0.2s;
+    .party-b-hp-row .hp-bar-track { flex: 1; height: 3px; }
+    .party-b-hp-frac {
+      font-size: 0.55rem;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-    .party-dot.lit-ok   { background: var(--hp-ok); }
-    .party-dot.lit-hurt { background: var(--hp-hurt); }
-    .party-dot.lit-crit { background: var(--hp-crit); }
 
-    /* Fake avatar placeholder colours */
-    .av-aldric { background: linear-gradient(160deg, #2a4a7a 0%, #4a7acc 100%); }
-    .av-mireth { background: linear-gradient(160deg, #4a2a6a 0%, #7a4acc 100%); }
-    .av-grond  { background: linear-gradient(160deg, #4a2a1a 0%, #7a4a2a 100%); }
-    .av-silas  { background: linear-gradient(160deg, #1a4a2a 0%, #3a8a4a 100%); }
+    /* ════════════════════════════════════════════════════════
+       DESIGN C — "Squad Status"
+       Compact vertical list.
+       Each row: avatar | name | HP bar + fraction.
+       Most information-dense.
+    ═══════════════════════════════════════════════════════ */
+    .party-c {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .party-c-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .party-c-row:last-child { border-bottom: none; }
+    .party-c-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-hdr);
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+      flex-shrink: 0;
+    }
+    .party-c-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .party-c-name {
+      font-size: 0.68rem;
+      color: var(--text);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+    }
+    .party-c-hp-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      flex-shrink: 0;
+      min-width: 70px;
+    }
+    .party-c-hp-bar { width: 100%; }
+    .party-c-hp-bar .hp-bar-track { height: 3px; }
+    .party-c-hp-frac {
+      font-size: 0.58rem;
+      color: var(--muted);
+    }
+    .party-c-hp-frac.hp-ok   { color: var(--hp-ok); }
+    .party-c-hp-frac.hp-hurt { color: var(--hp-hurt); }
+    .party-c-hp-frac.hp-crit { color: var(--hp-crit); }
+
+    /* ── Fake avatar gradients ───────────────────────────────── */
+    .avatar-aldric { background: linear-gradient(135deg, #3a5a8a, #5a8acc); }
+    .avatar-mireth { background: linear-gradient(135deg, #5a3a7a, #8a5acc); }
+    .avatar-grond  { background: linear-gradient(135deg, #5a3a2a, #8a5a3a); }
   </style>
 </head>
 <body>
 
-  <h1 class="page-title">Party Panel — Final Design</h1>
-  <p class="page-note">Design B · portrait cards · 3-dot health state · hidden when no party</p>
+  <h1 class="page-title">Party Panel — Design Concepts</h1>
+  <p class="page-note">Sits between AC / Initiative / Luck and Ability Scores · Hidden when no party members</p>
 
   <div class="toggle-row">
     <span class="toggle-label">Simulate:</span>
-    <button class="toggle-btn active" id="btn-show" onclick="setParty(true)">Party present</button>
+    <button class="toggle-btn active" id="btn-show" onclick="setParty(true)">Party present (3 players)</button>
     <button class="toggle-btn"        id="btn-hide" onclick="setParty(false)">No party (hidden)</button>
   </div>
 
-  <div class="sheet-shell">
+  <!-- ═══════════════════════════════════════════════════════
+       DESIGN A — Campfire Ring
+  ═══════════════════════════════════════════════════════ -->
+  <div class="design-block">
+    <div class="design-header">
+      <span class="design-tag">A</span>
+      <span class="design-name">Campfire Ring</span>
+    </div>
+    <p class="design-desc">
+      Circular avatar chips in a horizontal strip. HP state is encoded
+      entirely via ring colour (green / amber / red) — no numbers visible
+      by default. Minimal vertical footprint (~70px). Works well when you
+      just need a quick pulse check on the party.
+    </p>
+    <div class="sheet-shell">
+      <!-- context above -->
+      <div class="cbt-stats">
+        <div class="cbt-stat-box"><div class="cbt-stat-label">Armor Class</div><div class="cbt-stat-value">14</div></div>
+        <div class="cbt-stat-box"><div class="cbt-stat-label">Initiative</div><div class="cbt-stat-value">+1</div></div>
+        <div class="cbt-stat-box"><div class="cbt-stat-label">Luck Token</div><div class="cbt-stat-value">2</div></div>
+      </div>
 
-    <!-- AC / Initiative / Luck (context above) -->
-    <div class="cbt-stats">
-      <div class="cbt-stat-box">
-        <div class="cbt-stat-label">Armor Class</div>
-        <div class="cbt-stat-value">14</div>
+      <!-- party section A -->
+      <div class="party-section" id="party-a">
+        <div class="party-section-label">Party</div>
+        <div class="party-a">
+
+          <div class="party-a-chip">
+            <div class="party-a-avatar hp-ok avatar-aldric">A</div>
+            <div class="party-a-name">Aldric</div>
+            <div class="party-a-hp hp-ok">10/12</div>
+          </div>
+
+          <div class="party-a-chip">
+            <div class="party-a-avatar hp-hurt avatar-mireth">M</div>
+            <div class="party-a-name">Mireth</div>
+            <div class="party-a-hp hp-hurt">5/12</div>
+          </div>
+
+          <div class="party-a-chip">
+            <div class="party-a-avatar hp-crit avatar-grond">G</div>
+            <div class="party-a-name">Grond</div>
+            <div class="party-a-hp hp-crit">2/14</div>
+          </div>
+
+        </div>
       </div>
-      <div class="cbt-stat-box">
-        <div class="cbt-stat-label">Initiative</div>
-        <div class="cbt-stat-value">+1</div>
-      </div>
-      <div class="cbt-stat-box">
-        <div class="cbt-stat-label">Luck Token</div>
-        <div class="cbt-stat-value">2</div>
+
+      <!-- context below -->
+      <div class="section-label">Ability Scores</div>
+      <div class="ability-grid-stub">
+        <div class="ability-cell-stub"><div class="ability-cell-name">STR</div><div class="ability-cell-mod">+2</div><div class="ability-cell-score">14</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">DEX</div><div class="ability-cell-mod">+1</div><div class="ability-cell-score">12</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">CON</div><div class="ability-cell-mod">+0</div><div class="ability-cell-score">11</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">INT</div><div class="ability-cell-mod">−1</div><div class="ability-cell-score">8</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">WIS</div><div class="ability-cell-mod">+1</div><div class="ability-cell-score">13</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">CHA</div><div class="ability-cell-mod">+0</div><div class="ability-cell-score">10</div></div>
       </div>
     </div>
+  </div>
 
-    <!-- Party panel -->
-    <div id="party-panel">
-      <div class="section-label" style="margin-top:0">Party</div>
-      <div class="party-list">
+  <!-- ═══════════════════════════════════════════════════════
+       DESIGN B — Party Cards
+  ═══════════════════════════════════════════════════════ -->
+  <div class="design-block">
+    <div class="design-header">
+      <span class="design-tag">B</span>
+      <span class="design-name">Party Cards</span>
+    </div>
+    <p class="design-desc">
+      Portrait-first cards in a horizontal scrolling row. Each card shows
+      the portrait prominently at the top, then name and an HP bar with
+      current/max numbers. Scrolls horizontally for larger parties.
+      Moderate footprint (~120px).
+    </p>
+    <div class="sheet-shell">
+      <div class="cbt-stats">
+        <div class="cbt-stat-box"><div class="cbt-stat-label">Armor Class</div><div class="cbt-stat-value">14</div></div>
+        <div class="cbt-stat-box"><div class="cbt-stat-label">Initiative</div><div class="cbt-stat-value">+1</div></div>
+        <div class="cbt-stat-box"><div class="cbt-stat-label">Luck Token</div><div class="cbt-stat-value">2</div></div>
+      </div>
 
-        <!-- Aldric: healthy (●●●) -->
-        <div class="party-card">
-          <div class="party-portrait av-aldric" style="display:flex;align-items:center;justify-content:center;font-family:var(--font-hdr);font-size:1.8rem;color:rgba(255,255,255,0.5)">A</div>
-          <div class="party-card-info">
-            <span class="party-name">Aldric</span>
-            <div class="party-dots">
-              <div class="party-dot lit-ok"></div>
-              <div class="party-dot lit-ok"></div>
-              <div class="party-dot lit-ok"></div>
+      <div class="party-section" id="party-b">
+        <div class="party-section-label">Party</div>
+        <div class="party-b">
+
+          <div class="party-b-card">
+            <div class="party-b-portrait avatar-aldric">A</div>
+            <div class="party-b-info">
+              <div class="party-b-name">Aldric</div>
+              <div class="party-b-hp-row">
+                <div class="hp-bar-track"><div class="hp-bar-fill" style="width:83%;background:var(--hp-ok)"></div></div>
+                <span class="party-b-hp-frac">10/12</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Mireth: hurt (●●·) -->
-        <div class="party-card">
-          <div class="party-portrait av-mireth" style="display:flex;align-items:center;justify-content:center;font-family:var(--font-hdr);font-size:1.8rem;color:rgba(255,255,255,0.5)">M</div>
-          <div class="party-card-info">
-            <span class="party-name">Mireth</span>
-            <div class="party-dots">
-              <div class="party-dot lit-hurt"></div>
-              <div class="party-dot lit-hurt"></div>
-              <div class="party-dot"></div>
+          <div class="party-b-card">
+            <div class="party-b-portrait avatar-mireth">M</div>
+            <div class="party-b-info">
+              <div class="party-b-name">Mireth</div>
+              <div class="party-b-hp-row">
+                <div class="hp-bar-track"><div class="hp-bar-fill" style="width:42%;background:var(--hp-hurt)"></div></div>
+                <span class="party-b-hp-frac">5/12</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Grond: critical (●··) -->
-        <div class="party-card">
-          <div class="party-portrait av-grond" style="display:flex;align-items:center;justify-content:center;font-family:var(--font-hdr);font-size:1.8rem;color:rgba(255,255,255,0.5)">G</div>
-          <div class="party-card-info">
-            <span class="party-name">Grond</span>
-            <div class="party-dots">
-              <div class="party-dot lit-crit"></div>
-              <div class="party-dot"></div>
-              <div class="party-dot"></div>
+          <div class="party-b-card">
+            <div class="party-b-portrait avatar-grond">G</div>
+            <div class="party-b-info">
+              <div class="party-b-name">Grond</div>
+              <div class="party-b-hp-row">
+                <div class="hp-bar-track"><div class="hp-bar-fill" style="width:14%;background:var(--hp-crit)"></div></div>
+                <span class="party-b-hp-frac">2/14</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Silas: unknown HP (···) -->
-        <div class="party-card">
-          <div class="party-portrait av-silas" style="display:flex;align-items:center;justify-content:center;font-family:var(--font-hdr);font-size:1.8rem;color:rgba(255,255,255,0.5)">S</div>
-          <div class="party-card-info">
-            <span class="party-name">Silas</span>
-            <div class="party-dots">
-              <div class="party-dot"></div>
-              <div class="party-dot"></div>
-              <div class="party-dot"></div>
-            </div>
-          </div>
         </div>
+      </div>
 
+      <div class="section-label">Ability Scores</div>
+      <div class="ability-grid-stub">
+        <div class="ability-cell-stub"><div class="ability-cell-name">STR</div><div class="ability-cell-mod">+2</div><div class="ability-cell-score">14</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">DEX</div><div class="ability-cell-mod">+1</div><div class="ability-cell-score">12</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">CON</div><div class="ability-cell-mod">+0</div><div class="ability-cell-score">11</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">INT</div><div class="ability-cell-mod">−1</div><div class="ability-cell-score">8</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">WIS</div><div class="ability-cell-mod">+1</div><div class="ability-cell-score">13</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">CHA</div><div class="ability-cell-mod">+0</div><div class="ability-cell-score">10</div></div>
       </div>
     </div>
+  </div>
 
-    <!-- Ability Scores (context below) -->
-    <div class="section-label">Ability Scores</div>
-    <div class="ability-grid-stub">
-      <div class="ability-cell-stub"><div class="ability-cell-name">STR</div><div class="ability-cell-mod">+2</div><div class="ability-cell-score">14</div></div>
-      <div class="ability-cell-stub"><div class="ability-cell-name">DEX</div><div class="ability-cell-mod">+1</div><div class="ability-cell-score">12</div></div>
-      <div class="ability-cell-stub"><div class="ability-cell-name">CON</div><div class="ability-cell-mod">+0</div><div class="ability-cell-score">11</div></div>
-      <div class="ability-cell-stub"><div class="ability-cell-name">INT</div><div class="ability-cell-mod">−1</div><div class="ability-cell-score">8</div></div>
-      <div class="ability-cell-stub"><div class="ability-cell-name">WIS</div><div class="ability-cell-mod">+1</div><div class="ability-cell-score">13</div></div>
-      <div class="ability-cell-stub"><div class="ability-cell-name">CHA</div><div class="ability-cell-mod">+0</div><div class="ability-cell-score">10</div></div>
+  <!-- ═══════════════════════════════════════════════════════
+       DESIGN C — Squad Status
+  ═══════════════════════════════════════════════════════ -->
+  <div class="design-block">
+    <div class="design-header">
+      <span class="design-tag">C</span>
+      <span class="design-name">Squad Status</span>
     </div>
+    <p class="design-desc">
+      Compact vertical list — portrait thumbnail, name, and HP bar in
+      each row. Most information-dense design. Easy to scan HP at a
+      glance. Scales cleanly to larger parties without horizontal scroll.
+      Footprint scales with party size.
+    </p>
+    <div class="sheet-shell">
+      <div class="cbt-stats">
+        <div class="cbt-stat-box"><div class="cbt-stat-label">Armor Class</div><div class="cbt-stat-value">14</div></div>
+        <div class="cbt-stat-box"><div class="cbt-stat-label">Initiative</div><div class="cbt-stat-value">+1</div></div>
+        <div class="cbt-stat-box"><div class="cbt-stat-label">Luck Token</div><div class="cbt-stat-value">2</div></div>
+      </div>
 
+      <div class="party-section" id="party-c">
+        <div class="party-section-label">Party</div>
+        <div class="party-c">
+
+          <div class="party-c-row">
+            <div class="party-c-avatar avatar-aldric">A</div>
+            <div class="party-c-name">Aldric</div>
+            <div class="party-c-hp-col">
+              <div class="party-c-hp-bar">
+                <div class="hp-bar-track"><div class="hp-bar-fill" style="width:83%;background:var(--hp-ok)"></div></div>
+              </div>
+              <span class="party-c-hp-frac hp-ok">10 / 12</span>
+            </div>
+          </div>
+
+          <div class="party-c-row">
+            <div class="party-c-avatar avatar-mireth">M</div>
+            <div class="party-c-name">Mireth</div>
+            <div class="party-c-hp-col">
+              <div class="party-c-hp-bar">
+                <div class="hp-bar-track"><div class="hp-bar-fill" style="width:42%;background:var(--hp-hurt)"></div></div>
+              </div>
+              <span class="party-c-hp-frac hp-hurt">5 / 12</span>
+            </div>
+          </div>
+
+          <div class="party-c-row">
+            <div class="party-c-avatar avatar-grond">G</div>
+            <div class="party-c-name">Grond</div>
+            <div class="party-c-hp-col">
+              <div class="party-c-hp-bar">
+                <div class="hp-bar-track"><div class="hp-bar-fill" style="width:14%;background:var(--hp-crit)"></div></div>
+              </div>
+              <span class="party-c-hp-frac hp-crit">2 / 14</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="section-label">Ability Scores</div>
+      <div class="ability-grid-stub">
+        <div class="ability-cell-stub"><div class="ability-cell-name">STR</div><div class="ability-cell-mod">+2</div><div class="ability-cell-score">14</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">DEX</div><div class="ability-cell-mod">+1</div><div class="ability-cell-score">12</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">CON</div><div class="ability-cell-mod">+0</div><div class="ability-cell-score">11</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">INT</div><div class="ability-cell-mod">−1</div><div class="ability-cell-score">8</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">WIS</div><div class="ability-cell-mod">+1</div><div class="ability-cell-score">13</div></div>
+        <div class="ability-cell-stub"><div class="ability-cell-name">CHA</div><div class="ability-cell-mod">+0</div><div class="ability-cell-score">10</div></div>
+      </div>
+    </div>
   </div>
 
   <script>
     function setParty(show) {
-      var el = document.getElementById('party-panel');
-      if (show) el.classList.remove('hidden');
-      else       el.classList.add('hidden');
+      ['party-a', 'party-b', 'party-c'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (show) el.classList.remove('hidden');
+        else       el.classList.add('hidden');
+      });
       document.getElementById('btn-show').classList.toggle('active',  show);
       document.getElementById('btn-hide').classList.toggle('active', !show);
     }
