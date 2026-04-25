@@ -935,11 +935,6 @@ body {
 }
 
 /* ── CORE tab ───────────────────────────────────────── */
-.char-name-row {
-  position: relative;
-  margin-bottom: 14px;
-}
-
 .char-name-input {
   width: 100%;
   background: transparent;
@@ -949,7 +944,7 @@ body {
   font-family: var(--font-hdr);
   font-size: 1.6rem;
   padding: 4px 2px 6px;
-  margin-bottom: 0;
+  margin-bottom: 14px;
   outline: none;
   letter-spacing: 0.02em;
 }
@@ -2719,9 +2714,8 @@ input[type="number"].cbt-stat-num {
 /* ── View Toggle Pill ────────────────────────────────── */
 #view-toggle {
   position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
+  bottom: 6px;
+  right: 6px;
   z-index: 10;
 }
 
@@ -2771,12 +2765,6 @@ input[type="number"].cbt-stat-num {
 .pane-track > * {
   flex: 0 0 100%;
   min-width: 0;
-}
-
-#char-pane {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
 .party-active .pane-track {
