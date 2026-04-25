@@ -381,20 +381,17 @@
       }
 
       // ── Broadcasting ───────────────────────────────
-      function _broadcastCi() {
-        if (!window.TS) return;
-        var name      = (document.getElementById('char-name')  || {}).value || '';
-        var hpCurrent = parseInt(((document.getElementById('hp-current') || {}).value || '0'), 10) || 0;
-        var hpTotal   = parseInt(((document.getElementById('hp-max')     || {}).value || '0'), 10) || 0;
-        _safeSend({ t: 'ci', name: name, hpCurrent: hpCurrent, hpTotal: hpTotal }, 'board');
-      }
-
       function broadcastPortraitAndInfo() {
         if (!window.TS) return;
         var portrait = PortraitStore.get();
-        if (!portrait) return; // No portrait set — do not send portrait chunks.
+        if (!portrait) return; // No portrait set — do not send anything.
 
-        _broadcastCi();
+        var name      = (document.getElementById('char-name')  || {}).value || '';
+        var hpCurrent = parseInt(((document.getElementById('hp-current') || {}).value || '0'), 10) || 0;
+        var hpTotal   = parseInt(((document.getElementById('hp-max')     || {}).value || '0'), 10) || 0;
+
+        // Send lightweight character info immediately (no chunking needed).
+        _safeSend({ t: 'ci', name: name, hpCurrent: hpCurrent, hpTotal: hpTotal }, 'board');
 
         // Downscale portrait to 128×128 then chunk and send.
         var canvas = document.createElement('canvas');
@@ -515,7 +512,6 @@
       return {
         init:                     init,
         broadcastPortraitAndInfo: broadcastPortraitAndInfo,
-        broadcastCi:              _broadcastCi,
         getParty:                 getParty,
         onPartyChange:            onPartyChange,
         handleIncoming:           handleIncoming,
@@ -1066,15 +1062,15 @@
     // ── Party sync: re-broadcast CI on name or HP change ──────────
     (function() {
       var _ciTimer = null;
-      function debouncedCi() {
+      function broadcastCi() {
         clearTimeout(_ciTimer);
         _ciTimer = setTimeout(function() {
-          PartySync.broadcastCi();
+          PartySync.broadcastPortraitAndInfo();
         }, 300);
       }
       ['char-name', 'hp-current', 'hp-max'].forEach(function(id) {
         var el = document.getElementById(id);
-        if (el) el.addEventListener('input', debouncedCi);
+        if (el) el.addEventListener('input', broadcastCi);
       });
     })();
 

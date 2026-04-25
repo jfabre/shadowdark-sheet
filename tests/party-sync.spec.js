@@ -108,38 +108,6 @@ test('PartySync.broadcastPortraitAndInfo does not attempt to send when no portra
   expect(callCount).toBe(0);
 });
 
-// ── broadcastCi ───────────────────────────────────────
-
-test('PartySync.broadcastCi is a no-op when window.TS is absent', async ({ page }) => {
-  await loadApp(page);
-  const threw = await page.evaluate(() => {
-    try {
-      PartySync.broadcastCi();
-      return false;
-    } catch(e) {
-      return true;
-    }
-  });
-  expect(threw).toBe(false);
-});
-
-test('PartySync.broadcastCi sends ci but no pc chunks even when a portrait is set', async ({ page }) => {
-  await loadApp(page);
-  const types = await page.evaluate(() => {
-    var seen = [];
-    window.TS = { sync: { send: function(jsonStr) { seen.push(JSON.parse(jsonStr).t); } } };
-    // Simulate a portrait being present.
-    PortraitStore._testOverride = 'data:image/jpeg;base64,fakedata';
-    var origGet = PortraitStore.get;
-    PortraitStore.get = function() { return 'data:image/jpeg;base64,fakedata'; };
-    PartySync.broadcastCi();
-    PortraitStore.get = origGet;
-    return seen;
-  });
-  expect(types).toEqual(['ci']);
-  expect(types).not.toContain('pc');
-});
-
 // ── PartySync.handleIncoming ───────────────────────────
 
 test('handleIncoming "ci" message updates partyMap name and HP', async ({ page }) => {
