@@ -736,11 +736,21 @@
     function _bindToggle() {
       if (_toggleBound) return;
       _toggleBound = true;
-      var btn = document.getElementById('btn-toggle');
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        document.querySelector('.portrait-info-col').classList.toggle('party-active');
-      });
+      var btnChar  = document.getElementById('btn-char');
+      var btnParty = document.getElementById('btn-party');
+      function show(view) {
+        var isParty = view === 'party';
+        var col = document.querySelector('.portrait-info-col');
+        if (isParty) {
+          col.classList.add('party-active');
+        } else {
+          col.classList.remove('party-active');
+        }
+        btnChar.classList.toggle('active',  !isParty);
+        btnParty.classList.toggle('active',  isParty);
+      }
+      btnChar.addEventListener('click',  function(e) { e.stopPropagation(); show('char'); });
+      btnParty.addEventListener('click', function(e) { e.stopPropagation(); show('party'); });
     }
 
     function renderPartyPanel(party) {
@@ -751,6 +761,8 @@
       if (!ids.length) {
         toggle.style.display = 'none';
         document.querySelector('.portrait-info-col').classList.remove('party-active');
+        document.getElementById('btn-char').classList.add('active');
+        document.getElementById('btn-party').classList.remove('active');
         pane.innerHTML = '';
         return;
       }
