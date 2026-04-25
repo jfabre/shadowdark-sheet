@@ -15,7 +15,7 @@ A digital character sheet for [Shadowdark RPG](https://www.thearcanelibrary.com/
 - **Ability scores** — full 2×3 grid (STR, DEX, CON, INT, WIS, CHA) with auto-computed modifiers and ± stepper buttons
 - **Combat stats** — AC (auto-calculated from armor + DEX + shield), initiative (derived from DEX), luck tokens; AC and luck have ± steppers
 - **Attacks** — add weapon rows with autocomplete from the full Shadowdark weapon table (15 weapons); auto-fills damage die and stat bonus; bonus-to-hit is editable (manual override shown with accent underline; clears when value matches the calculated mod)
-- **Spells** — add spell rows with autocomplete for all Tier 1–2 Priest and Wizard spells (34 spells); auto-fills tier, range, duration, and description
+- **Spells** — add spell rows with autocomplete for all Tier 1–2 Priest and Wizard spells (34 spells); auto-fills tier, range, duration, and description; mark individual spells as lost (expended) with a toggle — dimmed with a red accent, restored on rest
 
 ### Inventory Tab
 - **Encumbrance** — real-time slot tracker with progress bar; accounts for armor, coins, and inventory
