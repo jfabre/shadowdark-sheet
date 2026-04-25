@@ -717,57 +717,6 @@
       return { hide };
     }
 
-    // ── Party Panel ──────────────────────────────────────────────────────────────
-
-    function _hpState(hpCurrent, hpTotal) {
-      if (!hpTotal) return { lit: 0, cls: '' };
-      var pct = hpCurrent / hpTotal;
-      if (pct > 0.66) return { lit: 3, cls: 'lit-ok' };
-      if (pct > 0.33) return { lit: 2, cls: 'lit-hurt' };
-      return { lit: 1, cls: 'lit-crit' };
-    }
-
-    function renderPartyPanel(party) {
-      var panel = document.getElementById('party-panel');
-      var list = document.getElementById('party-list');
-      var ids = Object.keys(party);
-      panel.style.display = ids.length ? '' : 'none';
-      list.innerHTML = '';
-      for (var i = 0; i < ids.length; i++) {
-        var m = party[ids[i]];
-        var state = _hpState(m.hpCurrent, m.hpTotal);
-
-        var img = document.createElement('img');
-        img.className = 'party-portrait';
-        img.alt = '';
-        img.src = (m.portraitReady && m.portraitUrl) ? m.portraitUrl : DEFAULT_PORTRAIT;
-
-        var nameEl = document.createElement('div');
-        nameEl.className = 'party-name';
-        nameEl.textContent = m.name || 'Adventurer';
-
-        var dots = document.createElement('div');
-        dots.className = 'party-dots';
-        for (var d = 0; d < 3; d++) {
-          var dot = document.createElement('span');
-          dot.className = 'party-dot' + (d < state.lit ? ' ' + state.cls : '');
-          dots.appendChild(dot);
-        }
-
-        var info = document.createElement('div');
-        info.className = 'party-card-info';
-        info.appendChild(nameEl);
-        info.appendChild(dots);
-
-        var card = document.createElement('div');
-        card.className = 'party-card';
-        card.appendChild(img);
-        card.appendChild(info);
-
-        list.appendChild(card);
-      }
-    }
-
     // ── Boot ───────────────────────────────────────────
     // Wrapped in async IIFE so TaleSpire's async getBlob() resolves
     // before any UI reads from storage. Browser mode resolves instantly.
@@ -778,7 +727,6 @@
     await PortraitStore.init();
     await PortraitStore.migrateFromCampaignBlob();
     PartySync.init();
-    PartySync.onPartyChange(renderPartyPanel);
 
     // Game data (ABILITY_STATS, WEAPONS, SPELL_DB, etc.) loaded from data.js
 
