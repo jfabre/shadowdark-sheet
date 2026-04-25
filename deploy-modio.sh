@@ -153,7 +153,6 @@ zip -j "$ZIP_PATH" \
   script.js \
   data.js \
   style.css \
-  ding.mp3 \
   README.md \
   CHANGELOG.md
 
