@@ -7,38 +7,27 @@ test.beforeEach(async ({ page }) => {
 
 // ── Visibility ──────────────────────────────────────────────────────────────
 
-test('view toggle hidden when party is empty', async ({ page }) => {
+test('party panel hidden when party is empty', async ({ page }) => {
   await page.evaluate(() => renderPartyPanel({}));
-  const display = await page.$eval('#view-toggle', el => el.style.display);
+  const display = await page.$eval('#party-panel', el => el.style.display);
   expect(display).toBe('none');
 });
 
-test('view toggle visible when party has one member', async ({ page }) => {
+test('party panel visible when party has one member', async ({ page }) => {
   await page.evaluate(() => renderPartyPanel({
     'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false }
   }));
-  const display = await page.$eval('#view-toggle', el => el.style.display);
+  const display = await page.$eval('#party-panel', el => el.style.display);
   expect(display).toBe('');
 });
 
-test('view toggle hidden again when party empties', async ({ page }) => {
+test('party panel hidden again when party empties', async ({ page }) => {
   await page.evaluate(() => {
     renderPartyPanel({ 'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false } });
     renderPartyPanel({});
   });
-  const display = await page.$eval('#view-toggle', el => el.style.display);
+  const display = await page.$eval('#party-panel', el => el.style.display);
   expect(display).toBe('none');
-});
-
-test('char-pane visible and party-pane hidden when party empties', async ({ page }) => {
-  await page.evaluate(() => {
-    renderPartyPanel({ 'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false } });
-    renderPartyPanel({});
-  });
-  const charDisplay  = await page.$eval('#char-pane',  el => el.style.display);
-  const partyDisplay = await page.$eval('#party-pane', el => el.style.display);
-  expect(charDisplay).toBe('');
-  expect(partyDisplay).toBe('none');
 });
 
 // ── Card count ───────────────────────────────────────────────────────────────
@@ -51,14 +40,6 @@ test('renders one card per party member', async ({ page }) => {
   }));
   const count = await page.$$eval('.party-card', cards => cards.length);
   expect(count).toBe(3);
-});
-
-test('cards are rendered inside #party-pane', async ({ page }) => {
-  await page.evaluate(() => renderPartyPanel({
-    'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false }
-  }));
-  const count = await page.$$eval('#party-pane .party-card', cards => cards.length);
-  expect(count).toBe(1);
 });
 
 // ── Portrait ─────────────────────────────────────────────────────────────────
@@ -121,40 +102,4 @@ test('0 lit dots when hp total is unknown', async ({ page }) => {
   }));
   const dots = await page.$$eval('.party-dot', dots => dots.map(d => d.className));
   expect(dots).toEqual(['party-dot', 'party-dot', 'party-dot']);
-});
-
-// ── Toggle interaction ────────────────────────────────────────────────────────
-
-test('btn-party becomes active after clicking party button', async ({ page }) => {
-  await page.evaluate(() => renderPartyPanel({
-    'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false }
-  }));
-  await page.click('#btn-party');
-  const partyActive = await page.$eval('#btn-party', el => el.classList.contains('active'));
-  const charActive  = await page.$eval('#btn-char',  el => el.classList.contains('active'));
-  expect(partyActive).toBe(true);
-  expect(charActive).toBe(false);
-});
-
-test('party-pane visible after clicking party button', async ({ page }) => {
-  await page.evaluate(() => renderPartyPanel({
-    'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false }
-  }));
-  await page.click('#btn-party');
-  const partyDisplay = await page.$eval('#party-pane', el => el.style.display);
-  const charDisplay  = await page.$eval('#char-pane',  el => el.style.display);
-  expect(partyDisplay).toBe('');
-  expect(charDisplay).toBe('none');
-});
-
-test('char-pane restored after switching back to character view', async ({ page }) => {
-  await page.evaluate(() => renderPartyPanel({
-    'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false }
-  }));
-  await page.click('#btn-party');
-  await page.click('#btn-char');
-  const charDisplay  = await page.$eval('#char-pane',  el => el.style.display);
-  const partyDisplay = await page.$eval('#party-pane', el => el.style.display);
-  expect(charDisplay).toBe('');
-  expect(partyDisplay).toBe('none');
 });

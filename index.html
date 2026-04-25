@@ -19,18 +19,6 @@
       <!-- Character name -->
       <input type="text" id="char-name" class="char-name-input" placeholder="Character Name" autocomplete="off" />
 
-      <!-- Portrait view toggle pill (shown by JS when party has members) -->
-      <div id="view-toggle" style="display:none">
-        <div class="view-pill">
-          <button class="view-pill-btn active" id="btn-char" aria-label="Character view">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><circle cx="7" cy="4" r="2.8"/><path d="M1 13 C1 9.5 3.5 8 7 8 C10.5 8 13 9.5 13 13Z"/></svg>
-          </button>
-          <button class="view-pill-btn" id="btn-party" aria-label="Party view">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><circle cx="3.5" cy="4.5" r="2"/><path d="M0 12.5 C0 10 1.5 9 3.5 9 C4.5 9 5.4 9.4 6 10"/><circle cx="10.5" cy="4.5" r="2"/><path d="M14 12.5 C14 10 12.5 9 10.5 9 C9.5 9 8.6 9.4 8 10"/><circle cx="7" cy="3.5" r="2.2"/><path d="M2.5 13 C2.5 10 4.5 8.8 7 8.8 C9.5 8.8 11.5 10 11.5 13Z"/></svg>
-          </button>
-        </div>
-      </div>
-
       <!-- Portrait + Identity/Alignment row -->
       <div class="portrait-info-row">
         <!-- Character portrait -->
@@ -48,8 +36,7 @@
 
         <!-- Right column: identity + alignment -->
         <div class="portrait-info-col">
-          <div id="char-pane">
-            <!-- Class / Level / Ancestry -->
+          <!-- Class / Level / Ancestry -->
           <div class="identity-grid">
             <div class="field-group">
               <label>Ancestry</label>
@@ -143,11 +130,7 @@
               <div class="xp-levelup-label">✦ Level Up</div>
             </div>
 
-          </div><!-- /.hp-xp-row -->
-
-          </div><!-- /#char-pane -->
-
-          <div id="party-pane" class="party-list" style="display:none"></div>
+          </div>
 
         </div>
       </div>
@@ -174,6 +157,12 @@
             <button class="cbt-step-btn cbt-step-up" aria-label="Increase luck">＋</button>
           </div>
         </div>
+      </div>
+
+      <!-- Party panel (shown/hidden by JS based on PartySync.getParty()) -->
+      <div id="party-panel" style="display:none">
+        <div class="section-label">Party</div>
+        <div id="party-list" class="party-list"></div>
       </div>
 
       <!-- Ability scores 2×3 grid -->
@@ -629,19 +618,5 @@
   <script src="data.js"></script>
   <script src="script.js"></script>
 
-<!-- DEMO ONLY -->
-<script>
-window.addEventListener('load', function() {
-  setTimeout(function() {
-    var base = 'https://api.dicebear.com/9.x/adventurer/svg?seed=';
-    renderPartyPanel({
-      c1: { clientId:'c1', name:'Aria',    hpCurrent:10, hpTotal:10, portraitUrl: base+'Aria',     portraitReady:true },
-      c2: { clientId:'c2', name:'Brom',    hpCurrent:5,  hpTotal:10, portraitUrl: base+'Brom',     portraitReady:true },
-      c3: { clientId:'c3', name:'Caelindë',hpCurrent:2,  hpTotal:10, portraitUrl: base+'Caelinde', portraitReady:true },
-      c4: { clientId:'c4', name:'Dwyn',    hpCurrent:0,  hpTotal:0,  portraitUrl: '',              portraitReady:false }
-    });
-  }, 500);
-});
-</script>
 </body>
 </html>
