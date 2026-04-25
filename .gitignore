@@ -102,5 +102,8 @@ playwright-report/
 # Gas Town session hooks
 .github/hooks/
 
+# Reference PDFs (local only)
+*.pdf
+
 # Visual companion brainstorm sessions
 .superpowers/
