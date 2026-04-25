@@ -5,6 +5,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [0.9.2] - 2026-04-25
 
+- fix: correct version badge and deploy script backreference bug
+- release: v0.9.2
+- docs: complete README audit — add dice integration, 3 themes, XP shimmer, spell auto-hide, fix version badge format
+
+## [0.9.2] - 2026-04-25
+
 - docs: complete README audit — add dice integration, 3 themes, XP shimmer, spell auto-hide, fix version badge format
 
 ## [0.9.1] - 2026-04-25
