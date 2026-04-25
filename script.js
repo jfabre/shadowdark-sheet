@@ -48,16 +48,14 @@
        var data = (event && event.payload) ? event.payload : event;
        if (!data || !data.resultsGroups) return;
 
-       // Check this event actually contains d20 dice before consuming a pending entry
+       // Match by rollId — the API includes the originating rollId in every result event.
+       // This avoids the fragile FIFO assumption and correctly ignores unrelated rolls.
+       var pending = data.rollId ? pendingAdvRolls.get(data.rollId) : undefined;
+       if (!pending) return;
+       pendingAdvRolls.delete(data.rollId);
+
        var d20s = [];
        data.resultsGroups.forEach(function(g) { _collectDice(g.result, 'd20', d20s); });
-       if (!d20s.length) return;
-
-       // Grab and clear the oldest pending entry (FIFO)
-       var firstKey = pendingAdvRolls.keys().next().value;
-       if (firstKey === undefined) return;
-       var pending = pendingAdvRolls.get(firstKey);
-       pendingAdvRolls.delete(firstKey);
 
        var kept  = pending.mode === 'advantage' ? Math.max.apply(null, d20s) : Math.min.apply(null, d20s);
       var total = kept + pending.bonusN;
