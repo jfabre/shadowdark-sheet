@@ -3,6 +3,10 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.2] - 2026-04-25
+
+- docs: complete README audit — add dice integration, 3 themes, XP shimmer, spell auto-hide, fix version badge format
+
 ## [0.9.1] - 2026-04-25
 
 - docs: add lost spell toggle to README features
