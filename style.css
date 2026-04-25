@@ -2672,7 +2672,6 @@ input[type="number"].cbt-stat-num {
   object-fit: cover;
   display: block;
   background: var(--surface);
-  overflow: hidden;
 }
 
 .party-card-info {
