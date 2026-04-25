@@ -740,12 +740,8 @@
       var btnParty = document.getElementById('btn-party');
       function show(view) {
         var isParty = view === 'party';
-        var col = document.querySelector('.portrait-info-col');
-        if (isParty) {
-          col.classList.add('party-active');
-        } else {
-          col.classList.remove('party-active');
-        }
+        document.getElementById('char-pane').style.display  = isParty ? 'none' : '';
+        document.getElementById('party-pane').style.display = isParty ? ''     : 'none';
         btnChar.classList.toggle('active',  !isParty);
         btnParty.classList.toggle('active',  isParty);
       }
@@ -760,7 +756,8 @@
 
       if (!ids.length) {
         toggle.style.display = 'none';
-        document.querySelector('.portrait-info-col').classList.remove('party-active');
+        document.getElementById('char-pane').style.display  = '';
+        pane.style.display = 'none';
         document.getElementById('btn-char').classList.add('active');
         document.getElementById('btn-party').classList.remove('active');
         pane.innerHTML = '';

@@ -35,8 +35,10 @@ test('char-pane visible and party-pane hidden when party empties', async ({ page
     renderPartyPanel({ 'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false } });
     renderPartyPanel({});
   });
-  const hasPartyActive = await page.$eval('.portrait-info-col', el => el.classList.contains('party-active'));
-  expect(hasPartyActive).toBe(false);
+  const charDisplay  = await page.$eval('#char-pane',  el => el.style.display);
+  const partyDisplay = await page.$eval('#party-pane', el => el.style.display);
+  expect(charDisplay).toBe('');
+  expect(partyDisplay).toBe('none');
 });
 
 // ── Card count ───────────────────────────────────────────────────────────────
@@ -139,8 +141,10 @@ test('party-pane visible after clicking party button', async ({ page }) => {
     'c1': { clientId: 'c1', name: 'Aria', hpCurrent: 10, hpTotal: 10, portraitUrl: '', portraitReady: false }
   }));
   await page.click('#btn-party');
-  const hasPartyActive = await page.$eval('.portrait-info-col', el => el.classList.contains('party-active'));
-  expect(hasPartyActive).toBe(true);
+  const partyDisplay = await page.$eval('#party-pane', el => el.style.display);
+  const charDisplay  = await page.$eval('#char-pane',  el => el.style.display);
+  expect(partyDisplay).toBe('');
+  expect(charDisplay).toBe('none');
 });
 
 test('char-pane restored after switching back to character view', async ({ page }) => {
@@ -149,6 +153,8 @@ test('char-pane restored after switching back to character view', async ({ page 
   }));
   await page.click('#btn-party');
   await page.click('#btn-char');
-  const hasPartyActive = await page.$eval('.portrait-info-col', el => el.classList.contains('party-active'));
-  expect(hasPartyActive).toBe(false);
+  const charDisplay  = await page.$eval('#char-pane',  el => el.style.display);
+  const partyDisplay = await page.$eval('#party-pane', el => el.style.display);
+  expect(charDisplay).toBe('');
+  expect(partyDisplay).toBe('none');
 });

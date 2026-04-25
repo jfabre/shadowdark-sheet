@@ -965,7 +965,6 @@ body {
   gap: 10px;
   padding: 6px 0;
   justify-content: center;
-  overflow: hidden;
 }
 
 .identity-grid {
@@ -2713,16 +2712,15 @@ input[type="number"].cbt-stat-num {
 
 /* ── View Toggle Pill ────────────────────────────────── */
 #view-toggle {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  z-index: 10;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
 }
 
 .view-pill {
   display: flex;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 20px;
   overflow: hidden;
   gap: 0;
@@ -2742,7 +2740,7 @@ input[type="number"].cbt-stat-num {
 }
 
 .view-pill-btn.active {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--border);
   color: var(--accent);
 }
 
@@ -2751,22 +2749,8 @@ input[type="number"].cbt-stat-num {
 }
 
 #party-pane {
+  flex: 1;
+  min-width: 0;
   align-content: center;
 }
 
-.pane-track {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  overflow: hidden;
-  transition: transform 0.25s ease;
-}
-
-.pane-track > * {
-  flex: 0 0 100%;
-  min-width: 0;
-}
-
-.party-active .pane-track {
-  transform: translateX(-100%);
-}
