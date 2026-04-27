@@ -87,6 +87,25 @@
       }
     }
 
+    // ── TaleSpire sync callbacks (global — required by manifest) ──
+    function onSyncMessage(event) {
+      // event.kind === 'syncMessageReceived'
+      // event.str        → the raw JSON string
+      // event.fromClient → { id: string }
+      if (!event || !event.fromClient) return;
+      PartySync.handleIncoming(event.fromClient.id, event);
+    }
+
+    function onSyncClientEvent(event) {
+      // event.kind === 'clientConnected'  → event.client.id
+      // event.kind === 'clientDisconnected' → event.clientId
+      if (event.kind === 'clientConnected' && event.client) {
+        PartySync.clientConnected(event.client.id);
+      } else if (event.kind === 'clientDisconnected') {
+        PartySync.clientDisconnected(event.clientId);
+      }
+    }
+
     // ── Dice tray helper ───────────────────────────────
     // Returns true if TaleSpire handled the roll; false → caller shows fallback UI.
     function sendToTray(rolls) {
@@ -95,6 +114,35 @@
         catch (e) { console.warn('TS.dice.putDiceInTray failed, using fallback:', e); }
       }
       return false;
+    }
+
+    // ── Party sync helpers ─────────────────────────────
+    // Default 128×128 portrait shown before a peer's image is received.
+    var DEFAULT_PORTRAIT = (function() {
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">' +
+        '<rect width="128" height="128" fill="#2a2a3e"/>' +
+        '<circle cx="64" cy="46" r="24" fill="#5a5a7e"/>' +
+        '<ellipse cx="64" cy="108" rx="36" ry="28" fill="#5a5a7e"/>' +
+        '</svg>';
+      return 'data:image/svg+xml;base64,' + btoa(svg);
+    })();
+
+    // Split a string into an array of chunks of at most `size` characters.
+    function chunkString(str, size) {
+      var chunks = [];
+      for (var i = 0; i < str.length; i += size) {
+        chunks.push(str.slice(i, i + size));
+      }
+      return chunks;
+    }
+
+    // Reassemble an array of chunks back into a string.
+    // Returns null if any slot from 0..(total-1) is missing.
+    function reassembleChunks(chunks, total) {
+      for (var i = 0; i < total; i++) {
+        if (chunks[i] === undefined || chunks[i] === null) return null;
+      }
+      return chunks.slice(0, total).join('');
     }
 
     // ── Storage Adapter ────────────────────────────────
@@ -270,6 +318,192 @@
       }
 
       return { init, get, set, remove, migrateFromCampaignBlob };
+    })();
+
+    // ── PartySync ──────────────────────────────────────
+    // Broadcasts the local player's portrait and character info to all Dark Spire
+    // clients on the same TaleSpire board. No-op when window.TS is absent.
+    const PartySync = (function() {
+      // Map of clientId → { clientId, name, hpCurrent, hpTotal, portraitUrl, portraitReady }
+      var _partyMap = {};
+      // Receive buffers: clientId → { chunks: [], total: N, timer: id }
+      var _receiveBuffers = {};
+      // Incremented on every broadcast to cancel in-flight sends.
+      var _sendGeneration = 0;
+      // Registered onPartyChange callbacks.
+      var _callbacks = [];
+
+      function _notify() {
+        _callbacks.forEach(function(fn) { try { fn(_partyMap); } catch(e) {} });
+      }
+
+      function onPartyChange(fn) {
+        _callbacks.push(fn);
+      }
+
+      function getParty() {
+        return _partyMap;
+      }
+
+      // ── Initialisation ─────────────────────────────
+      function init() {
+        if (!window.TS) return;
+        TS.sync.getClientsConnected()
+          .then(function(clients) {
+            clients.forEach(function(c) {
+              if (!_partyMap[c.id]) {
+                _partyMap[c.id] = _skeleton(c.id);
+              }
+            });
+            if (clients.length > 0) {
+              // Ask existing peers to send us their data.
+              _safeSend({ t: 'pr' }, 'board');
+            }
+            // Send our own data to all peers.
+            broadcastPortraitAndInfo();
+            _notify();
+          })
+          .catch(function(e) {
+            if (window.TS && TS.debug) TS.debug.log('[PartySync] init failed: ' + e);
+          });
+      }
+
+      // ── Broadcasting ───────────────────────────────
+      function broadcastPortraitAndInfo() {
+        if (!window.TS) return;
+        var portrait = PortraitStore.get();
+        if (!portrait) return; // No portrait set — do not send anything.
+
+        var name      = (document.getElementById('char-name')  || {}).value || '';
+        var hpCurrent = parseInt(((document.getElementById('hp-current') || {}).value || '0'), 10) || 0;
+        var hpTotal   = parseInt(((document.getElementById('hp-max')     || {}).value || '0'), 10) || 0;
+
+        // Send lightweight character info immediately (no chunking needed).
+        _safeSend({ t: 'ci', name: name, hpCurrent: hpCurrent, hpTotal: hpTotal }, 'board');
+
+        // Downscale portrait to 128×128 then chunk and send.
+        var canvas = document.createElement('canvas');
+        canvas.width  = 128;
+        canvas.height = 128;
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, 128, 128);
+          var b64 = canvas.toDataURL('image/jpeg', 0.7)
+                          .replace('data:image/jpeg;base64,', '');
+          _sendChunks(b64);
+        };
+        // img.src assignment after onload is set — avoids race on cached images.
+        img.src = portrait;
+      }
+
+      function _sendChunks(base64) {
+        var chunks = chunkString(base64, 470);
+        var total  = chunks.length;
+        var gen    = ++_sendGeneration;
+
+        function sendNext(i) {
+          if (gen !== _sendGeneration) return; // A newer broadcast cancelled this one.
+          if (i >= total) return;
+          _safeSend({ t: 'pc', s: i, n: total, d: chunks[i] }, 'board');
+          setTimeout(function() { sendNext(i + 1); }, 15);
+        }
+        sendNext(0);
+      }
+
+      function _safeSend(obj, target) {
+        try {
+          TS.sync.send(JSON.stringify(obj), target);
+        } catch(e) {
+          if (window.TS && TS.debug) TS.debug.log('[PartySync] send error: ' + e);
+        }
+      }
+
+      // ── Receiving ──────────────────────────────────
+      function handleIncoming(senderId, event) {
+        var msg;
+        try { msg = JSON.parse(event.str); } catch(e) { return; }
+
+        if (msg.t === 'ci') {
+          if (!_partyMap[senderId]) _partyMap[senderId] = _skeleton(senderId);
+          _partyMap[senderId].name      = msg.name      || '';
+          _partyMap[senderId].hpCurrent = msg.hpCurrent || 0;
+          _partyMap[senderId].hpTotal   = msg.hpTotal   || 0;
+          _notify();
+
+        } else if (msg.t === 'pc') {
+          if (!_receiveBuffers[senderId]) {
+            _receiveBuffers[senderId] = { chunks: [], total: msg.n, timer: null };
+          }
+          var buf = _receiveBuffers[senderId];
+          buf.chunks[msg.s] = msg.d;
+
+          // Reset the 15-second incomplete-transfer timeout.
+          clearTimeout(buf.timer);
+          buf.timer = setTimeout(function() {
+            delete _receiveBuffers[senderId];
+          }, 15000);
+
+          // Count non-null slots to check for completion.
+          var received = 0;
+          for (var i = 0; i < buf.chunks.length; i++) {
+            if (buf.chunks[i] !== undefined) received++;
+          }
+          if (received === msg.n) {
+            if (!_partyMap[senderId]) _partyMap[senderId] = _skeleton(senderId);
+            _partyMap[senderId].portraitUrl   = 'data:image/jpeg;base64,' + buf.chunks.join('');
+            _partyMap[senderId].portraitReady = true;
+            clearTimeout(buf.timer);
+            delete _receiveBuffers[senderId];
+            _notify();
+          }
+
+        } else if (msg.t === 'pr') {
+          // Peer is requesting our data (they just joined or reloaded).
+          broadcastPortraitAndInfo();
+        }
+      }
+
+      // ── Peer lifecycle ─────────────────────────────
+      function clientConnected(clientId) {
+        if (!_partyMap[clientId]) {
+          _partyMap[clientId] = _skeleton(clientId);
+        }
+        // Send our data to the newly connected peer.
+        broadcastPortraitAndInfo();
+        _notify();
+      }
+
+      function clientDisconnected(clientId) {
+        delete _partyMap[clientId];
+        if (_receiveBuffers[clientId]) {
+          clearTimeout(_receiveBuffers[clientId].timer);
+          delete _receiveBuffers[clientId];
+        }
+        _notify();
+      }
+
+      // ── Internal helpers ───────────────────────────
+      function _skeleton(clientId) {
+        return {
+          clientId:      clientId,
+          name:          '',
+          hpCurrent:     0,
+          hpTotal:       0,
+          portraitUrl:   DEFAULT_PORTRAIT,
+          portraitReady: false,
+        };
+      }
+
+      return {
+        init:                     init,
+        broadcastPortraitAndInfo: broadcastPortraitAndInfo,
+        getParty:                 getParty,
+        onPartyChange:            onPartyChange,
+        handleIncoming:           handleIncoming,
+        clientConnected:          clientConnected,
+        clientDisconnected:       clientDisconnected,
+      };
     })();
 
     // ── Version utilities ───────────────────────────────
