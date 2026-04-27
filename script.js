@@ -87,6 +87,25 @@
       }
     }
 
+    // ── TaleSpire sync callbacks (global — required by manifest) ──
+    function onSyncMessage(event) {
+      // event.kind === 'syncMessageReceived'
+      // event.str        → the raw JSON string
+      // event.fromClient → { id: string }
+      if (!event || !event.fromClient) return;
+      PartySync.handleIncoming(event.fromClient.id, event);
+    }
+
+    function onSyncClientEvent(event) {
+      // event.kind === 'clientConnected'  → event.client.id
+      // event.kind === 'clientDisconnected' → event.clientId
+      if (event.kind === 'clientConnected' && event.client) {
+        PartySync.clientConnected(event.client.id);
+      } else if (event.kind === 'clientDisconnected') {
+        PartySync.clientDisconnected(event.clientId);
+      }
+    }
+
     // ── Dice tray helper ───────────────────────────────
     // Returns true if TaleSpire handled the roll; false → caller shows fallback UI.
     function sendToTray(rolls) {
