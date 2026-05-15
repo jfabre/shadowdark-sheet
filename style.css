@@ -868,6 +868,63 @@ html.theme-switching * {
   background: #c0392b;
 }
 
+/* ── Storage recovery banner ─────────────────────────── */
+.storage-banner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: #5a1a1a;
+  color: #fbeaea;
+  border-bottom: 2px solid #c0392b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  font-family: var(--font-hdr);
+}
+.storage-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.storage-banner-icon {
+  font-size: 1.4em;
+  line-height: 1;
+  color: #f1c40f;
+  flex: 0 0 auto;
+}
+.storage-banner-msg {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85em;
+  line-height: 1.35;
+}
+.storage-banner-msg strong {
+  font-size: 1em;
+  letter-spacing: 0.02em;
+}
+.storage-banner-actions {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.storage-banner-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fbeaea;
+  border: 1px solid rgba(251, 234, 234, 0.5);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-family: inherit;
+  font-size: 0.85em;
+  cursor: pointer;
+}
+.storage-banner-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 /* ── Base ───────────────────────────────────────────── */
 body {
   background: var(--bg);

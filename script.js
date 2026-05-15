@@ -2,20 +2,25 @@
     // The manifest subscribes to symbiote.onStateChangeEvent.
     // This global handler resolves a Promise when the API is initialized.
     let _tsReadyResolve;
+    let _tsReadyTimedOut = false;
     const _tsReadyPromise = new Promise(function(resolve) { _tsReadyResolve = resolve; });
 
     function onTaleSpireStateChange(event) {
       if (event.kind === 'hasInitialized') _tsReadyResolve();
-      // Force-flush storage before TaleSpire destroys the webview
+      // Force-flush storage before TaleSpire destroys the webview.
+      // The symbiote API allows handlers to be async; awaiting maximizes
+      // the chance setBlob completes before the webview goes away.
       if (event.kind === 'willShutdown' || event.kind === 'willEnterBackground') {
-        StorageAdapter.flush();
+        return StorageAdapter.flush();
       }
     }
 
     // In TaleSpire, window.TS exists before page load but the API isn't ready
     // until hasInitialized fires. Only resolve early for the browser case.
-    // Safety timeout: if hasInitialized was somehow missed, resolve after 3s.
-    if (window.TS) setTimeout(function() { _tsReadyResolve(); }, 3000);
+    // Safety timeout: if hasInitialized was somehow missed, resolve after 3s
+    // but mark this fact so StorageAdapter can fail-closed instead of
+    // attempting a getBlob against an API that may not be ready.
+    if (window.TS) setTimeout(function() { _tsReadyTimedOut = true; _tsReadyResolve(); }, 3000);
     else requestAnimationFrame(function() { _tsReadyResolve(); });
 
     // ── Advantage/Disadvantage roll state ──────────────
@@ -149,60 +154,156 @@
     // Abstracts browser localStorage vs TaleSpire campaign storage.
     // In TaleSpire, all keys are packed into a single JSON blob
     // stored via TS.localStorage.campaign.setBlob/getBlob.
+    //
+    // Data-loss hardening (see plan 2026-05-15-persistence-hardening):
+    //   * Tracks an explicit load state so a failed read NEVER overwrites
+    //     the stored blob with an empty in-memory cache.
+    //   * Stamps the blob with a _schemaVersion. Refuses to downgrade.
+    //   * Retries failed writes on an exponential-backoff timer.
+    //   * Notifies a listener so the UI can render a recovery banner.
+    const SCHEMA_VERSION = 1;
     const StorageAdapter = (function() {
       const _cache = {};
       let _isTaleSpire = false;
       let _dirty = false;
       let _debounceTimer = null;
-      const DEBOUNCE_MS = 1500;
+      let _retryTimer = null;
+      let _retryAttempt = 0;
+      // 'unloaded' before init runs; 'ok' once we have a confident read
+      // (which includes the "no blob yet" first-run case); 'failed' if the
+      // read threw, the blob couldn't be parsed, or the schema is newer
+      // than what we know how to write back safely.
+      let _loadState = 'unloaded';
+      let _loadError = null;
+      const _stateListeners = [];
+      const DEBOUNCE_MS = 500;
+      const RETRY_BASE_MS = 2000;
+      const RETRY_MAX_ATTEMPTS = 5;
 
-      async function _flushToTaleSpire() {
-        if (!_isTaleSpire || !_dirty) return;
-        _dirty = false;
-        try {
-          await TS.localStorage.campaign.setBlob(JSON.stringify(_cache));
-        } catch (e) {
-          _dirty = true; // retry on next flush
-          if (window.TS && TS.debug) TS.debug.log('[StorageAdapter] write failed: ' + e);
-          console.warn('[StorageAdapter] TaleSpire write failed:', e);
+      function _notifyStateChange() {
+        for (let i = 0; i < _stateListeners.length; i++) {
+          try { _stateListeners[i](_loadState, _loadError); }
+          catch (e) { console.warn('[StorageAdapter] listener threw:', e); }
         }
       }
 
+      function _setState(next, err) {
+        if (_loadState === next) return;
+        _loadState = next;
+        _loadError = err || null;
+        _notifyStateChange();
+      }
+
+      async function _flushToTaleSpire() {
+        if (!_isTaleSpire || !_dirty) return;
+        if (_loadState !== 'ok') return; // never overwrite a blob we couldn't read
+        _dirty = false;
+        try {
+          await TS.localStorage.campaign.setBlob(JSON.stringify(_cache));
+          _retryAttempt = 0;
+          if (_retryTimer) { clearTimeout(_retryTimer); _retryTimer = null; }
+        } catch (e) {
+          _dirty = true;
+          if (window.TS && TS.debug) TS.debug.log('[StorageAdapter] write failed: ' + e);
+          console.warn('[StorageAdapter] TaleSpire write failed:', e);
+          _scheduleRetry();
+        }
+      }
+
+      function _scheduleRetry() {
+        if (_retryTimer) return;
+        if (_retryAttempt >= RETRY_MAX_ATTEMPTS) {
+          console.warn('[StorageAdapter] giving up after ' + _retryAttempt + ' retries');
+          return;
+        }
+        const delay = RETRY_BASE_MS * Math.pow(2, _retryAttempt);
+        _retryAttempt++;
+        _retryTimer = setTimeout(function() {
+          _retryTimer = null;
+          _scheduleIdle(_flushToTaleSpire);
+        }, delay);
+      }
+
       const _scheduleIdle = window.requestIdleCallback
-        ? (fn) => requestIdleCallback(fn, { timeout: 2000 })
-        : (fn) => setTimeout(fn, 0);
+        ? function(fn) { return requestIdleCallback(fn, { timeout: 2000 }); }
+        : function(fn) { return setTimeout(fn, 0); };
 
       function _scheduleFlush() {
         if (!_isTaleSpire) return;
         clearTimeout(_debounceTimer);
-        _debounceTimer = setTimeout(() => _scheduleIdle(_flushToTaleSpire), DEBOUNCE_MS);
+        _debounceTimer = setTimeout(function() { _scheduleIdle(_flushToTaleSpire); }, DEBOUNCE_MS);
       }
 
-      // Immediate flush — cancels any pending debounce. Called on shutdown.
+      // Immediate flush — cancels any pending debounce. Returns a Promise
+      // so shutdown handlers (which the symbiote API allows to be async)
+      // can await it. Safe to call any time; resolves immediately if there
+      // is nothing to write or the storage is in a non-writable state.
       function flush() {
-        if (!_isTaleSpire || !_dirty) return;
+        if (!_isTaleSpire || !_dirty || _loadState !== 'ok') return Promise.resolve();
         clearTimeout(_debounceTimer);
-        _flushToTaleSpire();
+        return _flushToTaleSpire();
       }
 
-      async function init() {
+      async function init(opts) {
+        const tsReadyTimedOut = !!(opts && opts.tsReadyTimedOut);
         _isTaleSpire = !!(window.TS &&
                           window.TS.localStorage &&
                           window.TS.localStorage.campaign);
 
-        if (_isTaleSpire) {
-          try {
-            const raw = await TS.localStorage.campaign.getBlob();
-            if (raw) Object.assign(_cache, JSON.parse(raw));
-            if (TS.debug) TS.debug.log('[StorageAdapter] loaded ' + Object.keys(_cache).length + ' keys');
-          } catch (e) {
-            if (TS.debug) TS.debug.log('[StorageAdapter] read failed: ' + e);
-            console.warn('[StorageAdapter] TaleSpire read failed:', e);
-          }
-          // Safety net: flush before the webview is destroyed
-          window.addEventListener('beforeunload', flush);
-          window.addEventListener('pagehide', flush);
+        if (!_isTaleSpire) {
+          // Browser mode: localStorage is synchronous, no chance of a
+          // mid-load failure that we'd silently overwrite.
+          _setState('ok');
+          return;
         }
+
+        // If the TS-ready promise resolved via timeout rather than the
+        // hasInitialized event, the API may not actually be functional.
+        // Don't roll the dice on getBlob — fail closed immediately so the
+        // banner appears and we never overwrite.
+        if (tsReadyTimedOut) {
+          console.warn('[StorageAdapter] TS ready timed out — refusing to read/write');
+          _setState('failed', new Error('TS API not initialized'));
+          return;
+        }
+
+        try {
+          const raw = await TS.localStorage.campaign.getBlob();
+          if (raw) {
+            let parsed;
+            try {
+              parsed = JSON.parse(raw);
+            } catch (e) {
+              _setState('failed', e);
+              if (TS.debug) TS.debug.log('[StorageAdapter] parse failed: ' + e);
+              console.warn('[StorageAdapter] blob parse failed:', e);
+              return;
+            }
+            const blobVersion = parsed && parsed._schemaVersion;
+            if (typeof blobVersion === 'number' && blobVersion > SCHEMA_VERSION) {
+              _setState('failed', new Error('newer schema'));
+              console.warn('[StorageAdapter] blob schema v' + blobVersion + ' > known v' + SCHEMA_VERSION);
+              return;
+            }
+            Object.assign(_cache, parsed);
+          }
+          _setState('ok');
+          if (TS.debug) TS.debug.log('[StorageAdapter] loaded ' + Object.keys(_cache).length + ' keys');
+        } catch (e) {
+          _setState('failed', e);
+          if (TS.debug) TS.debug.log('[StorageAdapter] read failed: ' + e);
+          console.warn('[StorageAdapter] TaleSpire read failed:', e);
+          return;
+        }
+        // Safety net: flush before the webview is destroyed.
+        // beforeunload/pagehide listeners must be synchronous; we kick off
+        // the async flush and the symbiote willShutdown handler awaits.
+        window.addEventListener('beforeunload', function() { flush(); });
+        window.addEventListener('pagehide', function() { flush(); });
+        window.addEventListener('blur', function() { flush(); });
+        document.addEventListener('visibilitychange', function() {
+          if (document.hidden) flush();
+        });
       }
 
       function getItem(key) {
@@ -214,16 +315,28 @@
 
       function setItem(key, value) {
         if (_isTaleSpire) {
+          if (_loadState !== 'ok') {
+            // Refuse to mutate the in-memory cache. We must not let an
+            // unloaded/failed state ever flush an empty cache back to TS.
+            if (TS.debug) TS.debug.log('[StorageAdapter] write blocked (state=' + _loadState + ') key=' + key);
+            return;
+          }
           _cache[key] = value;
+          _cache._schemaVersion = SCHEMA_VERSION;
           _dirty = true;
           _scheduleFlush();
         } else {
-          localStorage.setItem(key, value);
+          try { localStorage.setItem(key, value); }
+          catch (e) { console.warn('[StorageAdapter] localStorage setItem failed:', e); }
         }
       }
 
       function removeItem(key) {
         if (_isTaleSpire) {
+          if (_loadState !== 'ok') {
+            if (TS.debug) TS.debug.log('[StorageAdapter] remove blocked (state=' + _loadState + ') key=' + key);
+            return;
+          }
           delete _cache[key];
           _dirty = true;
           _scheduleFlush();
@@ -233,8 +346,20 @@
       }
 
       function isTaleSpire() { return _isTaleSpire; }
+      function getState() { return _loadState; }
+      function isHealthy() { return _loadState === 'ok'; }
+      function onStateChange(fn) {
+        _stateListeners.push(fn);
+        // Fire immediately with current state for late subscribers.
+        try { fn(_loadState, _loadError); }
+        catch (e) { console.warn('[StorageAdapter] listener threw:', e); }
+      }
 
-      return { init, getItem, setItem, removeItem, isTaleSpire, flush };
+      return {
+        init, getItem, setItem, removeItem, isTaleSpire, flush,
+        getState, isHealthy, onStateChange,
+        SCHEMA_VERSION: SCHEMA_VERSION,
+      };
     })();
 
     // ── Portrait Store ───────────────────────────────────
@@ -242,34 +367,61 @@
     // keep the campaign blob small and fast to serialize/flush.
     // In TaleSpire: uses global.setBlob with a campaign-keyed JSON map.
     // In browser: uses localStorage directly.
+    //
+    // Data-loss hardening: the global blob is shared across ALL campaigns
+    // for this user, so a failed-load → overwrite bug here would wipe
+    // every other campaign's portrait. Same load-state guard as the main
+    // StorageAdapter.
     const PortraitStore = (function() {
       const PORTRAIT_KEY = 'sd_char_portrait';
       let _isTaleSpire = false;
       let _campaignId = null;
       let _map = {}; // { campaignId: dataUrl }
+      let _loadState = 'unloaded';
 
-      async function init() {
+      async function init(opts) {
+        const tsReadyTimedOut = !!(opts && opts.tsReadyTimedOut);
         _isTaleSpire = !!(window.TS &&
                           window.TS.localStorage &&
                           window.TS.localStorage.global);
 
-        if (_isTaleSpire) {
-          try {
-            const info = await TS.campaigns.whereAmI();
-            _campaignId = info && info.id ? info.id : '_default';
-          } catch (e) {
-            _campaignId = '_default';
-            console.warn('[PortraitStore] could not get campaign ID:', e);
-          }
-
-          try {
-            const raw = await TS.localStorage.global.getBlob();
-            if (raw) _map = JSON.parse(raw);
-          } catch (e) {
-            console.warn('[PortraitStore] global read failed:', e);
-          }
-          if (TS.debug) TS.debug.log('[PortraitStore] loaded for campaign ' + _campaignId);
+        if (!_isTaleSpire) {
+          _loadState = 'ok';
+          return;
         }
+        if (tsReadyTimedOut) {
+          _loadState = 'failed';
+          console.warn('[PortraitStore] TS ready timed out — refusing to read/write');
+          return;
+        }
+
+        try {
+          const info = await TS.campaigns.whereAmI();
+          _campaignId = info && info.id ? info.id : '_default';
+        } catch (e) {
+          _campaignId = '_default';
+          console.warn('[PortraitStore] could not get campaign ID:', e);
+        }
+
+        try {
+          const raw = await TS.localStorage.global.getBlob();
+          if (raw) {
+            let parsed;
+            try { parsed = JSON.parse(raw); }
+            catch (e) {
+              _loadState = 'failed';
+              console.warn('[PortraitStore] global parse failed:', e);
+              return;
+            }
+            if (parsed && typeof parsed === 'object') _map = parsed;
+          }
+          _loadState = 'ok';
+        } catch (e) {
+          _loadState = 'failed';
+          console.warn('[PortraitStore] global read failed:', e);
+          return;
+        }
+        if (TS.debug) TS.debug.log('[PortraitStore] loaded for campaign ' + _campaignId);
       }
 
       function get() {
@@ -281,6 +433,10 @@
 
       async function set(dataUrl) {
         if (_isTaleSpire) {
+          if (_loadState !== 'ok') {
+            console.warn('[PortraitStore] write blocked (state=' + _loadState + ')');
+            return;
+          }
           _map[_campaignId] = dataUrl;
           try {
             await TS.localStorage.global.setBlob(JSON.stringify(_map));
@@ -294,6 +450,10 @@
 
       async function remove() {
         if (_isTaleSpire) {
+          if (_loadState !== 'ok') {
+            console.warn('[PortraitStore] remove blocked (state=' + _loadState + ')');
+            return;
+          }
           delete _map[_campaignId];
           try {
             await TS.localStorage.global.setBlob(JSON.stringify(_map));
@@ -309,6 +469,8 @@
       // Called once during init to handle existing users.
       async function migrateFromCampaignBlob() {
         if (!_isTaleSpire) return;
+        if (_loadState !== 'ok') return; // don't migrate if global isn't writable
+        if (!StorageAdapter.isHealthy()) return;
         const existing = StorageAdapter.getItem(PORTRAIT_KEY);
         if (existing) {
           await set(existing);
@@ -317,7 +479,10 @@
         }
       }
 
-      return { init, get, set, remove, migrateFromCampaignBlob };
+      function getState() { return _loadState; }
+      function isHealthy() { return _loadState === 'ok'; }
+
+      return { init, get, set, remove, migrateFromCampaignBlob, getState, isHealthy };
     })();
 
     // ── PartySync ──────────────────────────────────────
@@ -716,8 +881,8 @@
     (async function boot() {
     // Wait for TaleSpire API to initialize (instant in browser mode)
     await _tsReadyPromise;
-    await StorageAdapter.init();
-    await PortraitStore.init();
+    await StorageAdapter.init({ tsReadyTimedOut: _tsReadyTimedOut });
+    await PortraitStore.init({ tsReadyTimedOut: _tsReadyTimedOut });
     await PortraitStore.migrateFromCampaignBlob();
 
     // Game data (ABILITY_STATS, WEAPONS, SPELL_DB, etc.) loaded from data.js
@@ -751,6 +916,9 @@
 
     // ── localStorage ───────────────────────────────────
     const STORAGE_KEY = 'sd_char';
+    const BACKUP_KEY = 'sd_char_backup';
+    const BACKUP_AT_KEY = 'sd_char_backup_at';
+    const BACKUP_NAME_KEY = 'sd_char_backup_name';
 
     function loadCharacter() {
       try {
@@ -761,15 +929,55 @@
       }
     }
 
+    // Write the *previous* good blob to the webview's native localStorage —
+    // bypassing StorageAdapter entirely. This is an independent recovery
+    // channel: it survives a corrupt/wiped TS campaign blob because it
+    // doesn't share storage with it.
+    function _writeBackupSnapshot(prevRaw, prevName) {
+      if (!prevRaw) return;
+      try {
+        // Sanity-check that prev parses; never snapshot corrupt data.
+        JSON.parse(prevRaw);
+      } catch (e) { return; }
+      try {
+        window.localStorage.setItem(BACKUP_KEY, prevRaw);
+        window.localStorage.setItem(BACKUP_AT_KEY, new Date().toISOString());
+        if (prevName) window.localStorage.setItem(BACKUP_NAME_KEY, prevName);
+        else window.localStorage.removeItem(BACKUP_NAME_KEY);
+      } catch (e) {
+        console.warn('[backup] localStorage write failed:', e);
+      }
+    }
+
     function saveCharacter(data) {
       try {
-        StorageAdapter.setItem(STORAGE_KEY, JSON.stringify(data));
+        const newRaw = JSON.stringify(data);
+        const prevRaw = StorageAdapter.getItem(STORAGE_KEY);
+        if (prevRaw && prevRaw !== newRaw) {
+          let prevName = null;
+          try { prevName = (JSON.parse(prevRaw) || {}).name || null; }
+          catch (e) { /* don't snapshot if unparseable */ prevName = undefined; }
+          if (prevName !== undefined) _writeBackupSnapshot(prevRaw, prevName);
+        }
+        StorageAdapter.setItem(STORAGE_KEY, newRaw);
       } catch (e) {
         console.warn('Could not save character data:', e);
       }
     }
 
-    window.SD = { loadCharacter, saveCharacter };
+    function getBackupInfo() {
+      try {
+        const raw = window.localStorage.getItem(BACKUP_KEY);
+        if (!raw) return null;
+        const at = window.localStorage.getItem(BACKUP_AT_KEY) || null;
+        const name = window.localStorage.getItem(BACKUP_NAME_KEY) || null;
+        const current = StorageAdapter.getItem(STORAGE_KEY);
+        const isSame = current === raw;
+        return { raw: raw, at: at, name: name, isSame: isSame };
+      } catch (e) { return null; }
+    }
+
+    window.SD = { loadCharacter, saveCharacter, getBackupInfo };
     window.SD.character = loadCharacter();
 
     // ── Generic check/spell roller (stat checks, initiative, spellcasting) ──
@@ -2634,11 +2842,89 @@
       return navigator.clipboard.writeText(text);
     }
 
+    // ── Storage recovery banner ───────────────────────
+    // Activated when StorageAdapter reports a 'failed' load state.
+    (function() {
+      const banner = document.getElementById('storage-banner');
+      if (!banner) return;
+      StorageAdapter.onStateChange(function(state) {
+        banner.hidden = (state !== 'failed');
+      });
+      const exportBtn = document.getElementById('storage-banner-export');
+      const reloadBtn = document.getElementById('storage-banner-reload');
+      if (exportBtn) exportBtn.addEventListener('click', function() { exportCharacter(); });
+      if (reloadBtn) reloadBtn.addEventListener('click', function() { location.reload(); });
+    })();
+
+    // ── Restore previous version ──────────────────────
+    // Reads from the webview's native localStorage backup (independent of
+    // TS campaign blob) and replaces the current character after a
+    // confirmation dialog. Reloads the page to re-bind UI.
+    function restorePreviousVersion() {
+      const info = window.SD.getBackupInfo();
+      if (!info) {
+        showToast('No previous version available');
+        return;
+      }
+      let parsed;
+      try { parsed = JSON.parse(info.raw); }
+      catch (e) {
+        showToast('Backup is corrupted', true);
+        return;
+      }
+
+      const confirmModal  = document.getElementById('import-confirm');
+      const confirmMsg    = document.getElementById('confirm-message');
+      const confirmCancel = document.getElementById('confirm-cancel');
+      const confirmReplace = document.getElementById('confirm-replace');
+
+      const charName = (parsed && parsed.name) || info.name || 'previous character';
+      let whenLabel = '';
+      if (info.at) {
+        try {
+          const d = new Date(info.at);
+          if (!isNaN(d.getTime())) whenLabel = ' (saved ' + d.toLocaleString() + ')';
+        } catch (e) { /* ignore */ }
+      }
+      confirmMsg.innerHTML = 'Your current character will be replaced with <strong>' +
+        String(charName).replace(/</g, '&lt;') + '</strong>' + whenLabel +
+        '. This cannot be undone.';
+      confirmModal.hidden = false;
+
+      function cleanup() {
+        confirmReplace.removeEventListener('click', onReplace);
+        confirmCancel.removeEventListener('click', onCancel);
+      }
+      function onCancel() { confirmModal.hidden = true; cleanup(); }
+      function onReplace() {
+        try {
+          window.SD.saveCharacter(parsed);
+          StorageAdapter.flush();
+        } catch (e) {
+          console.warn('[restore] save failed:', e);
+        }
+        confirmModal.hidden = true;
+        cleanup();
+        showToast('Previous version restored');
+        setTimeout(function() { location.reload(); }, 500);
+      }
+      confirmReplace.addEventListener('click', onReplace);
+      confirmCancel.addEventListener('click', onCancel);
+    }
+
     // ── Export character ───────────────────────────────
     async function exportCharacter() {
       try {
-        const charRaw = StorageAdapter.getItem('sd_char');
-        const character = charRaw ? JSON.parse(charRaw) : {};
+        // If storage is healthy, source from the stored blob (most authoritative).
+        // If not, fall back to whatever is in memory so the user can still
+        // recover their session — this is the whole point of the banner Export button.
+        let character;
+        if (StorageAdapter.isHealthy()) {
+          const charRaw = StorageAdapter.getItem('sd_char');
+          character = charRaw ? JSON.parse(charRaw) : {};
+        } else {
+          character = (window.SD && window.SD.character) || {};
+        }
         const portrait = PortraitStore.get();
         const theme = StorageAdapter.getItem('sd_theme') || null;
 
@@ -2913,6 +3199,27 @@
       document.getElementById('menu-import').addEventListener('click', function() {
         toggleMenu(false);
         importCharacter();
+      });
+
+      // Restore previous version (only enabled when a backup exists in
+      // the webview's native localStorage and differs from current)
+      const restoreBtn = document.getElementById('menu-restore');
+      function refreshRestoreVisibility() {
+        const info = window.SD.getBackupInfo();
+        if (info && !info.isSame) {
+          restoreBtn.hidden = false;
+        } else {
+          restoreBtn.hidden = true;
+        }
+      }
+      refreshRestoreVisibility();
+      // Re-check whenever the menu opens so a freshly-written backup shows up.
+      document.getElementById('menu-btn').addEventListener('click', function() {
+        setTimeout(refreshRestoreVisibility, 0);
+      });
+      restoreBtn.addEventListener('click', function() {
+        toggleMenu(false);
+        restorePreviousVersion();
       });
 
       // Theme — open popover, close dropdown

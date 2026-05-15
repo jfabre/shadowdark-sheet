@@ -11,6 +11,23 @@
 </head>
 <body>
 
+  <!-- ── Storage recovery banner ─────────────────────── -->
+  <!-- Shown when StorageAdapter.init() failed to read the campaign blob.
+       Blocks writes (in JS) and gives the user a recovery path. -->
+  <div id="storage-banner" class="storage-banner" hidden role="alert" aria-live="assertive">
+    <div class="storage-banner-inner">
+      <span class="storage-banner-icon" aria-hidden="true">⚠</span>
+      <div class="storage-banner-msg">
+        <strong>Couldn't load your saved character.</strong>
+        <span>Your changes won't be saved. Try reloading; if that doesn't help, contact support.</span>
+      </div>
+      <div class="storage-banner-actions">
+        <button type="button" id="storage-banner-export" class="storage-banner-btn">Export</button>
+        <button type="button" id="storage-banner-reload" class="storage-banner-btn">Reload</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Content ─────────────────────────────────────── -->
   <div id="content">
 
@@ -419,6 +436,10 @@
     <button class="menu-item" role="menuitem" id="menu-import">
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M5 20h14v-2H5v2zm7-2l5.5-7h-4V5h-3v6h-4l5.5 7z"/></svg>
       Import Character
+    </button>
+    <button class="menu-item" role="menuitem" id="menu-restore" hidden>
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6s-2.69 6-6 6s-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8s-3.58-8-8-8z"/></svg>
+      Restore Previous Version
     </button>
     <hr class="menu-divider" />
     <button class="menu-item" role="menuitem" id="menu-theme">
