@@ -1683,9 +1683,10 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   border-radius: 6px;
   color: var(--text);
   font-family: var(--font-num);
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   text-align: center;
   padding: 6px 0;
+  line-height: 1;
   pointer-events: none;
   -moz-appearance: textfield;
   -webkit-appearance: none;
@@ -1696,6 +1697,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 
 .currency-txn-row {
   display: flex;
+  gap: 4px;
   width: 100%;
 }
 
@@ -1704,11 +1706,10 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   min-width: 0;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-right: none;
-  border-radius: 4px 0 0 4px;
+  border-radius: 4px;
   color: var(--text);
   font-family: var(--font-num);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   text-align: center;
   padding: 5px 0;
 }
@@ -1722,7 +1723,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
 .currency-apply-btn {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0 4px 4px 0;
+  border-radius: 4px;
   color: var(--muted);
   font-family: var(--font-num);
   font-size: 0.9rem;
