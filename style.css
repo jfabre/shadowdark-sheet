@@ -1662,7 +1662,7 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -1670,60 +1670,69 @@ input[type="number"].ability-score:focus { border: none; outline: none; }
   font-family: var(--font-num);
   font-size: 0.75rem;
   color: var(--accent);
-  letter-spacing: 0.1em;
-  margin-right: 14px;
+  letter-spacing: 0.12em;
 }
 
 .currency-label--gp { color: #C9A84C; }
 .currency-label--sp { color: #A8A9AD; }
 
-.currency-stepper {
-  display: flex;
-  align-items: stretch;
+.currency-display {
   width: 100%;
-}
-
-.currency-btn {
   background: var(--surface);
   border: 1px solid var(--border);
-  color: var(--muted);
-  font-family: var(--font-num);
-  font-size: 0.65rem;
-  padding: 4px 0;
-  cursor: pointer;
-  flex: 0 0 22px;
-  text-align: center;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s, color 0.15s;
-  line-height: 1;
-}
-.currency-btn:active { background: var(--border); color: var(--text); }
-.currency-btn--minus:first-child { border-radius: 4px 0 0 4px; }
-.currency-btn--plus:last-child { border-radius: 0 4px 4px 0; }
-.currency-btn + .currency-btn,
-.currency-btn + .currency-input,
-.currency-input + .currency-btn { margin-left: -1px; }
-
-.currency-input {
-  flex: 1;
-  min-width: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  border-radius: 6px;
   color: var(--text);
   font-family: var(--font-num);
-  font-size: 1rem;
+  font-size: 1.8rem;
   text-align: center;
-  padding: 4px 0;
-  border-radius: 0;
+  padding: 6px 0;
+  pointer-events: none;
   -moz-appearance: textfield;
   -webkit-appearance: none;
   appearance: none;
 }
-.currency-input::-webkit-inner-spin-button,
-.currency-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.currency-display::-webkit-inner-spin-button,
+.currency-display::-webkit-outer-spin-button { display: none; }
+
+.currency-txn-row {
+  display: flex;
+  width: 100%;
 }
+
+.currency-txn-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  color: var(--text);
+  font-family: var(--font-num);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 5px 0;
+}
+.currency-txn-input::placeholder { color: var(--muted); }
+.currency-txn-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  z-index: 1;
+}
+
+.currency-apply-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0 4px 4px 0;
+  color: var(--muted);
+  font-family: var(--font-num);
+  font-size: 0.9rem;
+  padding: 5px 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s, color 0.12s;
+}
+.currency-apply-btn:hover { background: var(--border); color: var(--text); }
+.currency-apply-btn:active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
 /* Encumbrance */
 .enc-header {

@@ -1275,7 +1275,6 @@
       getMatches(query) {
         return INVENTORY_ITEMS
           .filter(item => !query || item.toLowerCase().includes(query.toLowerCase()))
-          .slice(0, 12)
           .map(name => ({ label: name }));
       },
       onSelect(inputEl, item) {
@@ -1378,6 +1377,15 @@
         const con = (window.SD.character.abilities || {}).CON ?? 10;
         const mod = Math.floor((con - 10) / 2);
         return Math.max(0, mod);
+      }
+
+      function applyTxn(targetId, txnInput) {
+        const delta = parseFloat(txnInput.value.trim());
+        if (isNaN(delta)) return;
+        const inp = document.getElementById(targetId);
+        inp.value = Math.max(0, (parseFloat(inp.value) || 0) + delta);
+        inp.dispatchEvent(new Event('input'));
+        txnInput.value = '';
       }
 
       function updateEncumbrance() {
@@ -1549,13 +1557,15 @@
         });
       });
 
-      document.querySelectorAll('.currency-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const input = document.getElementById(btn.dataset.target);
-          const delta = parseInt(btn.dataset.delta, 10);
-          input.value = Math.max(0, (parseFloat(input.value) || 0) + delta);
-          input.dispatchEvent(new Event('input'));
+      document.querySelectorAll('.currency-txn-input').forEach(inp => {
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Enter') applyTxn(inp.dataset.target, inp);
         });
+      });
+      document.querySelectorAll('.currency-apply-btn').forEach(btn => {
+        btn.addEventListener('click', () =>
+          applyTxn(btn.dataset.target,
+                   btn.closest('.currency-txn-row').querySelector('.currency-txn-input')));
       });
       ['gear-armor-type'].forEach(id => {
         document.getElementById(id).addEventListener('change', () => {

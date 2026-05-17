@@ -213,23 +213,21 @@
       <section class="gear-section">
         <div class="currency-row">
           <div class="currency-field">
-            <span class="currency-label currency-label--gp">GP</span>
-            <div class="currency-stepper">
-              <button class="currency-btn currency-btn--minus" data-target="gear-gp" data-delta="-10">−10</button>
-              <button class="currency-btn currency-btn--minus" data-target="gear-gp" data-delta="-5">−5</button>
-              <input type="number" id="gear-gp" min="0" class="currency-input" value="0" />
-              <button class="currency-btn currency-btn--plus" data-target="gear-gp" data-delta="5">+5</button>
-              <button class="currency-btn currency-btn--plus" data-target="gear-gp" data-delta="10">+10</button>
+            <div class="currency-label currency-label--gp">GP</div>
+            <input type="number" id="gear-gp" min="0" class="currency-display" value="0" tabindex="-1" />
+            <div class="currency-txn-row">
+              <input type="text" inputmode="numeric" class="currency-txn-input"
+                     data-target="gear-gp" placeholder="±" autocomplete="off" />
+              <button class="currency-apply-btn" data-target="gear-gp">↵</button>
             </div>
           </div>
           <div class="currency-field">
-            <span class="currency-label currency-label--sp">SP</span>
-            <div class="currency-stepper">
-              <button class="currency-btn currency-btn--minus" data-target="gear-sp" data-delta="-10">−10</button>
-              <button class="currency-btn currency-btn--minus" data-target="gear-sp" data-delta="-5">−5</button>
-              <input type="number" id="gear-sp" min="0" class="currency-input" value="0" />
-              <button class="currency-btn currency-btn--plus" data-target="gear-sp" data-delta="5">+5</button>
-              <button class="currency-btn currency-btn--plus" data-target="gear-sp" data-delta="10">+10</button>
+            <div class="currency-label currency-label--sp">SP</div>
+            <input type="number" id="gear-sp" min="0" class="currency-display" value="0" tabindex="-1" />
+            <div class="currency-txn-row">
+              <input type="text" inputmode="numeric" class="currency-txn-input"
+                     data-target="gear-sp" placeholder="±" autocomplete="off" />
+              <button class="currency-apply-btn" data-target="gear-sp">↵</button>
             </div>
           </div>
         </div>
