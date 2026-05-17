@@ -3,7 +3,14 @@
 All notable changes to **The Dark Spire** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [0.9.2] - 2026-04-25
+## [0.9.3] - 2026-05-17
+
+- fix: harden sheet persistence against data loss
+- chore: remove PartySync dead code
+- feat: replace GP/SP stepper buttons with transaction-style UI
+- fix: polish GP/SP transaction UI sizing and borders
+- fix: replace settings cog with clean Feather stroke-based gear icon
+- docs: update help modal with Restore Previous Version and FAQ fix
 
 - fix: correct version badge and deploy script backreference bug
 - release: v0.9.2
