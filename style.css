@@ -260,8 +260,6 @@ input[type="number"]:focus,
   background: var(--surface);
   border: 1.5px solid var(--border);
   color: var(--muted);
-  font-size: 18px;
-  line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
